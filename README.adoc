@@ -1,0 +1,62 @@
+= README
+
+== transliteration-learner-from-graphs
+
+A technology to design transliteration systems from scratch in a friendly way for language experts.
+
+=== Motivation & Approach
+
+
+==== Motivation
+
+Transliteration is the process of transforming a language into another
+script, transforming the letters such as to maintain the  sounds.
+
+Languages are obviously subject to very complex rules making the above process
+ quite complicated.
+It is especially the case if no corpora are available to train
+neural networks or other techniques on.
+
+No corpora are available with Farsi at the time of the creation of this
+library, and so we needed to build the transliteration strategy from scratch.
+
+Building a proper library needs the composition
+of mappings of  language roots, lemmas and affixes
+ into constructions via complex rules.
+The software is binding a set of mappings
+via and extensive number of rules.
+
+In the design of the rules and on top of the mappings,
+many components are involved:
+Part of Speech tagger, lemmatizer and stemming.
+
+In addition to this all, the work on a computerised solution
+ requires also a successful interplay  between
+ a software developer and a linguist.
+
+Ideally, such a collaboration should be made easier,
+ allowing for visualisation, scaling and an intuitive solution.
+
+
+==== Approach
+
+For achieving this, we propose the following approach:
+
+1. Graphical Editor
+
+  * allowing a linguist to easily design and reshape complex rules
+
+2. Learning Code
+
+  * software capable to convert graphical rules into code.
+
+3. Transliteration of massive Farsi dataset
+
+  * We have put together massive dataset for this purpose.
+
+4. Training of neural network architecture
+
+  * transliteration is approached as translation and with similar tools.
+
+
+=== library

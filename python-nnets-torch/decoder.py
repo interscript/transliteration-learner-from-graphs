@@ -1,4 +1,53 @@
 
+
+from torch import Tensor
+import torch
+import torch.nn as nn
+from typing import Iterable, List
+from torch.nn import Transformer
+import math
+
+
+# helper function to club together sequential operations
+def sequential_transforms(*transforms):
+    def func(txt_input):
+        for transform in transforms:
+            txt_input = transform(txt_input)
+        return txt_input
+    return func
+
+
+def tokenizer(text):
+    for s in '.,!;:?':
+        text = text.replace(s, ' '+s+' ')
+    return text.split()
+
+
+def tensor_transform(token_ids: List[int]):
+    return torch.cat((torch.tensor([BOS_IDX]),
+                      torch.tensor(token_ids),
+                      torch.tensor([EOS_IDX])))
+
+
+# Hardcoded Language parameters
+DEVICE = 'cpu'
+
+
+SRC_LANGUAGE = 'farsi'
+TGT_LANGUAGE = 'transliterated'
+
+# Define special symbols and indices
+UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
+# Make sure the tokens are in order of their indices to properly insert them in vocab
+special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
+
+
+def generate_square_subsequent_mask(sz):
+    mask = (torch.triu(torch.ones((sz, sz), device=DEVICE)) == 1).transpose(0, 1)
+    mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
+    return mask
+
+
 # function to generate output sequence using greedy algorithm
 def greedy_decode(model, src, src_mask, max_len, start_symbol):
     src = src.to(DEVICE)
@@ -24,7 +73,10 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol):
 
 
 # actual function to translate input sentence into target language
-def translate(model: torch.nn.Module, src_sentence: str):
+def translate(model: torch.nn.Module, 
+              text_transform: dict, 
+              vocab_transform: dict, 
+              src_sentence: str):
     model.eval()
     src = text_transform[SRC_LANGUAGE](src_sentence).view(-1, 1)
     num_tokens = src.shape[0]
@@ -35,8 +87,7 @@ def translate(model: torch.nn.Module, src_sentence: str):
         list(tgt_tokens.cpu().numpy()))).replace("<bos>", "").replace("<eos>", "")
 
 
-import re 
-
+import re
 
 def evaluation(trans_orig, trans_model, orig):
     l_bugs = []

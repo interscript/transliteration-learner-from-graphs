@@ -1,0 +1,19 @@
+1. The word نیایشگرانی in line 125 is transliterated /nayeyaSgarAnayi/ This is so odd. Can't tell how that's happened. 
+
+2. The word پیتر in line 125 is transliterated پیtar while پیت exists in the entries. So, seems like the code is not looking for the biggest substring of the word that exists in entries. It's just finding the biggest substring starting at the end of words. This whole starting in the end, which was actually at the beginning of the string for rule 20, doesn't apply to the last rule. So, we just need to look for the biggest substring. I know this makes the code even slower, but this is what works best. I'm not sure when the code succeeds at finding two different parts of an uncharted word and when it fails. E.g. اینحال in line 566 doesn't exist in entries and the code finds and combines the two parts perfectly.
+
+3. There's also another bug hidden somewhere. The word پاری in line 173 is transliterated پاreyi. The whole first part of word being left in Farsi aside, the second part, ری, exists in entries as rey, so where does the /i/ in the end come from?!
+
+4. Another strange case is دوهواپیمای in lines 993 and 994. Other than the code not looking for the biggest substring, the process in which /adueuAپیم'eyi/ is produced is a mystery to me. How is that output produced? I think there are some serious bugs mostly connected to the algorithm or more probably implementation of the last rule. We gotta take a look into that.
+
+5. In rule 24 there's this part that says we must use single letters with T as their PoS when we're left at only one letter. That doesn't seem to be implemented. We can check اثیات in line 566 later to make sure it is.
+
+6. The verb نتوانسته است in line 566 is transliterated naAst! And it's not a problem with the library lemmatizing it wrong. The library lemmatizes it into توانست#توان and we choose the first one based on rule 3. Then we transliterate ن in the beginning according to rule 21. The rest is clear. The output should be /natavAneste 'ast/ and I don't see any complications. MAYBE it has something to do with how rule 5 is implemented. Maybe است is lemmatized before being checked in entries. However, even in that case, the whole verb root /tavAnest/ shouldn't have been omitted.
+
+7. The word نفسی in line 68 is transliterated /naفsi/ while the library perfectly stems it to نفس which exists in entries. So the implementation of rule 24 is actually interfering with other rules while it was supposed to decode uncharted words when nothing else worked. THIS IS THE BIGGEST BUG IN THE CODE I'VE FOUND SO FAR.
+
+8. I won't mention all the too many problems caused by the code looking for affixes first, but that needs to be fixed. I think rule 24 is clear enough for that.
+
+9. The word نیروهای in line 652 is the same as bug number 7, but with two suffixes instead of one. So, rule 20 is used here. I think previous models were able to produce correct outputs for نیروهای and نفسی. Then implementation of rule 24 is sometimes interfering with normal cases. Both these words are nouns if this can help.
+
+10. The word میگوید in line 942 is a verb that library hasn't lemmatized. So, rule 24! However, with all the wrong outputs produced because the code would try to recognize affixes first, in one of the few cases that could help, the code hasn't recognized می in the beginning as a prefix to help transliterate the word! The correct transliteration is /miguyad/

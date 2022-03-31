@@ -8,6 +8,8 @@ For doing it, we use a modern framework: transformers
 The code in this repository allows to train and export these Models
 into the ONNX format that is in turn used in the production done in Ruby.
 
-=== Build ONNX models
+===== Script to Train transliteration model
+
+===== Script to Build ONNX models
 
 python transformers_decomposed_to_onnx.py

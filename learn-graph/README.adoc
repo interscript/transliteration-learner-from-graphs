@@ -27,11 +27,10 @@ ____
 
 ==== Python Dependencies
 
-Has to be ran alongside the python dependancies of farsi branch
+Has to be ran alongside the python dependencies for legacy reasons
 [source,bash]
 ----
-ENV[``PYTHON''] = ``…my python path with hazm installed…''
-import Pkg; Pkg.add(``PyCall''); Pkg.build(``PyCall'')
+pip install -r requirements.txt
 ----
 
 ==== Ressources Dependencies
@@ -45,6 +44,13 @@ curl -sSL https://github.com/secryst/rababa-models/releases/download/untagged-d9
 ==== Install Julia
 
 https://julialang.org/downloads/[julia downloads]
+
+==== Connect to Correct Python Path/Dependencies
+[source,bash]
+----
+ENV[``PYTHON''] = ``…my python path with hazm installed…''
+import Pkg; Pkg.add(``PyCall''); Pkg.build(``PyCall'')
+----
 
 ==== Julia Dependencies
 

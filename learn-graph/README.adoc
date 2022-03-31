@@ -55,6 +55,19 @@ julia packageInstall.jl
 
 ==== Commands
 
+* Build ressources:
+In python for legacy reasons.
+Code is expecting following ressources /resources:
+
+      Affixes.xlsx; Entries.xlsx; farsi_assets.pickle; postagger.model; PoS_mappings.csv
+
+and builds:
+      farsi_assets.pickle
+[source,bash]
+----
+python script_to_build_assets.py
+----
+
 * Train
 [source,bash]
 ----

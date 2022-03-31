@@ -12,9 +12,9 @@ import _pickle as cPickle
 # Ressources expected: Flexicon/Affixes.xlsx  Flexicon/Entries.xlsx
 PATH_FLEXICON = "resources/"
 # Tagger model
-PATH_HAZM = "resources/postagger.model"
+PATH_HAZM = PATH_FLEXICON+"/postagger.model"
 # PoS mappings
-PATH_MAPPINGS = "data/PoS_mappings.csv"
+PATH_MAPPINGS = PATH_FLEXICON+"/PoS_mappings.csv"
 
 
 stemmer = Stemmer()
@@ -114,4 +114,3 @@ import pickle
 
 with open('resources/farsi_assets.pickle', 'wb') as handle:
     pickle.dump(dic_assets, handle, protocol=pickle.HIGHEST_PROTOCOL)
-

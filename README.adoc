@@ -59,4 +59,28 @@ For achieving this, we propose the following approach:
   * transliteration is approached as translation and with similar tools.
 
 
-=== Library
+=== Library + Workflow
+
+The Library is structured as described below.
+More details are provided within the subfolders.
+
+1. /learn-graph
+
+  * code: creates customised transliteration code from expert diagrams and mappings
+    code currently support lucidcharts, whereas basic format has to be followed
+    for diagrams design
+  * tests and benchmarks: basics benchmarks can run from a simple data format,
+      allowing for easy evaluation of new diagrams or tweaks in the code.
+  * data + transliteration for learning: We provide with farsi datasets that can be
+    transliterated by our code.
+
+2. /python-nnets-torch
+
+  * training of transformer architecture, transliteration learned as transliteration
+  * export and decomposition of best models into onnx format, so that they can be used in production
+
+3. /lib
+
+  * production code in ruby
+  * importing and combining transformer models trained in python to transliterate
+    samples or files

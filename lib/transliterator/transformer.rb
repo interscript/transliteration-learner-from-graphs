@@ -1,7 +1,6 @@
-# ported from https://github.com/pytorch/pytorch/blob/626e410e1dedcdb9d5a410a8827cc7a8a9fbcce1/torch/nn/modules/transformer.py
+
 require_relative "vocab"
 require_relative "encoders"
-#require_relative "titi"
 
 require "torch"
 
@@ -73,7 +72,7 @@ module Transliterator
       start_symbol=2 # BOS_IDX
       ys = Torch.tensor([[start_symbol]])
 
-      tgt_tokens = (0..max_len-2).map {|i|
+      tgt_tokens = (0..max_len-2).map { |i|
 
           sz = ys.size[1]
           tgt_mask = (Torch.ones([sz, sz]) -
@@ -91,7 +90,6 @@ module Transliterator
           if max == 3 # EOS_IDX
             break
           end
-
       }
 
       Array(ys).map {|x| x[0]}

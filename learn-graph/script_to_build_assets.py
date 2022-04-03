@@ -12,9 +12,9 @@ import _pickle as cPickle
 # Ressources expected: Flexicon/Affixes.xlsx  Flexicon/Entries.xlsx
 PATH_FLEXICON = "resources/"
 # Tagger model
-PATH_HAZM = PATH_FLEXICON+"/postagger.model"
+PATH_HAZM = PATH_FLEXICON+"postagger.model"
 # PoS mappings
-PATH_MAPPINGS = PATH_FLEXICON+"/PoS_mappings.csv"
+PATH_MAPPINGS = PATH_FLEXICON+"PoS_mappings.csv"
 
 
 stemmer = Stemmer()

@@ -54,6 +54,12 @@ function runAgent(node::Node,
 
             end
 
+            if isnothing(node.children)
+
+                @goto __OUT
+
+            end
+
             # continue locally
             node.children[1]
 
@@ -64,6 +70,7 @@ function runAgent(node::Node,
 
             if node.children == nothing
 
+                @label __OUT
                 return haskey(data, "res") ? data["res"] : data["word"]
 
             end

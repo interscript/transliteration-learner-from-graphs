@@ -52,35 +52,6 @@ module Transliterator
 
     end
 
-    def encode_src_batch(batch_data)
-
-      batch_data.map {|txt| encode_src_txt(txt)}
-
-    end
-
-        def transliterate_file(path)
-          texts = File.read(path).split("\n").map(&:strip)
-
-          # process batches
-          out_texts = []
-          idx = 0
-          while idx + @batch_size <= texts.length
-            originals = texts[idx...idx + @batch_size]
-
-            out_texts += diacritize_text(originals)
-
-            idx += @batch_size
-          end
-
-          # process rest of data
-          while idx < texts.length
-            out_texts += [diacritize_text(texts[idx])]
-            idx += 1
-          end
-
-          out_texts
-        end
-
   end
 
 end

@@ -36,6 +36,7 @@ module Transliterator
 
     end
 
+
     def encode(src, src_mask)
 
       d_src = {"src": src}
@@ -46,6 +47,7 @@ module Transliterator
       @transformer_encoder.predict(d_pos_src_mask)["output"]
 
     end
+
 
     def decode(ys, memory, tgt_mask)
 
@@ -61,6 +63,7 @@ module Transliterator
       Torch.tensor(out["output"])
 
     end
+
 
     def greedy_decode(src)
 

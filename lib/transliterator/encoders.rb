@@ -26,6 +26,7 @@ module Transliterator
 
     end
 
+
     def tokenizer(txt)
 
       # clean and collapse whitespaces
@@ -33,6 +34,7 @@ module Transliterator
       txt.split()
 
     end
+
 
     def encode_src(txt)
 
@@ -43,6 +45,7 @@ module Transliterator
       Torch.tensor([[2]] + src + [[3]])
 
     end
+
 
     def decode_tgt(tgt)
 

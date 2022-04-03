@@ -3,12 +3,10 @@ require_relative "vocab"
 require_relative "encoders"
 require_relative "transformer"
 
-
 module Transliterator
 
   class Transliterator
 
-    #include Transformer
 
     def initialize(config)
 

@@ -77,18 +77,34 @@ target_length = 8
 input_vocab_size = len(vocab_transform[SRC_LANGUAGE])
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))
 
-# Export model
+
+# Export the model
 torch.onnx.export(transformer.src_tok_emb, 
                   (src),
-                  "../resources/token_embbedding.onnx",
+                  "../resources/token_src_embbedding.onnx",
                   input_names=['src'],
                   output_names=['output'],  # the model's output names
                   dynamic_axes={'src': {0: 'source_length', 1: 'batch_size'}},
-                  verbose=False,
+                  verbose=True, #False,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
-                  do_constant_folding=False,  # whether to execute constant folding for optimizatio
-                )
+                  do_constant_folding=True, #False,  # whether to execute constant folding for optimizatio
+                )  
+
+# Export the model
+tgt = src
+torch.onnx.export(transformer.tgt_tok_emb, 
+                  (tgt),
+                  "../resources/token_tgt_embbedding.onnx",
+                  input_names=['tgt'],
+                  output_names=['output'],  # the model's output names
+                  dynamic_axes={'tgt': {0: 'source_length', 1: 'batch_size'}},
+                  verbose=True, #False,
+                  export_params=True,        # store the trained parameter weights inside the model file
+                  opset_version=11,          # the ONNX version to export the model to
+                  do_constant_folding=True, #False,  # whether to execute constant folding for optimizatio
+                )  
+
 
 
 ### Export Positional Encoding
@@ -105,6 +121,45 @@ torch.onnx.export(transformer.positional_encoding, # transformer.src_tok_emb,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=False,  # whether to execute constant folding for optimizatio
+                )
+
+
+### Export Generator
+
+src = text_transform[SRC_LANGUAGE](src_sentence).view(-1, 1)
+num_tokens = src.shape[0]
+src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
+memory = transformer.encode(src, src_mask)
+memory = memory.to(DEVICE)
+
+start_symbol=BOS_IDX
+
+ys = torch.ones(1, 1).fill_(start_symbol).type(torch.long).to(DEVICE)
+sz = ys.size(0)
+tgt = transformer.positional_encoding(
+                          transformer.tgt_tok_emb(ys))
+
+tgt_mask = (dcder.generate_square_subsequent_mask(ys.size(0))
+                .type(torch.bool)).to(DEVICE)
+
+out = transformer.transformer.decoder(tgt, memory, tgt_mask)
+out = out.transpose(0, 1)
+outs = out[:, -1]
+#prob = transformer.generator(out[:, -1])
+#_, next_word = torch.max(prob, dim=1)
+#next_word
+
+torch.onnx.export(transformer.generator,
+                  (outs),
+                  "../resources/transformer_generator.onnx",
+                  input_names=['outs'],
+                  output_names=['output'],  # the model's output names
+                  # dynamic_axes={'outs': 
+                  #               {1: 'vocab_size'}}, # {0: 'source_length', 1: 'batch_size'}},
+                  verbose=False,
+                  export_params=True,        # store the trained parameter weights inside the model file
+                  opset_version=11,          # the ONNX version to export the model to
+                  do_constant_folding=False  # whether to execute constant folding for optimizatio
                 )
 
 

@@ -7,40 +7,56 @@ module Transliterator
 
   class FarsiEncoder
 
-        attr_accessor :target_id_to_s
-        # :normalized_table, :dagesh_table
-        # include CharacterTable
-        include Farsi
-        include Transliterate
+    #include Farsi
+    #include Transliterate
 
-        def initialize(config)
+    def initialize(config)
 
-          @max_len = config[:max_len]
+      @max_len = config[:max_len]
+      @vocab_transform = YAML.load(File.read(config[:vocab_transform]))
 
-          @input_s_to_id =
-            (Special_symbols+Farsi_CHARS.chars).map.with_index { |s, i| [s, i] }.to_h
-          @input_id_to_s =
-            (Special_symbols+Farsi_CHARS.chars).map.with_index { |s, i| [i, s] }.to_h
+      src_lang = "farsi"
+      tgt_lang = "transliterated"
 
-          @target_s_to_id =
-            (Special_symbols+Transliterated_CHARS.chars).map.with_index { |s, i| [s, i] }.to_h
-          @target_id_to_s =
-            (Special_symbols+Transliterated_CHARS.chars).map.with_index { |s, i| [i, s] }.to_h
+      @src_s_to_id = @vocab_transform[src_lang].map.with_index { |s, i| [s, i] }.to_h
+      @src_id_to_s = @vocab_transform[src_lang].map.with_index { |s, i| [i, s] }.to_h
 
-        end
+      @tgt_s_to_id = @vocab_transform[tgt_lang].map.with_index { |s, i| [s, i] }.to_h
+      @tgt_id_to_s = @vocab_transform[tgt_lang].map.with_index { |s, i| [i, s] }.to_h
 
-        def encode_src_txt(txt)
+    end
 
-          src = txt.chars.map {|c| @input_s_to_id[c]}
-          src = src + (1..@max_len-src.length).map  {|c| @input_s_to_id["<unk>"]}
-          src = Torch.tensor(src)
-          src
-        end
+    def tokenizer(txt)
 
-        def encode_src_batch(batch_data)
-          batch_data.map {|txt| encode_src_txt(txt)}
-        end
+      # clean and collapse whitespaces
+      txt = txt.gsub(/[[:space:]]+/, " ").strip
+      txt.split()
 
+    end
+
+    def encode_src(txt)
+
+      l_txt = tokenizer(txt)
+      src = l_txt.map {|i| [@src_s_to_id[i]]}
+
+      # encoding beginning and ending
+      Torch.tensor([[2]] + src + [[3]])
+
+    end
+
+    def decode_tgt(tgt)
+
+      txt = ""
+      (1..tgt.length-2).map {|i| txt += @tgt_id_to_s[tgt[i]] + " "}
+      txt.strip
+
+    end
+
+    def encode_src_batch(batch_data)
+
+      batch_data.map {|txt| encode_src_txt(txt)}
+
+    end
 
         def transliterate_file(path)
           texts = File.read(path).split("\n").map(&:strip)
@@ -64,38 +80,6 @@ module Transliterator
 
           out_texts
         end
-
-  end
-
-  class PositionalEncoding < Torch::NN::Module
-    # PositionalEncoding module injects some information about the relative or
-    # absolute position of the tokens in the sequence.
-    # The positional encodings have the same dimension as the embeddings so
-    # that the two can be summed. Here, we use sine and cosine functions of
-    # different frequencies.
-    def initialize(d_model, dropout: 0.1, max_len: 100) #5000)
-      super()
-      @dropout = Torch::NN::Dropout.new(p: dropout)
-
-      pe = Torch.zeros(max_len, d_model)
-      position = Torch.arange(0, max_len, dtype: :float).unsqueeze(1)
-      div_term = Torch.exp(Torch.arange(0, d_model, 2).float() * (-Math.log(10000.0) / d_model))
-      sin = Torch.sin(position * div_term).t
-      cos = Torch.cos(position * div_term).t
-      pe.t!
-      pe.each.with_index do |row, i|
-        pe[i] = sin[i / 2] if i % 2 == 0
-        pe[i] = cos[(i-1)/2] if i % 2 != 0
-      end
-      pe.t!
-      pe = pe.unsqueeze(0).transpose(0, 1)
-      register_buffer('pe', pe)
-    end
-
-    def forward(x)
-      x = x + pe.narrow(0, 0, x.size(0))
-      return x
-    end
 
   end
 

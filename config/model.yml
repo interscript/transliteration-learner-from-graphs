@@ -1,12 +1,2 @@
-:activation: relu
-:d_model: 64
-:dim_feedforward: 256
-:dropout: 0.05
-:input_vocab_size: 1000
-:nhead: 8
-:num_decoder_layers: 4
-:num_encoder_layers: 4
-:target_vocab_size: 1000
-:max_len: 100
 :vocab_transform: "../resources/vocab_transform.yaml"
 :onnx_path: "../resources"

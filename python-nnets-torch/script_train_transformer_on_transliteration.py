@@ -40,11 +40,14 @@ df = pd.read_csv(PATH_DATA)
 
 df['transliterated'] = [d[:-1] for d in df['trans']]
 df['farsi'] = [d[:-1] for d in df['farsi']]
-df['no_farsi'] = [check_farsi(d) and check_length(d)  for d in df['transliterated']]
+df['no_farsi'] = [check_farsi(d) and check_length(d) for d in df['transliterated']]
 df = df[df['no_farsi'] == True]
 N = df.shape[0]
 df = df[:int(N/2)]
 
+
+
+### Build model
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -100,11 +103,12 @@ import pickle
 with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
     pickle.dump(vocab_transform, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
+""";
+
 with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'rb') as handle:
     vocab_transform = pickle.load(handle)
 
-""";
-
+    
 # Build Model
 
 torch.manual_seed(0)
@@ -132,10 +136,9 @@ loss_fn = torch.nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 optimizer = torch.optim.Adam(transformer.parameters(), lr=0.0001, betas=(0.9, 0.98), eps=1e-9)
 
 
-# load model
+# If load model
 """
 PATH = "drive/MyDrive/models/model_basic_epoch_1.pt" # jair
-
 transformer.load_state_dict(torch.load(PATH, map_location=torch.device('cpu')))
 transformer.eval();
 """;
@@ -228,13 +231,14 @@ for epoch in range(1, NUM_EPOCHS+1):
     df_test = pd.read_csv("drive/MyDrive/Transformer/data/test.csv")
 
     df_test["trans0_9"] = [translate(transformer, d) for d in df_test["orig"]]
-    #df_test.to_csv('drive/MyDrive/test_data/df_test_'+str(epoch)+'.csv')
+    # df_test.to_csv('drive/MyDrive/test_data/df_test_'+str(epoch)+'.csv')
     ids = evaluation(df_test["trans"], df_test["trans0_9"], df_test["orig"])
 
     print('save model:::::')
     torch.save(transformer.state_dict(),
                'drive/MyDrive/models/model_basic_epoch_'+str(epoch)+'.pt')
-    print('saved model:::::')
+    print('model saved:::::')
+    
     """
     for src, tgt in list(zip(df[SRC_LANGUAGE], df[TGT_LANGUAGE]))[:10]:
         dico = {'src': src, 'tgt': tgt, 'tra': translate(transformer, src)}
@@ -243,7 +247,6 @@ for epoch in range(1, NUM_EPOCHS+1):
         print('TRA::  ', dico['tra'])
         print('')
 
-    print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\')
     """
 
     """

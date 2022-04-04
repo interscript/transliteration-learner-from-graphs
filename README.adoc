@@ -2,7 +2,7 @@
 
 == transliteration-learner-from-graphs
 
-A technology to design transliteration systems from scratch in a friendly way for language experts.
+A technology to design transliteration systems from scratch in an inclusive way for language experts.
 
 === Motivation & Approach
 
@@ -32,7 +32,7 @@ Part of Speech tagger, lemmatizer and stemming.
 
 In addition to this all, the work on a computerised solution
  requires also a successful interplay  between
- a software developer and a linguist.
+ a software developer and a linguist/language specialist.
 
 Ideally, such a collaboration should be made easier,
  allowing for visualisation, scaling and an intuitive solution.
@@ -48,7 +48,7 @@ For achieving this, we propose the following approach:
 
 2. Learning Code
 
-  * software capable to convert graphical rules into code.
+  * software capable to convert above mentionned graphical rules into code.
 
 3. Transliteration of massive Farsi dataset
 

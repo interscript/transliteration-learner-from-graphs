@@ -1,6 +1,4 @@
-= README
-
-== transliteration-learner-from-graphs
+= transliteration-learner-from-graphs
 
 A technology to design transliteration systems from scratch in an inclusive way for language experts.
 

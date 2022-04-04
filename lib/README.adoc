@@ -1,1 +1,10 @@
+=== Transliteration in Ruby
 
+The ruby implementation is importing nnets components to run transformers
+in ruby after they were trained and export with the python code/scripts.
+
+
+===== Assets
+
+load ONNX models can be
+found https://github.com/secryst/transliteration-learner-from-graph-models[here].

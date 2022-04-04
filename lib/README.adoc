@@ -1,4 +1,4 @@
-=== Transliteration in Ruby
+== Transliteration in Ruby
 
 The ruby implementation is importing nnets components to run transformers
 in ruby after they were trained and export with the python code/scripts.

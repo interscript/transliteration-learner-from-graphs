@@ -1,0 +1,12 @@
+numpy==1.19.5
+onnx==1.11.0
+onnxruntime==1.10.0
+pandas==1.1.5
+pandas-access==0.0.1
+pickleshare==0.7.5
+PyYAML==6.0
+torch==1.10.2
+torchtext==0.11.2
+tqdm==4.56.0
+vocab==0.0.5
+typing_extensions==4.1.1

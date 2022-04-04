@@ -18,9 +18,11 @@ import transformer as tmer
 import decoder as dcder
 
 
+"""
 # Mount google drive on google collab
-from google.colab import drive
+ from google.colab import drive
 drive.mount('/content/drive')
+"""
 
 
 ### Load and preprocess data
@@ -35,7 +37,7 @@ def check_length(txt):
     return True if len(txt) < 100 else False
 
 
-PATH_DATA = 'data/df_data_2.csv'
+PATH_DATA = '../resources/data_farsi_translit.csv'
 df = pd.read_csv(PATH_DATA)
 
 df['transliterated'] = [d[:-1] for d in df['trans']]
@@ -105,7 +107,7 @@ with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
 
 """;
 
-with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'rb') as handle:
+with open('../resources/vocab_transform.pickle', 'rb') as handle:
     vocab_transform = pickle.load(handle)
 
     
@@ -228,7 +230,7 @@ for epoch in range(1, NUM_EPOCHS+1):
     val_loss = evaluate(transformer)
     print((f"Epoch: {epoch},            Train loss: {train_loss:.3f},            Val loss: {val_loss:.3f},            "f"Epoch time = {(end_time - start_time):.3f}s"))
 
-    df_test = pd.read_csv("drive/MyDrive/Transformer/data/test.csv")
+    df_test = pd.read_csv("../resources/test.csv")
 
     df_test["trans0_9"] = [translate(transformer, d) for d in df_test["orig"]]
     # df_test.to_csv('drive/MyDrive/test_data/df_test_'+str(epoch)+'.csv')
@@ -236,28 +238,5 @@ for epoch in range(1, NUM_EPOCHS+1):
 
     print('save model:::::')
     torch.save(transformer.state_dict(),
-               'drive/MyDrive/models/model_basic_epoch_'+str(epoch)+'.pt')
+               '../resources/model_basic_epoch_'+str(epoch)+'.pt')
     print('model saved:::::')
-    
-    """
-    for src, tgt in list(zip(df[SRC_LANGUAGE], df[TGT_LANGUAGE]))[:10]:
-        dico = {'src': src, 'tgt': tgt, 'tra': translate(transformer, src)}
-        print('SRC::  ', dico['src'])
-        print('TGT::  ', dico['tgt'])
-        print('TRA::  ', dico['tra'])
-        print('')
-
-    """
-
-    """
-    f_1 = open("drive/MyDrive/data/test.txt", "r")
-    data_test = f_1.readlines()
-    f_1.close()
-
-    f_2 = open('results/test_'+str(epoch)+'.txt', "w")
-    for d in data_test:
-        f_2.write(d + "\n")
-        f_2.write(translate(transformer, d) + "\n")
-        f_2.write("\n")
-    f_2.close()
-    """;

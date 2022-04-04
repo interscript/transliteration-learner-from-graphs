@@ -40,7 +40,7 @@ transformer = tfmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, E
 
 
 # Load model
-MODEL_PATH = "../resources/model_basic_epoch_1.pt" # jair
+MODEL_PATH = "../resources/model_trained_transformer.pt" 
 transformer.load_state_dict(
     torch.load(MODEL_PATH, map_location=torch.device('cpu')))
 transformer.eval();
@@ -85,10 +85,10 @@ torch.onnx.export(transformer.src_tok_emb,
                   input_names=['src'],
                   output_names=['output'],  # the model's output names
                   dynamic_axes={'src': {0: 'source_length', 1: 'batch_size'}},
-                  verbose=True, #False,
+                  verbose=True,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
-                  do_constant_folding=True, #False,  # whether to execute constant folding for optimizatio
+                  do_constant_folding=True,  # whether to execute constant folding for optimizatio
                 )  
 
 # Export the model
@@ -99,10 +99,10 @@ torch.onnx.export(transformer.tgt_tok_emb,
                   input_names=['tgt'],
                   output_names=['output'],  # the model's output names
                   dynamic_axes={'tgt': {0: 'source_length', 1: 'batch_size'}},
-                  verbose=True, #False,
+                  verbose=True,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
-                  do_constant_folding=True, #False,  # whether to execute constant folding for optimizatio
+                  do_constant_folding=True,  # whether to execute constant folding for optimizatio
                 )  
 
 
@@ -145,6 +145,7 @@ tgt_mask = (dcder.generate_square_subsequent_mask(ys.size(0))
 out = transformer.transformer.decoder(tgt, memory, tgt_mask)
 out = out.transpose(0, 1)
 outs = out[:, -1]
+
 #prob = transformer.generator(out[:, -1])
 #_, next_word = torch.max(prob, dim=1)
 #next_word

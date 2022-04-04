@@ -35,6 +35,10 @@ In addition to this all, the work on a computerised solution
 Ideally, such a collaboration should be made easier,
  allowing for visualisation, scaling and an intuitive solution.
 
+Finally and very importantly, once built, the specialist can easily reshape the
+logic and generate an entirely new solution  or just tweaks
+with minimal support from the developer.
+
 
 ==== Approach
 

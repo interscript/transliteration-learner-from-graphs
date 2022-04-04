@@ -2,7 +2,6 @@
 require_relative "vocab"
 require_relative "encoders"
 
-require "torch"
 
 module Transliterator
 
@@ -37,11 +36,20 @@ module Transliterator
     end
 
 
+    def create_mask(n)
+
+      mask = Array.new(n) { Array.new(n, false) }
+      (0..n-1).map {|i| (i+1..n-1).map {|j| mask[i][j]=true }}
+      mask
+
+    end
+
+
     def encode(src, src_mask)
 
       d_src = {"src": src}
       tokens = @token_src_embedding.predict(d_src)
-      d_tokens = {"tokens": tokens["output"]} # Torch.tensor(tokens["output"])}
+      d_tokens = {"tokens": tokens["output"]}
       pos = @positional_embedding.predict(d_tokens)
       d_pos_src_mask = {src: pos["output"], src_mask: src_mask}
       @transformer_encoder.predict(d_pos_src_mask)["output"]
@@ -53,42 +61,37 @@ module Transliterator
 
       d_tgt = {"tgt": ys}
       tokens = @token_tgt_embedding.predict(d_tgt)
-
-      d_tokens = {"tokens": Torch.tensor(tokens["output"])}
+      d_tokens = {"tokens": tokens["output"]}
       pos = @positional_embedding.predict(d_tokens)
       tgt = pos["output"]
-
       d_data = {tgt: tgt, memory: memory, tgt_mask: tgt_mask}
       out = @transformer_decoder.predict(d_data)
-      Torch.tensor(out["output"])
+      out["output"]
 
     end
 
 
     def greedy_decode(src)
 
-      num_tokens = src.shape[0]
+      num_tokens = src.length
       max_len = num_tokens + 5
-      src_mask = Torch.zeros(num_tokens, num_tokens).type(Torch.bool)
+      src_mask = Array.new(num_tokens) { Array.new(num_tokens, false) }
       memory = encode(src, src_mask)
 
       start_symbol=2 # BOS_IDX
-      ys = Torch.tensor([[start_symbol]])
+      ys = [[start_symbol]]
 
       tgt_tokens = (0..max_len-2).map { |i|
 
-          sz = ys.size[1]
-          tgt_mask = (Torch.ones([sz, sz]) -
-                      Torch.tril(Torch.ones([sz, sz]))).type(Torch.bool)
-          out = decode(ys, memory, tgt_mask)
-          out = out.transpose(0, 1)
+          sz = ys.length
+          tgt_mask = create_mask(sz)
 
-          d_outs = {outs: out[0.., -1]}
+          out = decode(ys, memory, tgt_mask)
+          d_outs = {outs: [out.transpose[0][-1]]}
+
           probas = @transformer_generator.predict(d_outs)
           max = probas["output"][0].each_with_index.max[1]
-
-          ys = Torch.cat([ys,
-                          Torch.tensor([[max]])])
+          ys = ys + [[max]]
 
           if max == 3 # EOS_IDX
             break

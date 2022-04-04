@@ -1,7 +1,6 @@
 
 require_relative "vocab"
 
-require "torch"
 
 module Transliterator
 
@@ -42,7 +41,7 @@ module Transliterator
       src = l_txt.map {|i| [@src_s_to_id[i]]}
 
       # encoding beginning and ending
-      Torch.tensor([[2]] + src + [[3]])
+      [[2]] + src + [[3]]
 
     end
 

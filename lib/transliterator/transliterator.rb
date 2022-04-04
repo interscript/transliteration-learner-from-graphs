@@ -3,6 +3,7 @@ require_relative "vocab"
 require_relative "encoders"
 require_relative "transformer"
 
+
 module Transliterator
 
   class Transliterator
@@ -48,7 +49,6 @@ module Transliterator
 
     def get_transformers()
 
-      #Transliterator::
       Transformer.new(@config)
 
     end

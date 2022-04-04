@@ -20,8 +20,8 @@ Any lucidchart diagram  is encoded and "learnt" as a graph.
 
 Example data:
 ____
-resources/TestFarsiTrans.csv
-resources/TestFarsiTrans.png
+resources/Model1.0.csv
+resources/Model1.0.png
 ____
 
 

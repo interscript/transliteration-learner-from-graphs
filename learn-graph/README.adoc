@@ -41,6 +41,11 @@ Obviously, the nodes and entries have to be connected by arrows in a consistent
 manner.
 
 
+==== Hazm library
+
+Core of the strategy is the Hazm library, allowing to perform various operations
+on farsi texts like tokenization, lemmatization, PoS tagging, ...
+
 ==== Mappings
 
 Basis for the transliteration strategy are various mappings:

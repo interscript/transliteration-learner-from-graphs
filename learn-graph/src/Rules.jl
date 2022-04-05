@@ -113,7 +113,13 @@ dicCODE["return the transliteration of the instance with the desired pos that ha
 
 dicCODE["return the transliteration of the instance with the highest frequency!"] =
     Functor((d,e=nothing,f=nothing) -> (
-        d["res"] = py"""return_highest_search_pos"""(d["data"], d["pos"]); d),
+        v = py"""return_highest_search_pos"""(d["data"], d["pos"]);
+        if typeof(v) == String
+            d["res"] = v
+        else
+            d["res"] = v[1]
+            d["SynCatCode"] = v[2]
+        end; d),
             Dict(:in => ["data"], :out => ["res"]))
 
 

@@ -1,6 +1,6 @@
-== README
+== Farsi Learn
 
-=== Farsi Learn
+==== Intro
 
 Farsi learn is a software allowing a non technical experts to sketch
 rules and logic steps needed for the task of transliteration of Farsi.
@@ -12,17 +12,68 @@ While the language specialist can design and try easily his own rules,
 the developer implements the code corresponding to the rules. This way
 both tasks and roles are well defined and confined.
 
-=== Learning Strategy
-Any lucidchart diagram  is encoded and "learnt" as a graph.
+== Components & Steps
+
+==== Learning Strategy
+
+Original transliteration strategy https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/rules/rules.md[rules],
+in a typical format...
+
+In this project, we used lucidchart to generate a
+https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.png[diagram representation] of the above rules.
+
+Such lucidchart diagram can be learnt and encoded into code from its
+https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.csv[csv export].
+
+==== Diagram format
+
+We structure logic flows as a set of graphs.
+This scales by allowing a graph to call other graph logics.
+
+Any diagram respecting the same formatting can be straightforwardly transformed
+into code:
+
+  * Entry Point of logic flows (or subfows):
+   Start of any logic of sub logic Curly Brace Note
+  * Nodes: Decision, Process and Terminator.
+
+Obviously, the nodes and entries have to be connected by arrows in a consistent
+manner.
 
 
-==== Graph Parsed
+==== Mappings
 
-Example data:
-____
-resources/Model1.0.csv
-resources/Model1.0.png
-____
+Basis for the transliteration strategy are various mappings:
+https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/raw_mappings.zip[link to mappings]
+
+Following files are expected to be placed into /resources:
+
+  *  Affixes.xlsx
+  *  Entries.xlsx
+  *  PoS_mappings.csv
+  *  postagger.model
+
+
+==== Models
+
+Our models can be downloaded
+https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/models.zip[here].
+
+Files to be placed for instance into /resources are:
+
+  *  Model.csv
+  *  Model.dat
+  *  Model.png
+
+Model.dat is the precompiled model.
+
+==== Run
+After python & julia dependencies and have been taken care of,
+as described in the steps below, one can start to transliterate in debug mode:
+[source,bash]
+----
+julia transliterateSingleString.jl --path-model resources/Model0.1.dat  --farsi-text مزایایی --pos-tagging noun
+----
 
 
 ==== Python Dependencies
@@ -33,13 +84,6 @@ Has to be ran alongside the python dependencies for legacy reasons
 pip install -r requirements.txt
 ----
 
-==== Ressources Dependencies
-Farsi resources can be found on https://github.com/secryst/rababa-models/releases[secryst] and manually downloaded there. Assets are to be put under resources. Alternatively, run the following commands:
-[source,bash]
-----
-curl -sSL https://github.com/secryst/rababa-models/releases/download/untagged-d9108f5298deeb17ecac/farsi_assets.pickle -o resources/farsi_assets.pickle
-curl -sSL https://github.com/secryst/rababa-models/releases/download/untagged-d9108f5298deeb17ecac/postagger.model -o resources/postagger.model
-----
 
 ==== Install Julia
 

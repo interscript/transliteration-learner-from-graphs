@@ -1,6 +1,8 @@
 = transliteration-learner-from-graphs
 
-A technology to design transliteration systems from scratch in an inclusive way for language experts.
+A technology to design transliteration systems from scratch, integrative
+of language experts workflow with a graphical
+editor.
 
 === Motivation & Approach
 
@@ -10,34 +12,26 @@ A technology to design transliteration systems from scratch in an inclusive way 
 Transliteration is the process of transforming a language into another
 script, transforming the letters such as to maintain the  sounds.
 
-Languages are obviously subject to very complex rules making the above process
- quite complicated.
-It is especially the case if no corpora are available to train
-neural networks or other techniques on.
 
 No corpora are available with Farsi at the time of the creation of this
 library, and so we needed to build the transliteration strategy from scratch.
 
-Building a proper library needs the composition
+
+The building of  a proper library needs the composition
 of mappings of  language roots, lemmas and affixes
- into constructions via complex rules.
-The software is binding a set of mappings
-via and extensive number of rules.
+ into constructions via a number of rules.
+ Additional NLP components are involved:
+ Part of Speech tagger, lemmatizer and stemming.
 
-In the design of the rules and on top of the mappings,
-many components are involved:
-Part of Speech tagger, lemmatizer and stemming.
 
-In addition to this all, the work on a computerised solution
- requires also a successful interplay  between
- a software developer and a linguist/language specialist.
+In order to make the code easier to edit, reusable and with
+less dependency on the developer, we looked for some way to empower the linguist
+and encapsulate both dev.'s' and linguist's workflows.
 
-Ideally, such a collaboration should be made easier,
- allowing for visualisation, scaling and an intuitive solution.
 
-Finally and very importantly, once built, the specialist can easily reshape the
-logic and generate an entirely new solution  or just tweaks
-with minimal support from the developer.
+We also needed to make production code independant of some python libraries
+and details and easy to build.
+Our codes are generated from data in ways explained below.
 
 
 ==== Approach
@@ -48,7 +42,7 @@ For achieving this, we propose the following approach:
 
   * allowing a linguist to easily design and reshape complex rules
 
-2. Learning Code
+2. "Learn" Graphs
 
   * software capable to convert above mentionned graphical rules into code.
 
@@ -59,6 +53,8 @@ For achieving this, we propose the following approach:
 4. Training of neural network architecture
 
   * transliteration is approached as translation and with similar tools.
+
+
 
 
 === Library + Workflow

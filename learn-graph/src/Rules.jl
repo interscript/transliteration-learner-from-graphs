@@ -35,12 +35,14 @@ dicCODE["lemmatize it!"] =
             Dict(:in => ["word"], :out => ["lemma"]))
 
 dicCODE["includes underscores?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = contains(d["lemma"], "_") ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = contains(d["lemma"], "_") ? "yes" : "no"; d),
             Dict(:in => ["lemma"], :out => ["state"]))
 
 dicCODE["does only one of the verb roots exist in the verb?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = length(filter(x -> occursin(x, d["word"]),
-                                      split(d["lemma"], "#"))) == 1 ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = length(filter(x -> occursin(x, d["word"]),
+            split(d["lemma"], "#"))) == 1 ? "yes" : "no"; d),
             Dict(:in => ["word", "lemma"], :out => ["state"]))
 
 dicCODE["output it!"] =
@@ -56,24 +58,6 @@ dicCODE["collision?"] =
     Functor((d,e=nothing,f=nothing) -> (d["state"] = length(d["data"]) == 1 ? "no" : "yes"; d),
             Dict(:in => ["data"], :out => ["state"]))
 
-#===
-dd = Dict{String, Any}("data" => Dict{Any, Any}[Dict("جایگاه" => "2", "SynCatCode" => "N1", "هجاسازی مجدد" => false, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => 23, "مقولة ستاک+وند" => "", "نام وند" => "PEC", "نوع" => "0", "PhonologicalForm" => "yam", "درج واج در وندافزایی" => "", "کد معنا" => "03", "طرح تکیه" => "W", "واکه" => "1", "هم\u200cنویسه با واحد واژگانی" => ""), Dict("جایگاه" => "3", "SynCatCode" => "N1", "هجاسازی مجدد" => false, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => 42, "مقولة ستاک+وند" => "", "نام وند" => "COC", "نوع" => "0", "PhonologicalForm" => "yam", "درج واج در وندافزایی" => "", "کد معنا" => "05", "طرح تکیه" => "W", "واکه" => "1", "هم\u200cنویسه با واحد واژگانی" => ""), Dict("جایگاه" => "2", "SynCatCode" => "V1", "هجاسازی مجدد" => false, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => 65, "مقولة ستاک+وند" => "", "نام وند" => "PEI", "نوع" => "0", "PhonologicalForm" => "im", "درج واج در وندافزایی" => "", "کد معنا" => "20", "طرح تکیه" => "W", "واکه" => "0", "هم\u200cنویسه با واحد واژگانی" => ""), Dict("جایگاه" => "2", "SynCatCode" => "V2", "هجاسازی مجدد" => false, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => 71, "مقولة ستاک+وند" => "", "نام وند" => "PEI", "نوع" => "0", "PhonologicalForm" => "im", "درج واج در وندافزایی" => "", "کد معنا" => "21", "طرح تکیه" => "W", "واکه" => "1", "هم\u200cنویسه با واحد واژگانی" => ""), Dict("جایگاه" => "2", "SynCatCode" => "V2", "هجاسازی مجدد" => false, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => 175, "مقولة ستاک+وند" => "", "نام وند" => "PEI", "نوع" => "0", "PhonologicalForm" => "im", "درج واج در وندافزایی" => "", "کد معنا" => "21", "طرح تکیه" => "W", "واکه" => "0", "هم\u200cنویسه با واحد واژگانی" => ""), Dict("جایگاه" => nothing, "SynCatCode" => "V1", "هجاسازی مجدد" => nothing, "تغییرات آوایی در وندافزایی" => "", "Affix" => "یم", "id" => nothing, "مقولة ستاک+وند" => nothing, "نام وند" => nothing, "نوع" => nothing, "PhonologicalForm" => "yam", "درج واج در وندافزایی" => "", "کد معنا" => 20, "طرح تکیه" => nothing, "واکه" => nothing, "هم\u200cنویسه با واحد واژگانی" => nothing)], "res" => "im", "SynCatCode" => "N1", "pre_pos" => nothing, "state" => "no", "pos" => "Noun", "res_root" => "mard", "suffix" => "یم", "affix" => "یم", "word" => "مردیم", "brain" => "affix-handler", "lemma" => "مرد")
-
-
-            dicCODE["output its transliteration!"] =
-                Functor((d,e=nothing,f=nothing) -> (
-                dd=data;
-                dd["pos"] = d["pos"];
-                dd["word"] = d["word"];
-                d = dd;
-                        haskey(d, "res") ? d :
-                            typeof(d["data"]) == Vector{Dict{Any, Any}} ?
-                                (v = py"""return_highest_search_pos"""(d["data"], d["pos"]);
-                                 d["res"] = v[1]; d["SynCatCode"] = v[2]; d) :
-                                (d["res"] = d["word"]; d)),
-                        Dict(:in => [], :out => []))
-===#
-#===#
 dicCODE["output its transliteration!"] =
     Functor((d,e=nothing,f=nothing) ->
         (if !haskey(d, "res")
@@ -84,28 +68,31 @@ dicCODE["output its transliteration!"] =
         end;
         d),
             Dict(:in => [], :out => []))
-#===#
 
 dicCODE["return its transliteration!"] = dicCODE["output its transliteration!"]
-
 
 dicCODE["stem it!"] =
     Functor((d,e=nothing,f=nothing) -> (d["lemma"] = stemmer.stem(d["word"]); d),
             Dict(:in => ["word"], :out => ["lemma"])) # lemma
 
 dicCODE["is the verb root found in the db?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
+    Functor((d,e=nothing,f=nothing) ->
+        (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
             d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
             Dict(:in => ["lemma", "pos"], :out => ["data", "state"]))
 
 dicCODE["does the root of the word exist in the database?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
+    Functor((d,e=nothing,f=nothing) ->
+        (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
             d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
             Dict(:in => ["lemma", "pos"], :out => ["data", "state"]))
 
 dicCODE["transliterate each side of underscore separately in proper order"] =
-    Functor((d,e=nothing,f=nothing) -> split(d["lemma"], "_") |>
-                (D -> map(x -> py"""return_highest_search_pos"""(x, d["pos"]), D) |> join),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = split(d["lemma"], "_") |>
+                (D -> map(x ->
+                    py"""return_highest_search_pos"""(x, d["pos"]), D) |> join);
+         d),
             Dict(:in => ["lemma"], :out => ["res"]))
 
 

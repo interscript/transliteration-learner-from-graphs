@@ -155,7 +155,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
     Functor((d,e=nothing,f=nothing) ->
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
-         wrd = join(lStr[idx:end], "");
+         wrd = join(lStr[idx+1:end], "");
          dd=copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
@@ -515,8 +515,17 @@ dicCODE["is the prefix ب or بی?"] =
     Functor((d,e=nothing,f=nothing) ->
                 (wrd = d["word"];
                  root = filter(x -> contains(wrd, x), split(d["lemma"], "#"))[1];
-                 idx = findfirst(root, wrd)[1];
-                 d["state"] = wrd[1:idx] in ["ب", "بی"] ? "yes" : "no"; d),
+                 n = length(collect(root));
+                 nWord = length(collect(wrd));
+                 idx = nothing;
+                 for i=1:nWord-n+1
+                     if join(collect(d["word"])[i:i+n-1], "") == root
+                         idx = i
+                         break
+                     end
+                 end;
+                 d["state"] = join(collect(d["word"])[1:idx], "") in  ["ب", "بی"] ?
+                            "yes" : "no"; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
 

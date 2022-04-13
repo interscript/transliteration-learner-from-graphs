@@ -67,29 +67,71 @@ graph = dicBRAINS[entryBrain]
 data = Dict{String, Any}(
             "word" => nothing,
             "pos" => nothing,
+            "pre_pos" => nothing,
             "state" => nothing, # used for messages back to system
             "brain" => entryBrain) # current brain or graph
 
 
+VOCABFARSI = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
+
+function processPOS(pos)
+
+    l_supported_POS = vcat(py"""l_PoS""",
+                       collect(keys(py"""d_map_FLEXI""")),
+                       collect(keys(py"""d_map_HAZM""")))
+
+    if !(pos in l_supported_POS)
+
+        @error "pos unrecognised, needs to be within: ", l_supported_POS
+        exit()
+
+    else
+
+        if pos in collect(keys(py"""d_map_FLEXI"""))
+
+            pos = py"""d_map_FLEXI"""[pos]
+
+        elseif pos in collect(keys(py"""d_map_HAZM"""))
+
+            pos = py"""d_map_HAZM"""[pos]
+
+        end
+
+    end
+
+    pos
+
+end
+
+
+m = 1
 if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 
-    df_Test = DataFrame(CSV.File("data/test.csv")) #_data.csv"))
+    df_Test = DataFrame(CSV.File("data/test_data.csv")) #_data.csv"))
 
     df_Test[!,"transModel"] =
         map(d -> d |>
             py"""normalise""" |>
                 hazm.word_tokenize |>
                     tagger.tag |>
-                        (D -> map(d -> (data["word"] = d[1];
-                                        data["pos"] = d[2];
-                                        data["state"] = nothing;
+                        (D -> map(d -> (dd = copy(data); 
+                                        dd["pos"] = processPOS(d[2]);
+                                        dd["word"] = d[2] != "Punctuation" ?
+                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
+                                        dd["state"] = nothing;
                             try
-                                runAgent(graph, dicBRAINS, df_Nodes, data)
+                        
+                                dd["pos"] == "Punctuation" ?
+                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
+                        
                             catch
-                                println(data["word"], " : ", data["pos"])
-                                ""
-                            end), D)) |>
+                        
+                                println("DBG:: ", dd["word"], " : ", dd["pos"]);
+                                dd["word"]
+                        
+                            end
+                ), D)) |>
                             (L -> join(L, " ")),
     df_Test[!,"orig"])
 

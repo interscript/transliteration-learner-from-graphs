@@ -30,6 +30,13 @@ module Transliterator
 
       # clean and collapse whitespaces
       txt = txt.gsub(/[[:space:]]+/, " ").strip
+
+      txt.gsub("ﯼ",
+                  "ﻱ")
+                  
+      txt.gsub("ک",
+                  "ك")
+
       txt.split()
 
     end

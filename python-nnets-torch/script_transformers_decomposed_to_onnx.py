@@ -215,3 +215,17 @@ torch.onnx.export(transformer.transformer.decoder,
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=False,  # whether to execute constant folding for optimizatio
                 )
+
+
+# finally export vocabulary
+import yaml
+
+
+v_farsi = vocab_transform['farsi']
+v_trans = vocab_transform['transliterated']
+
+d = {'farsi': v_farsi.vocab.get_itos(), 
+     'transliterated': v_trans.vocab.get_itos()}
+
+with open('../resources/vocab_transform.yaml', 'w') as outfile:
+    yaml.dump(d, outfile) #, default_flow_style=False)

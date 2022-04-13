@@ -6,7 +6,7 @@ include("hazm/py_code.jl")
 data = Dict{String, Any}(
             "word" => nothing,
             "pos" => nothing, # d["pos"],
-            "pre_pos" => nothing, #d["pre_pos"],
+            "pre_pos" => nothing, # d["pre_pos"],
             "state" => nothing,
             "brain" => "transliterator");
 
@@ -16,13 +16,19 @@ dicCODE = Dict{String, Functor}()
 
 # transliterator
 
-dicCODE["change all instances of ي and ك in the text to ی and ک"] =
-    Functor((d,e=nothing,f=nothing) -> (d["word"]=py"""normalise"""(d["word"]); d),
+dicCODE["do nothing!"] =
+    Functor((d,e=nothing,f=nothing) -> d,
+        Dict(:in => ["word"], :out => ["word"]))
+
+dicCODE["change all instances of ي and ك and ۀ in the text to ی and ک and هٔ"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["word"]=py"""normalise"""(d["word"]); d),
             Dict(:in => ["word"], :out => ["word"]))
 
 dicCODE["is the word found in the db?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["data"]=py"""search_db"""(d["word"], d["pos"]);
-            d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["data"]=py"""search_db"""(d["word"], d["pos"]);
+         d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
             Dict(:in => ["word", "pos"], :out => ["data", "state"]))
 
 dicCODE["is it a verb?"] =
@@ -31,12 +37,15 @@ dicCODE["is it a verb?"] =
 
 dicCODE["lemmatize it!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["lemma"] = lemmatizer.lemmatize(d["word"]); d),
+        (d["lemma"] = d["word"] |> lemmatizer.lemmatize |>
+            (S -> split(S, "#")) |>
+                (S -> filter(c -> c != "", S)) |>
+                    (S -> join(S, "#")); d),
             Dict(:in => ["word"], :out => ["lemma"]))
 
 dicCODE["includes underscores?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = contains(d["lemma"], "_") ? "yes" : "no"; d),
-            Dict(:in => ["lemma"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) -> (d["state"] = contains(d["word"], "_") ? "yes" : "no"; d),
+            Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["does only one of the verb roots exist in the verb?"] =
     Functor((d,e=nothing,f=nothing) -> (d["state"] = length(filter(x -> occursin(x, d["word"]),
@@ -53,7 +62,8 @@ dicCODE["output it!"] =
             Dict(:in => ["data"], :out => []))
 
 dicCODE["collision?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = length(d["data"]) == 1 ? "no" : "yes"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = length(d["data"]) == 1 ? "no" : "yes"; d),
             Dict(:in => ["data"], :out => ["state"]))
 
 dicCODE["does it include u200c?"] =
@@ -61,37 +71,97 @@ dicCODE["does it include u200c?"] =
         (d["state"] = contains(d["word"], "\u200c") ? "yes" : "no"; d),
         Dict(:in => ["word"], :out => ["state"]))
 
+#===
+    new changes...
+===#
 
 dicCODE["is the segment before it نمی?"] =
     Functor((d,e=nothing,f=nothing) ->
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          d["state"] = join(lStr[1:idx-1], "") == "نمی" ? "yes" : "no"; d),
-         Dict(:in => ["word"], :out => ["state"]))
+            Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["is the segment before it می?"] =
     Functor((d,e=nothing,f=nothing) ->
-    (lStr = collect(d["word"]);
-     idx = indexin('\u200c', lStr)[1];
-     d["state"] = join(lStr[1:idx-1], "") == "می" ? "yes" : "no"; d),
-        Dict(:in => ["word"], :out => ["state"]))
+        (lStr = collect(d["word"]);
+         idx = indexin('\u200c', lStr)[1];
+         d["state"] = join(lStr[1:idx-1], "") == "می" ? "yes" : "no"; d),
+            Dict(:in => ["word"], :out => ["state"]))
 
-dicCODE["transliterate the segment after u200c as a verb and add mi to the beginning of it"] =
+dicCODE["does the segment after it start with ها?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (lStr = collect(d["word"]);
+         idx = indexin('\u200c', lStr)[1];
+         d["state"] = join(lStr[idx+1:min(end,idx+2)], "") == "ها" ? "yes" : "no"; d),
+            Dict(:in => ["word"], :out => ["state"]))
+
+dicCODE["transliterate the segment before u200c and mark the segment after u200c as suffix."] =
+    Functor((d,e=nothing,f=nothing) ->
+        (lStr = collect(d["word"]);
+         idx = indexin('\u200c', lStr)[1];
+         # pre u200c
+         dd = copy(data);
+         dd["word"] = join(lStr[1:idx-1], "");
+         dd["pos"] = d["pos"];
+         interfaceName = "transliterator";
+         node = e[interfaceName];
+         pre_res = runAgent(node, e, f, dd);
+         d["res_root"] = pre_res;
+         # post u200c
+         d["word"] = join(lStr[idx+1:end], "");
+         d["affix"] = d["word"];
+         d["suffix"] = d["word"]; d),
+            Dict(:in => ["word"], :out => ["state"]))
+
+dicCODE["transliterate each side of it separately in proper order"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (lStr = collect(d["word"]);
+         idx = indexin('\u200c', lStr)[1];
+         dd = copy(data);
+         # pre u200c
+         dd["word"] = join(lStr[1:idx-1], "");
+         dd["pos"] = d["pos"];
+         interfaceName = "transliterator";
+         node = e[interfaceName];
+         d["res"] = runAgent(node, e, f, dd);
+         # post u200c
+         dd = copy(data);
+         dd["word"] = join(lStr[1:idx-1], "");
+         dd["pos"] = d["pos"];
+         interfaceName = "transliterator";
+         node = e[interfaceName];
+         d["res"] = d["res"] * runAgent(node, e, f, dd); d),
+            Dict(:in => ["word"], :out => ["state"]))
+
+# dicCODE["transliterate the segment after u200c as a verb and add mi to the beginning of it"] =
+dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatize it!\" and add mi to the beginning of it"] =
     Functor((d,e=nothing,f=nothing) ->
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          prev_wrd = join(lStr[1:idx-1], "");
          wrd = join(lStr[idx+1:end], "");
-         dd=data;
+         dd = copy(data);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
-         interfaceName = "transliterator";
+         interfaceName = "verb-handler"; #"transliterator";
          node = e[interfaceName];
          res = "mi"*runAgent(node, e, f, dd);
-         d["res"] = "PREV_TO_BE_SOLVED_"*prev_wrd*res; d),
-         Dict(:in => ["word"], :out => ["res"])) # jair
+         d["res"] = res; d),
+            Dict(:in => ["word"], :out => ["res"])) # jair
 
-
+ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatize it!\" and add nemi to the beginning of it"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (lStr = collect(d["word"]);
+         idx = indexin('\u200c', lStr)[1];
+         wrd = join(lStr[idx:end], "");
+         dd=copy(data);
+         dd["word"] = wrd;
+         dd["pos"] = "Verb";
+         interfaceName = "verb-handler";
+         node = e[interfaceName];
+         d["res"] = "nemi"*runAgent(node, e, f, dd); d),
+            Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["output its transliteration!"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -117,13 +187,23 @@ dicCODE["is the verb root found in the db?"] =
             Dict(:in => ["lemma", "pos"], :out => ["data", "state"]))
 
 dicCODE["does the root of the word exist in the database?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
-            d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
+         d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
             Dict(:in => ["lemma", "pos"], :out => ["data", "state"]))
 
 dicCODE["transliterate each side of underscore separately in proper order"] =
-    Functor((d,e=nothing,f=nothing) -> split(d["lemma"], "_") |>
-                (D -> map(x -> py"""return_highest_search_pos"""(x, d["pos"]), D) |> join),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = map(w -> (dd = copy(data);
+                              dd["word"] = w;
+                              dd["pos"] = d["pos"];
+                              interfaceName = "transliterator";
+                              node = e[interfaceName];
+                              runAgent(node, e, f, dd)),
+                    split(d["word"], "_")) |>
+                        (D -> join(D, ""));
+         d["root"] = d["word"]; # to end computation
+         d),
             Dict(:in => ["lemma"], :out => ["res"]))
 
 
@@ -275,11 +355,12 @@ dicCODE["return \"an\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"as\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "as"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "aS"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"es\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "es"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "eS"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"om\""] =
@@ -291,7 +372,7 @@ dicCODE["return \"am\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"man\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "man"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "mAn"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"na\""] =
@@ -299,7 +380,7 @@ dicCODE["return \"na\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"eman\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "eman"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "emAn"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"omi\""] =
@@ -339,15 +420,15 @@ dicCODE["is it a suffix?"] =
             else
                 "no"
             end; d),
-        #(aff = d["affix"];
-         #d["state"] = d["word"][length(aff)] == aff ? "yes" : "no";
-         #d),
             Dict(:in => ["word", "affix"], :out => ["state"]))
 
 dicCODE["is there only one instance of the affix?"] =
-    Functor((d,e=nothing,f=nothing) -> (
-    d["state"] = py"""has_only_one_search_pos"""(d["data"]); d),
-            Dict(:in => ["data"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) ->
+    (if !haskey(d, "data")
+        d["data"] = py"""affix_search"""(d["affix"])
+     end;
+     d["state"] = py"""has_only_one_search_pos"""(d["data"]); d),
+            Dict(:in => ["affix"], :out => ["state"]))
 
 dicCODE["use it! "] =
     Functor((d,e=nothing,f=nothing) ->
@@ -364,19 +445,26 @@ dicCODE["is the word before it a verb?"] =
             if d["affix"] == get(d, "suffix", "nothing") # affix?
                 haskey(d,"lemma") && d["pos"] == "Verb" ? "yes" : "no";
             elseif d["affix"] == get(d, "prefix", "nothing") # suffix
-                d["pre_pos"] == "Verb" ? "yes" : "no"
+                if haskey(d, "pre_pos")
+                    d["pre_pos"] == "Verb" ? "yes" : "no"
+                else
+                    d["pos"] == "Verb" ?  "yes" : "no"
+                end;
             else
                 "no"
             end; d),
-            Dict(:in => ["pre_pos"], :out => ["state"]))
+            Dict(:in => [], :out => ["state"]))
 
 dicCODE["is the word to-which it's attached, a noun?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["pos"] == "Noun" ? "true" : "false"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["pos"] == "Noun" ? "yes" : "no"; d),
             Dict(:in => ["pos"], :out => ["state"]))
 
 dicCODE["is the word to-which it's attached, a number or چند?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = contains(d["word"], "چند") ? "yes" :
-        d["pos"] == "Number" ? "true" : "false"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = contains(d["word"], "چند") ? "yes" :
+                d["pos"] == "Number" ? "yes" : "no";
+         d),
             Dict(:in => ["pos", "affix"], :out => ["state"]))
 
 dicCODE["is the verb root to-which it's attached, marked as v2 in the database?"] =
@@ -388,21 +476,22 @@ dicCODE["does the verb root to-which it's attached, end in any of the /e, a, u/ 
             Dict(:in => ["verb_root"], :out => ["state"]))
 
 dicCODE["is there a space or semi-space before it?"] =
-    Functor((d,e=nothing,f=nothing) -> (n = first(findlast(d["affix"], d["word"]));
-                  if n > 1
-                      d["word"][n-1:n-1] == " " ?
-                           d["state"] = "yes" :
-                        if n > 4
-                            d["state"] =
-                                d["word"][n-3:n-1+length(d["affix"])] == string('\u200c', d["affix"]) ?
+    Functor((d,e=nothing,f=nothing) ->
+        (n = length(d["affix"]);
+         idx = first(findlast(d["affix"], d["word"]));
+         if idx > 1
+             d["word"][idx-n:idx] == " " ?
+                d["state"] = "yes" :
+                    if n > 4
+                        d["state"] =
+                            d["word"][n-3:n-1+length(d["affix"])] == string('\u200c', d["affix"]) ?
                                 "yes" : "no"
-                        else
+                    else
                             d["state"] = "no"
-                        end
-                  else
-                      d["state"] = "no"
-                  end;
-                  d),
+                    end
+          else
+             d["state"] = "no"
+          end; d),
             Dict(:in => ["word", "affix"], :out => ["state"]))
 
 
@@ -452,11 +541,13 @@ dicCODE["is there an آ in the verb roots?"] =
 
 
 dicCODE["change the first آ in the verb root(s) to ا."] =
-    Functor((d,e=nothing,f=nothing) -> (d["lemma"] = split(d["lemma"], "#") |>
-                    (Ls -> map(x -> (idx = findfirst("آ", x) |> first;
-                                     string(replace(x[1:idx], "آ" => "ا"), x[idx+2:end])),
-                               Ls) |>
-                            (L -> join(split(L, "a"), "#"))); d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["lemma"] = split(d["lemma"], "#") |>
+            (Ls -> map(x -> (idx = findfirst("آ", x) |> first;
+                             string(replace(x[1:idx], "آ" => "ا"), x[idx+2:end])),
+                       Ls) |>
+                    (L -> join(L, "#")));
+             d),
             Dict(:in => ["lemma"], :out => ["lemma"]))
 
 
@@ -490,8 +581,13 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
 
 
 dicCODE["does the transliteration of the segment before it end in /i/?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["l_res"][end][end-1:end] == "i" ? "yes" : "no"; d),
-            Dict(:in => ["l_res"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = if haskey(d, "l_res")
+             d["l_res"][end][end-1:end] == "i" ? "yes" : "no"
+         else
+             d["res_root"][end-1:end] == "i" ? "yes" : "no"
+         end; d),
+            Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a,e,o,a,i,u/ sounds?"] =
@@ -501,13 +597,23 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
 
 dicCODE["is there anything after the word root?"] =
     Functor((d,e=nothing,f=nothing) ->
-    (d["state"] = length(d["word"]) < last(findlast(reverse(d["lemma"]), reverse(d["word"]))) ? "yes" : "no"; d),
+        (d["state"] = if length(d["lemma"]) == length(d["word"])
+            "no"
+        else
+        contains(d["word"], d["lemma"]) ?
+            length(d["word"]) < last(findlast(reverse(d["lemma"]), reverse(d["word"]))) ? "yes" : "no" :
+            "no"
+        end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
 
 dicCODE["is there anything before the word root?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = 1 == first(findfirst(d["lemma"], d["word"])) ? "no" : "yes"; d),
+        (d["state"] = if contains(d["word"], d["lemma"])
+            d["state"] = 1 == first(findfirst(d["lemma"], d["word"])) ? "no" : "yes"
+         else
+            "no"
+         end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
 
@@ -530,58 +636,76 @@ dicCODE["is it found in affixes?"] =
 
 
 dicCODE["return the transliteration with t as its pos"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = py""""search_db"""(d["affix"], pos); d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = py"""get_in_db"""(d["affix"], "T"); d),
             Dict(:in => ["affix"], :out => ["res"]))
 
 
 dicCODE["return its transliteration then omit the ' symbol in the beginning of the word root that comes after it!"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = string(collect(d["data"][:PhonologicalForm])[1], "-'"); d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = string(collect(d["data"])[1]["PhonologicalForm"], "-'"); d),
             Dict(:in => ["data"], :out => ["res"]))
 
 
 dicCODE["is the word root, رو recognized as a verb?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["pos"] == "Verb" ? "yes" : "no";
-                  d["res"] = "rav";d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["pos"] == "Verb" ? "yes" : "no"; d),
             Dict(:in => ["data", "pos"], :out => ["state", "res"]))
 
 
 dicCODE["change the word root's transliteration from /rav/ to /ro/"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "ro"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = replace(d["res"], "rav" => "ro"); d),
             Dict(:in => ["res"], :out => ["res"]))
 
 
 dicCODE["mark it as prefix"] =
     Functor((d,e=nothing,f=nothing) ->
-        (l = length(collect(d["lemma"]));
-         d["prefix"] = join(collect(d["word"])[1:end-2]);
+        (nWord = length(collect(d["word"]));
+         n = length(collect(d["lemma"]));
+         idx = nothing;
+         for i=1:nWord-n+1
+             if join(collect(d["word"])[i:i+n-1], "") == d["lemma"]
+                 idx = i
+                 break
+             end
+         end;
+         d["prefix"] = join(collect(d["word"])[1:idx-1]);
          d["affix"] = d["prefix"];
-         d["res_root"] = d["res"]; d),
+         d["data"] = py"""affix_search"""(d["prefix"]);
+         d["res_root"] = haskey(d, "res_root") ? d["res_root"] : d["res"];
+         delete!(d, "res");
+         d),
             Dict(:in => ["word", "lemma"], :out => ["prefix"]))
 
 
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
-      (d["suffix"] = (id = last(findlast(d["lemma"], d["word"]));
-       try
-           d["word"][id+1:end]
-       catch
-           d["word"][id+2:end]
-       end);
+      (nWord = length(collect(d["word"]));
+       n = length(collect(d["lemma"]));
+       idx = nothing;
+       for i=reverse(1:nWord-n+1)
+           if join(collect(d["word"])[i:i+n-1], "") == d["lemma"]
+               idx = i
+               break
+           end
+       end;
+       d["suffix"] = join(collect(d["word"])[idx+n:end], "");
        d["res_root"] = d["res"];
        delete!(d, "res");
        d["affix"] = d["suffix"];
-       #d["word"] = d["suffix"];
        d["data"] = py"""affix_search"""(d["affix"]);
-       d["brain"] = "fixbug";
-       d),
-            Dict(:in => ["word", "lemma"], :out => ["suffix"]))
+       d["brain"] = "hacktobesurebrainsjump"; d),
+        Dict(:in => ["word", "lemma"], :out => ["suffix"]))
 
 
 dicCODE["add it to the beginning of the root's transliteration"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = haskey(d, "res_prefix") ?
-            string(d["res_prefix"], d["res_root"]) :
-            string(d["res"], d["res_root"]); d),
+        (d["res"] = if haskey(d, "res_prefix")
+            string(d["res_prefix"], d["res_root"])
+        else
+            string(d["res"], d["res_root"])
+        end; d),
         Dict(:in => ["res_root"], :out => ["res"]))
 
 
@@ -589,16 +713,25 @@ dicCODE["add it to the end of the root's transliteration"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = haskey(d, "res_suffix") ?
             string(d["res_root"], d["res_suffix"]) :
-            string(d["res_root"], d["res"]); d),
+            string(d["res_root"], d["res"]);
+         d["res"] = replace(d["res"], "-'"=>"", "-''"=>"");
+         d),
         Dict(:in => ["res_root", "res"], :out => ["res"]))
 
 
 dicCODE["undo the change to the verb root and use it!"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = d["lemma"] |>
-                    (x -> (idx = findfirst("ا", x) |> first;
-                           string(replace(x[1:idx], "آ" <= "ا"),
-                                  x[idx+2:end])));
-                  d),
+    Functor((d,e=nothing,f=nothing) ->
+        (w = collect(d["lemma"]);
+         idx = nothing;
+         for (i,v) in enumerate(w)
+             if v == 'ا'
+                 idx = i ; break
+             end
+         end;
+        d["res"] = string(join(replace(w[1:idx],
+                        'ا' => 'آ'), ""),
+                    join(w[idx+1:end],""));
+        d),
             Dict(:in => ["lemma"], :out => ["res"]))
 
 
@@ -607,20 +740,8 @@ dicCODE["undo the change to the verb root and use it!"] =
 
 dicCODE["return the concatenation of all the returned transliterations."] =
     Functor((d,e=nothing,f=nothing) ->
-        (l_res = [];
-         for w in d["l_affix"]
-            dd = copy(data)
-            dd["word"] = w
-            dd["pos"] = d["pos"];
-            dd["pre_pos"] = d["pre_pos"];
-            interfaceName = "transliterator"; # "affix-handler";
-            node = e[interfaceName];
-            v = runAgent(node, e, f, dd);
-            push!(l_res, v);
-         end;
-         d["res"] = join(l_res, "");
-         d),
-            Dict(:in => ["l_affix"], :out => ["res"]))
+        (d["res"] = join(d["l_res"], ""); d),
+            Dict(:in => ["l_res"], :out => ["res"]))
 
 
 dicCODE["transliterate it using affix-handler"] =
@@ -654,31 +775,30 @@ dicCODE["transliterate it using affix-handler"] =
 dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
         (interfaceName = "affix-handler";
-         d["res"] = if length(d["l_affix"]) == 1
-                v = py"""get_in_db"""(d["l_affix"][1], d["pos"]);
-                if !(typeof(v) == String)
-                    d["SynCatCode"] = v[2];
-                end
-
+         d["l_res"] = if length(d["l_affix"]) == 1
+                w = d["l_affix"][1];
+                w != "" ?
+                    [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]
             else
-                map(w -> (node = e[interfaceName];
-                        if haskey(d, "res")
-                            delete!(d, "res")
-                        end;
-                        d["affix"] = w;
-                        d["data"] = py"""affix_search"""(w);
-                        runAgent(node, e, f, d)),
-                    d["l_affix"]) |> (D -> join(D, ""))
+                map(w ->
+                            (dd = copy(data);
+                             dd["word"] = w;
+                             dd["affix"] = w;
+                             node = e[interfaceName];
+                             runAgent(node, e, f, dd)),
+                        d["l_affix"]);
             end;
          d),
-            Dict(:in => ["l_affix"], :out => ["res"]))
+            Dict(:in => ["l_affix"], :out => ["l_res"]))
 
 
 dicCODE["find the longest substring of the input that exists in the database."] =
     Functor((d,e=nothing,f=nothing) ->
         (d["d_substring"] = py"""longest_root_and_affixes"""(d["word"]);
+         d["word_total"] = d["word"];
+         d["data"] = py"""search_db"""(d["d_substring"]["root"]);
          d),
-            Dict(:in => ["word"], :out => ["res"]))
+            Dict(:in => ["word"], :out => ["d_substring", "data", "word_total"]))
 
 
 dicCODE["transliterate each side of it separately in proper order and put its transliteration with the highest frequency between them."] =
@@ -689,27 +809,30 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
              @goto OUT
          end;
          # root
-         root = py"""get_in_db"""(d_substrings["root"], d["pos"]);
+         root = if d["brain"] == "collision-handler"
+             py"""return_highest_search_pos"""(d["data"], d["pos"])
+         else
+             py"""get_in_db"""(d_substrings["root"], d["pos"])
+         end;
          prefix = d_substrings["prefix"];
          suffix = d_substrings["suffix"];
          # prefix and suffix
-         prefix = if length(prefix) > 0
+         prefix = if length(prefix) > 0 && !(prefix == "\u200c")
              dd = copy(data);
              dd["word"] = prefix;
              dd["pos"] = d["pos"];
              dd["pre_pos"] = d["pre_pos"];
-             interfaceName = "transliterator"; # "affix-handler";
+             interfaceName = "transliterator";
              node = e[interfaceName];
              if haskey(dd, "res")
                  dd["res_root"] = dd["res"]
                  delete!(dd, "res")
              end;
-             # dd["data"] = py"""affix_search"""(dd["affix"]);
              runAgent(node, e, f, dd);
          else
              ""
          end;
-         suffix = if length(suffix) > 0
+         suffix = if length(suffix) > 0 && !(suffix == "\u200c")
              dd = copy(data);
              dd["word"] = suffix;
              dd["pos"] = d["pos"];
@@ -720,7 +843,6 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
                  dd["res_root"] = dd["res"]
                  delete!(dd, "res")
              end;
-             # dd["data"] = py"""affix_search"""(dd["affix"]);
              runAgent(node, e, f, dd);
          else
              ""
@@ -737,4 +859,4 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
 dicCODE["move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector. if the input is not empty and no substring of the input can be found in affixes, move contents of affix vector back to the input then run terminator on it."] =
     Functor((d,e=nothing,f=nothing) ->
         (d["l_affix"] = py"""recu_affixes_subs"""(d["affix"], d["pos"]); d),
-            Dict(:in => ["affix"], :out => ["res"]))
+            Dict(:in => ["affix"], :out => ["l_affix"]))

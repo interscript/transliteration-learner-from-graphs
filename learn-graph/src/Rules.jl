@@ -3,7 +3,7 @@
 include("hazm/py_code.jl")
 
 
-data = Dict{String, Any}(
+dataN = Dict{String, Any}(
             "word" => nothing,
             "pos" => nothing, # d["pos"],
             "pre_pos" => nothing, # d["pre_pos"],
@@ -118,7 +118,7 @@ dicCODE["transliterate each side of it separately in proper order"] =
     Functor((d,e=nothing,f=nothing) ->
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
-         dd = copy(data);
+         dd = copy(dataN);
          # pre u200c
          dd["word"] = join(lStr[1:idx-1], "");
          dd["pos"] = d["pos"];
@@ -126,12 +126,13 @@ dicCODE["transliterate each side of it separately in proper order"] =
          node = e[interfaceName];
          d["res"] = runAgent(node, e, f, dd);
          # post u200c
-         dd = copy(data);
-         dd["word"] = join(lStr[1:idx-1], "");
+         dd = copy(dataN);
+         dd["word"] = join(lStr[idx+1:end], "");
          dd["pos"] = d["pos"];
          interfaceName = "transliterator";
          node = e[interfaceName];
-         d["res"] = d["res"] * runAgent(node, e, f, dd); d),
+         w = runAgent(node, e, f, dd);
+         d["res"] = d["res"] * w; d),
             Dict(:in => ["word"], :out => ["state"]))
 
 # dicCODE["transliterate the segment after u200c as a verb and add mi to the beginning of it"] =
@@ -141,7 +142,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          idx = indexin('\u200c', lStr)[1];
          prev_wrd = join(lStr[1:idx-1], "");
          wrd = join(lStr[idx+1:end], "");
-         dd = copy(data);
+         dd = copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
          interfaceName = "verb-handler"; #"transliterator";
@@ -155,7 +156,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          wrd = join(lStr[idx:end], "");
-         dd=copy(data);
+         dd=copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
          interfaceName = "verb-handler";
@@ -194,7 +195,7 @@ dicCODE["does the root of the word exist in the database?"] =
 
 dicCODE["transliterate each side of underscore separately in proper order"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = map(w -> (dd = copy(data);
+        (d["res"] = map(w -> (dd = copy(dataN);
                               dd["word"] = w;
                               dd["pos"] = d["pos"];
                               interfaceName = "transliterator";

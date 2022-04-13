@@ -145,7 +145,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd = copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
-         interfaceName = "verb-handler"; #"transliterator";
+         interfaceName = "transliterator"; #"verb-handler"
          node = e[interfaceName];
          res = "mi"*runAgent(node, e, f, dd);
          d["res"] = res; d),
@@ -159,7 +159,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd=copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
-         interfaceName = "verb-handler";
+         interfaceName = "transliterator"; #"verb-handler"
          node = e[interfaceName];
          d["res"] = "nemi"*runAgent(node, e, f, dd); d),
             Dict(:in => ["word"], :out => ["state"]))

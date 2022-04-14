@@ -101,7 +101,7 @@ dicCODE["transliterate the segment before u200c and mark the segment after u200c
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          # pre u200c
-         dd = copy(data);
+         dd = copy(dataN);
          dd["word"] = join(lStr[1:idx-1], "");
          dd["pos"] = d["pos"];
          interfaceName = "transliterator";
@@ -584,7 +584,7 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
                 d["l_res"][end] in ['A', 'e', 'o', 'u'] ?
                     "yes" : "no";
             elseif haskey(d, "res_root") && haskey(d, "suffix")
-                d["res_root"][end] in ['a', 'e', 'o', 'u'] ? "yes" : "no";
+                d["res_root"][end] in ['A', 'e', 'o', 'u'] ? "yes" : "no";
             else
                 "no"
             end;
@@ -801,7 +801,7 @@ dicCODE["run affix-handler on affix vector"] =
                     [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]
             else
                 map(w ->
-                            (dd = copy(data);
+                            (dd = copy(dataN);
                              dd["word"] = w;
                              dd["affix"] = w;
                              node = e[interfaceName];
@@ -838,7 +838,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
          suffix = d_substrings["suffix"];
          # prefix and suffix
          prefix = if length(prefix) > 0 && !(prefix == "\u200c")
-             dd = copy(data);
+             dd = copy(dataN);
              dd["word"] = prefix;
              dd["pos"] = d["pos"];
              dd["pre_pos"] = d["pre_pos"];
@@ -853,7 +853,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
              ""
          end;
          suffix = if length(suffix) > 0 && !(suffix == "\u200c")
-             dd = copy(data);
+             dd = copy(dataN);
              dd["word"] = suffix;
              dd["pos"] = d["pos"];
              dd["pre_pos"] = d["pre_pos"];

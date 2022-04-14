@@ -64,7 +64,7 @@ graph = dicBRAINS[entryBrain]
 
 
 # prepare data
-data = Dict{String, Any}(
+dataM = Dict{String, Any}(
             "word" => nothing,
             "pos" => nothing,
             "pre_pos" => nothing,
@@ -72,7 +72,7 @@ data = Dict{String, Any}(
             "brain" => entryBrain) # current brain or graph
 
 
-VOCABFARSI = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی\u200c"
+VOCABFARSI = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c"
 
 function processPOS(pos)
 
@@ -115,13 +115,14 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
             py"""normalise""" |>
                 hazm.word_tokenize |>
                     tagger.tag |>
-                        (D -> map(d -> (dd = copy(data); 
+                        (D -> map(d -> (dd = copy(dataM); 
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
                                                 join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
                                         dd["state"] = nothing;
+                    
                             try
-                        
+                                
                                 dd["pos"] == "Punctuation" ?
                                     dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
                         
@@ -130,10 +131,9 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
                                 println("DBG:: ", dd["word"], " : ", dd["pos"]);
                                 dd["word"]
                         
-                            end
-                ), D)) |>
-                            (L -> join(L, " ")),
-    df_Test[!,"orig"])
+                            end), D)) |> 
+                                (L -> join(L, " ")),
+            df_Test[!,"orig"])
 
     ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"], df_Test[!, "orig"])
 

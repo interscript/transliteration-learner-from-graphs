@@ -524,7 +524,7 @@ dicCODE["is the prefix ب or بی?"] =
                          break
                      end
                  end;
-                 d["state"] = join(collect(d["word"])[1:idx], "") in  ["ب", "بی"] ?
+                 d["state"] = join(collect(d["word"])[1:idx-1], "") in  ["ب", "بی"] ?
                             "yes" : "no"; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
@@ -566,8 +566,10 @@ dicCODE["undo the change to the first verb root and use it!"] =
             Dict(:in => ["lemma"], :out => ["res"]))
 
 dicCODE["undo the change to the second verb root and use it!"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = replace(split(d["lemma"], "#")[2], "آ" => "ا"); d),
-            Dict(:in => ["lemma"], :out => ["res"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["lemma"] = replace(split(d["lemma"], "#")[2], "ا" =>
+            "آ"); d),
+            Dict(:in => ["lemma"], :out => ["root"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a, i, u/ sounds?"] =
@@ -610,8 +612,10 @@ dicCODE["is there anything after the word root?"] =
         (d["state"] = if length(d["lemma"]) == length(d["word"])
             "no"
         else
-        contains(d["word"], d["lemma"]) ?
-            length(d["word"]) < last(findlast(reverse(d["lemma"]), reverse(d["word"]))) ? "yes" : "no" :
+            lemma = replace(d["lemma"], "آ"  =>
+                            "ا");
+        contains(d["word"], lemma) ?
+            length(d["word"]) < last(findlast(reverse(lemma), reverse(d["word"]))) ? "yes" : "no" :
             "no"
         end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
@@ -619,8 +623,10 @@ dicCODE["is there anything after the word root?"] =
 
 dicCODE["is there anything before the word root?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = if contains(d["word"], d["lemma"])
-            d["state"] = 1 == first(findfirst(d["lemma"], d["word"])) ? "no" : "yes"
+        (lemma = replace(d["lemma"], "آ"  =>
+                        "ا");
+         d["state"] = if contains(d["word"], lemma)
+            d["state"] = 1 == first(findfirst(lemma, d["word"])) ? "no" : "yes"
          else
             "no"
          end; d),
@@ -672,10 +678,12 @@ dicCODE["change the word root's transliteration from /rav/ to /ro/"] =
 dicCODE["mark it as prefix"] =
     Functor((d,e=nothing,f=nothing) ->
         (nWord = length(collect(d["word"]));
-         n = length(collect(d["lemma"]));
+         lemma = replace(d["lemma"], "آ"  =>
+                        "ا");
+         n = length(collect(lemma));
          idx = nothing;
          for i=1:nWord-n+1
-             if join(collect(d["word"])[i:i+n-1], "") == d["lemma"]
+             if join(collect(d["word"])[i:i+n-1], "") == lemma
                  idx = i
                  break
              end
@@ -692,10 +700,12 @@ dicCODE["mark it as prefix"] =
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
       (nWord = length(collect(d["word"]));
-       n = length(collect(d["lemma"]));
+      lemma = replace(d["lemma"], "آ"  =>
+                      "ا");
+       n = length(collect(lemma));
        idx = nothing;
        for i=reverse(1:nWord-n+1)
-           if join(collect(d["word"])[i:i+n-1], "") == d["lemma"]
+           if join(collect(d["word"])[i:i+n-1], "") == lemma
                idx = i
                break
            end

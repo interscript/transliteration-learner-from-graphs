@@ -598,16 +598,22 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
 dicCODE["does the transliteration of the segment before it end in /i/?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] = if haskey(d, "l_res")
-             d["l_res"][end][end-1:end] == "i" ? "yes" : "no"
+             d["l_res"][end][max(1, end-1):end] == "i" ? "yes" : "no"
          else
-             d["res_root"][end-1:end] == "i" ? "yes" : "no"
+             d["res_root"][max(1, end-1):end] == "i" ? "yes" : "no"
          end; d),
             Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a,e,o,a,i,u/ sounds?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["l_res"][end][end-1:end] in ["a", "e", "o","u", "i"] ? "yes" : "no"; d),
-            Dict(:in => ["l_res"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = if haskey(d, "l_res")
+            d["l_res"][end][end-1:end] in ["A", "e", "o","u", "i"] ? "yes" : "no"
+         else
+            d["res_root"][end] in ['A', 'e', 'o', 'u'] ? "yes" : "no"
+         end;
+         d),
+            Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["is there anything after the word root?"] =

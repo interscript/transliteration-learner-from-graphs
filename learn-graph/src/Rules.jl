@@ -183,8 +183,9 @@ dicCODE["stem it!"] =
             Dict(:in => ["word"], :out => ["lemma"])) # lemma
 
 dicCODE["is the verb root found in the db?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
-            d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["data"]=py"""search_db"""(d["lemma"], d["pos"]);
+         d["state"] = typeof(d["data"]) != String ? "yes" : "no"; d),
             Dict(:in => ["lemma", "pos"], :out => ["data", "state"]))
 
 dicCODE["does the root of the word exist in the database?"] =
@@ -536,8 +537,9 @@ dicCODE["do both verb roots exist in the verb?"] =
 
 
 dicCODE["use the second verb root!"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = split(d["lemma"], "#")[2]; d),
-            Dict(:in => ["lemma"], :out => ["res"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["lemma"] = split(d["lemma"], "#")[2]; d),
+            Dict(:in => ["lemma"], :out => ["lemma"]))
 
 dicCODE["use the first verb root!"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -546,7 +548,8 @@ dicCODE["use the first verb root!"] =
 
 
 dicCODE["is there an آ in the verb roots?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = contains(d["lemma"], "آ") ?  "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = contains(d["lemma"], "آ") ?  "yes" : "no"; d),
             Dict(:in => ["lemma"], :out => ["state"]))
 
 

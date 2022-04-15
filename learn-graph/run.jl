@@ -72,7 +72,7 @@ dataM = Dict{String, Any}(
             "brain" => entryBrain) # current brain or graph
 
 
-VOCABFARSI = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c"
+VOCABFARSI = "!?.ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c"
 
 function processPOS(pos)
 

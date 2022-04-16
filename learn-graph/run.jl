@@ -72,7 +72,8 @@ dataM = Dict{String, Any}(
             "brain" => entryBrain) # current brain or graph
 
 
-VOCABFARSI = "!?.ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c"
+VOCABFARSI = " !\"()+-./0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz{}«»،؛؟ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی\u200c"
+VOCABFARSI =" ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c #!?."
 
 function processPOS(pos)
 
@@ -82,7 +83,7 @@ function processPOS(pos)
 
     if !(pos in l_supported_POS)
 
-        @error "pos unrecognised, needs to be within: ", l_supported_POS
+        @error pos, "pos unrecognised, needs to be within: ", l_supported_POS
         exit()
 
     else
@@ -145,19 +146,39 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 else # transliterate the file
 
-
-    readlines(parsedArgs["file-name"], keep=true) |>
+    using ProgressBars
+    
+    ProgressBar(readlines(parsedArgs["file-name"], keep=true)) |>
       (D ->
         map(d -> d |>
             py"""normalise""" |>
                 hazm.word_tokenize |>
                     tagger.tag |>
-                        (D -> map(d -> (data["word"] = d[1];
-                                        data["pos"] = d[2];
-                                        data["state"] = nothing;
-                               runAgent(graph, dicBRAINS, df_Nodes, data)), D)) |>
+                        (D -> map(d -> (dd = copy(dataM);
+                        # println(d[1]);
+                                        dd["pos"] = processPOS(d[2]);
+                                        dd["word"] = d[2] != "Punctuation" ?
+                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
+                                        dd["state"] = nothing;
+                        
+                                        try
+                                
+                                            dd["pos"] == "Punctuation" ?
+                                                dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
+                        
+                                        catch
+                        
+                                            println("DBG:: ", dd["word"], " : ", dd["pos"]);
+                                            dd["word"];
+                            
+                            exit();
+                        
+                                        end
+                                        # runAgent(graph, dicBRAINS, df_Nodes, dd)
+                        ), 
+            D)) |>
                             (L -> join(L, " ")) |>
                                 println,
-            D))
+            D)) 
 
 end

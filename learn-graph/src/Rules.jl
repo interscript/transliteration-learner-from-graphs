@@ -576,7 +576,7 @@ dicCODE["undo the change to the second verb root and use it!"] =
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a, i, u/ sounds?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["l_res"][end][end-1:end] in ["a", "e", "i"] ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["l_res"][end][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no"; d),
             Dict(:in => ["l_res"], :out => ["state"]))
 
 
@@ -584,10 +584,10 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
             if haskey(d, "l_res")
-                d["l_res"][end] in ['A', 'e', 'o', 'u'] ?
+                d["l_res"][end] in ['A', 'a', 'e', 'o', 'u'] ?
                     "yes" : "no";
             elseif haskey(d, "res_root") && haskey(d, "suffix")
-                d["res_root"][end] in ['A', 'e', 'o', 'u'] ? "yes" : "no";
+                d["res_root"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no";
             else
                 "no"
             end;
@@ -674,7 +674,7 @@ dicCODE["return its transliteration then omit the ' symbol in the beginning of t
 
 dicCODE["is the word root, رو recognized as a verb?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = d["pos"] == "Verb" ? "yes" : "no"; d),
+        (d["state"] = d["pos"] == "Verb" && d["lemma"] == "رو" ? "yes" : "no"; d),
             Dict(:in => ["data", "pos"], :out => ["state", "res"]))
 
 
@@ -743,8 +743,7 @@ dicCODE["add it to the end of the root's transliteration"] =
         (d["res"] = haskey(d, "res_suffix") ?
             string(d["res_root"], d["res_suffix"]) :
             string(d["res_root"], d["res"]);
-         d["res"] = replace(d["res"], "-'"=>"", "-''"=>"");
-         d),
+         d["res"] = replace(d["res"], "-''"=>"", "-'"=>""); d),
         Dict(:in => ["res_root", "res"], :out => ["res"]))
 
 

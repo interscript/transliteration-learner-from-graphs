@@ -73,7 +73,7 @@ dataM = Dict{String, Any}(
 
 
 VOCABFARSI = " !\"()+-./0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz{}«»،؛؟ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی\u200c"
-VOCABFARSI =" ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهیآ \u200c #!?."
+VOCABFARSI =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c #!?."
 
 function processPOS(pos)
 
@@ -116,24 +116,24 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
             py"""normalise""" |>
                 hazm.word_tokenize |>
                     tagger.tag |>
-                        (D -> map(d -> (dd = copy(dataM); 
+                        (D -> map(d -> (dd = copy(dataM);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
                                                 join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
                                         dd["state"] = nothing;
-                    
+
                             try
-                                
+
                                 dd["pos"] == "Punctuation" ?
-                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
-                        
+                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd);
+
                             catch
-                        
+
                                 println("DBG:: ", dd["word"], " : ", dd["pos"]);
                                 dd["word"]
-                        
-                            end), D)) |> 
-                                (L -> join(L, " ")),
+
+                            end), D)) |>
+                                (L -> join(L, " ")), 
             df_Test[!,"orig"])
 
     ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"], df_Test[!, "orig"])
@@ -147,38 +147,38 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 else # transliterate the file
 
     using ProgressBars
-    
+
     ProgressBar(readlines(parsedArgs["file-name"], keep=true)) |>
       (D ->
-        map(d -> d |>
+        map(d ->
+            (println(d);
+            ;d |>
             py"""normalise""" |>
                 hazm.word_tokenize |>
                     tagger.tag |>
-                        (D -> map(d -> (dd = copy(dataM);
-                        # println(d[1]);
+                        (Ws -> map(d -> (dd = copy(dataM);
+                         # println(d[1]);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
                                                 join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
                                         dd["state"] = nothing;
-                        
+
                                         try
-                                
-                                            dd["pos"] == "Punctuation" ?
+
+                                            dd["pos"] == "Punctuation" || strip(dd["word"]) == "" ?
                                                 dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
-                        
+
                                         catch
-                        
-                                            println("DBG:: ", dd["word"], " : ", dd["pos"]);
+
+                                            ### println("DBG:: ", dd["word"], " : ", dd["pos"]);
                                             dd["word"];
-                            
-                            exit();
-                        
-                                        end
+                                            ### exit(); # ""
+
+                                        end),
                                         # runAgent(graph, dicBRAINS, df_Nodes, dd)
-                        ), 
-            D)) |>
+                                    Ws)) |>
                             (L -> join(L, " ")) |>
-                                println,
-            D)) 
+                                println),
+            D))
 
 end

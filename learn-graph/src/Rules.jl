@@ -149,7 +149,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          node = e[interfaceName];
          res = "mi"*runAgent(node, e, f, dd);
          d["res"] = res; d),
-            Dict(:in => ["word"], :out => ["res"])) # jair
+            Dict(:in => ["word"], :out => ["res"]))
 
  dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatize it!\" and add nemi to the beginning of it"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -444,8 +444,8 @@ dicCODE["use it!"] = dicCODE["use it! "]
 dicCODE["is the word before it a verb?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
-            if d["affix"] == get(d, "suffix", "nothing") # affix?
-                haskey(d,"lemma") && d["pos"] == "Verb" ? "yes" : "no";
+            if d["affix"] == get(d, "suffix", false) # affix?
+                haskey(d,"lemma") && d["pos"] == "Verb" ? "yes" : "no"; # jair
             elseif d["affix"] == get(d, "prefix", "nothing") # suffix
                 if haskey(d, "pre_pos")
                     d["pre_pos"] == "Verb" ? "yes" : "no"
@@ -576,22 +576,33 @@ dicCODE["undo the change to the second verb root and use it!"] =
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a, i, u/ sounds?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = d["l_res"][end][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] =
+            if !isnothing(get(d, "segm", nothing))
+                d["segm"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+            elseif haskey(d, "l_res")
+                d["l_res"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+            elseif (haskey(d, "res_root") && haskey(d, "suffix") && length(d["res_root"]) > 0)
+                d["res_root"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+            else
+                "no"
+            end; d),
+        # d["l_res"][end][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no"; d),
             Dict(:in => ["l_res"], :out => ["state"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a,e,o,a,u/ sounds?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
-            if haskey(d, "l_res")
-                d["l_res"][end] in ['A', 'a', 'e', 'o', 'u'] ?
-                    "yes" : "no";
-            elseif haskey(d, "res_root") && haskey(d, "suffix")
+            if !isnothing(get(d, "segm", nothing))
+                d["segm"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no";
+            elseif haskey(d, "l_res")
+                d["l_res"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no";
+            elseif (haskey(d, "res_root") && haskey(d, "suffix") && length(d["res_root"]) > 0)
                 d["res_root"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no";
             else
                 "no"
-            end;
-         d),
+            end; d),
             Dict(:in => [], :out => ["state"]))
 
 
@@ -808,13 +819,23 @@ dicCODE["run affix-handler on affix vector"] =
                 w != "" ?
                     [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]
             else
-                map(w ->
-                            (dd = copy(dataN);
+                k = haskey(d, "suffix") ? "suffix" : "prefix"
+                segm = nothing;
+                map(iw ->
+                            (i = iw[1];
+                             w = iw[2];
+                             dd = copy(dataN);
                              dd["word"] = w;
                              dd["affix"] = w;
+                             dd[k] = w;
+                             dd["pos"] = k == "suffix" ?
+                                        i == 0 ? d["pos"] : "nothing" :
+                                        i == length(d["l_affix"]) ? d["pos"] : "nothing";
+                             dd["segm"] = segm;
                              node = e[interfaceName];
-                             runAgent(node, e, f, dd)),
-                        d["l_affix"]);
+                             segm = runAgent(node, e, f, dd);
+                             segm),
+                        enumerate(d["l_affix"]));
             end;
          d),
             Dict(:in => ["l_affix"], :out => ["l_res"]))
@@ -824,8 +845,8 @@ dicCODE["find the longest substring of the input that exists in the database."] 
     Functor((d,e=nothing,f=nothing) ->
         (d["d_substring"] = py"""longest_root_and_affixes"""(d["word"]);
          d["word_total"] = d["word"];
-         d["data"] = py"""search_db"""(d["d_substring"]["root"]);
-         d),
+         d["data"] = d["d_substring"] != "" ?
+                    py"""search_db"""(d["d_substring"]["root"]) : ""; d),
             Dict(:in => ["word"], :out => ["d_substring", "data", "word_total"]))
 
 

@@ -145,9 +145,9 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd = copy(dataN);
          dd["word"] = wrd;
          dd["pos"] = "Verb";
-         interfaceName = "transliterator"; #"verb-handler"
+         interfaceName = "transliterator"; # "verb-handler"
          node = e[interfaceName];
-         res = "mi"*runAgent(node, e, f, dd);
+         res = wrd != "" ? "mi"*runAgent(node, e, f, dd) : "mi";
          d["res"] = res; d),
             Dict(:in => ["word"], :out => ["res"]))
 
@@ -212,12 +212,14 @@ dicCODE["transliterate each side of underscore separately in proper order"] =
 # collision-handler
 
 dicCODE["is there an instance of the word with the desired pos?"] =
-    Functor((d,e=nothing,f=nothing) -> (
-            d["state"] = py"""has_entries_search_pos"""(d["data"], d["pos"]); d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = typeof(d["data"]) != String ?
+            py"""has_entries_search_pos"""(d["data"], d["pos"]) : "no"; d),
             Dict(:in => ["data", "pos"], :out => ["state"]))
 
 dicCODE["is there only one instance of the word with the desired pos?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["state"] = py"""has_only_one_search_pos"""(d["data"], d["pos"]); d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = py"""has_only_one_search_pos"""(d["data"], d["pos"]); d),
             Dict(:in => ["data", "pos"], :out => ["state"]))
 
 dicCODE["return the transliteration of the instance with the desired pos!"] =
@@ -608,18 +610,24 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
 
 dicCODE["does the transliteration of the segment before it end in /i/?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = if haskey(d, "l_res")
-             d["l_res"][end][max(1, end-1):end] == "i" ? "yes" : "no"
+        (d["state"] = if !isnothing(get(d, "segm", nothing))
+             d["segm"][end] == 'i' ? "yes" : "no"
+         elseif haskey(d, "l_res")
+             d["l_res"][end][end] == 'i' ? "yes" : "no"
+         elseif haskey(d, "res_root")
+             d["res_root"][end] == 'i' ? "yes" : "no"
          else
-             d["res_root"][max(1, end-1):end] == "i" ? "yes" : "no"
+            "no"
          end; d),
             Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a,e,o,a,i,u/ sounds?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = if haskey(d, "l_res")
-            d["l_res"][end][end-1:end] in ["A", "e", "o","u", "i"] ? "yes" : "no"
+        (d["state"] =  if !isnothing(get(d, "segm", nothing))
+            d["segm"][end] in ['A', 'a', 'e', 'o','u', 'i'] ? "yes" : "no"
+         elseif haskey(d, "l_res")
+            d["l_res"][end][end] in ['A', 'a', 'e', 'o', 'u', 'i'] ? "yes" : "no"
          else
             d["res_root"][end] in ['A', 'e', 'o', 'u'] ? "yes" : "no"
          end;
@@ -673,8 +681,8 @@ dicCODE["is it found in affixes?"] =
 
 dicCODE["return the transliteration with t as its pos"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = py"""get_in_db"""(d["affix"], "T"); d),
-            Dict(:in => ["affix"], :out => ["res"]))
+        (d["res"] = py"""get_in_db"""(haskey(d, "affix") ? d["affix"] : d["word"], "T"); d),
+            Dict(:in => ["word"], :out => ["res"]))
 
 
 dicCODE["return its transliteration then omit the ' symbol in the beginning of the word root that comes after it!"] =
@@ -845,8 +853,8 @@ dicCODE["find the longest substring of the input that exists in the database."] 
     Functor((d,e=nothing,f=nothing) ->
         (d["d_substring"] = py"""longest_root_and_affixes"""(d["word"]);
          d["word_total"] = d["word"];
-         d["data"] = d["d_substring"] != "" ?
-                    py"""search_db"""(d["d_substring"]["root"]) : ""; d),
+         d["data"] = typeof(d["d_substring"]) != String ?
+            py"""search_db"""(d["d_substring"]["root"]) : d["d_substring"]; d),
             Dict(:in => ["word"], :out => ["d_substring", "data", "word_total"]))
 
 

@@ -73,7 +73,7 @@ dataM = Dict{String, Any}(
 
 
 VOCABFARSI = " !\"()+-./0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz{}«»،؛؟ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی\u200c"
-VOCABFARSI =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c #!?."
+VOCABFARSI =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
 
 function processPOS(pos)
 
@@ -147,17 +147,18 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 else # transliterate the file
 
     using ProgressBars
-
-    ProgressBar(readlines(parsedArgs["file-name"], keep=true)) |>
+    
+    ProgressBar(readlines(parsedArgs["file-name"], keep=true) |> 
+                                (D -> filter(s -> strip(s) != "", D))) |> 
       (D ->
         map(d ->
-            (println(d);
-            ;d |>
-            py"""normalise""" |>
-                hazm.word_tokenize |>
-                    tagger.tag |>
-                        (Ws -> map(d -> (dd = copy(dataM);
-                         # println(d[1]);
+            (println("f::"*chomp(d));
+             chomp(d) |>
+                py"""normalise""" |>
+                    hazm.word_tokenize |>
+                        tagger.tag |>
+                            (Ws -> map(d -> (dd = copy(dataM);
+                             # println(d[1]);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
                                                 join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
@@ -170,14 +171,14 @@ else # transliterate the file
 
                                         catch
 
-                                            ### println("DBG:: ", dd["word"], " : ", dd["pos"]);
+                                            println("DBG:: ", dd["word"], " : ", dd["pos"]);
                                             dd["word"];
                                             ### exit(); # ""
 
                                         end),
                                         # runAgent(graph, dicBRAINS, df_Nodes, dd)
                                     Ws)) |>
-                            (L -> join(L, " ")) |>
+                            (L -> "t::"*join(L, " ")) |>
                                 println),
             D))
 

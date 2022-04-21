@@ -5,8 +5,8 @@ include("hazm/py_code.jl")
 
 dataN = Dict{String, Any}(
             "word" => nothing,
-            "pos" => nothing, # d["pos"],
-            "pre_pos" => nothing, # d["pre_pos"],
+            "pos" => nothing,
+            "pre_pos" => nothing,
             "state" => nothing,
             "brain" => "transliterator");
 
@@ -565,10 +565,11 @@ dicCODE["change the first آ in the verb root(s) to ا."] =
              d),
             Dict(:in => ["lemma"], :out => ["lemma"]))
 
-
 dicCODE["undo the change to the first verb root and use it!"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = replace(split(d["lemma"], "#")[1], "آ" => "ا"); d),
-            Dict(:in => ["lemma"], :out => ["res"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["lemma"] = replace(split(d["lemma"], "#")[1], "ا" =>
+                            "آ"); d),
+            Dict(:in => ["lemma"], :out => ["lemma"]))
 
 dicCODE["undo the change to the second verb root and use it!"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -907,6 +908,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
          # postprocess
          d["SynCatCode"] = root[2];
          d["root"] = root[1];
+
          d["res"] = string(prefix, root[1], suffix);
          @label OUT;
          d),

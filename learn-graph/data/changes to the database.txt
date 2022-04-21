@@ -41,3 +41,9 @@
 21. I omitted the word "مردی" transliterated as /mardi/, N1, 405, WS as it wasn't necessary and caused some problems with the verb مردن.
 
 22. I added a row for ٔ  transliterated /ye/ in the affixes.
+
+23. I added a row for أ transliterated /'a/ in Entries.
+
+24. I added a row for ؤ transliterated /'/ in Entries.
+
+25. I added a row for ة transliterated /h/ in Entries.

@@ -109,7 +109,7 @@ m = 1
 if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 
-    df_Test = DataFrame(CSV.File("data/test_data.csv")) #_data.csv"))
+    df_Test = DataFrame(CSV.File("data/test.csv")) #_data.csv"))
 
     df_Test[!,"transModel"] =
         map(d -> d |>
@@ -140,8 +140,8 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
     df_Bugs = df_Test[ids,:]
 
-    println("error summary in: tests/test_debug.csv")
-    CSV.write("tests/test_debug.csv", df_Bugs)
+    println("error summary in: data/test_debug.csv")
+    CSV.write("data/test_debug.csv", df_Bugs)
 
 
 else # transliterate the file

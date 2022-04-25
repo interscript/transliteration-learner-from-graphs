@@ -93,7 +93,8 @@ dicCODE["does the segment after it start with ها?"] =
     Functor((d,e=nothing,f=nothing) ->
         (lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
-         d["state"] = join(lStr[idx+1:min(end,idx+2)], "") == "ها" ? "yes" : "no"; d),
+         d["state"] = join(lStr[idx+1:min(end,idx+2)], "") == "ها" ?
+                "yes" : "no"; d),
             Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["transliterate the segment before u200c and mark the segment after u200c as suffix."] =
@@ -697,12 +698,23 @@ dicCODE["is the word root, رو recognized as a verb?"] =
         (d["state"] = d["pos"] == "Verb" && d["lemma"] == "رو" ? "yes" : "no"; d),
             Dict(:in => ["data", "pos"], :out => ["state", "res"]))
 
+dicCODE["is the word root, شو recognized as a verb?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["pos"] == "Verb" && d["lemma"] == "شو" ? "yes" : "no"; d),
+            Dict(:in => ["data", "pos"], :out => ["state", "res"]))
 
 dicCODE["change the word root's transliteration from /rav/ to /ro/"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = replace(d["res"], "rav" => "ro"); d),
             Dict(:in => ["res"], :out => ["res"]))
 
+dicCODE["change its transliteration from /rav/ to /ro/"] =
+    dicCODE["change the word root's transliteration from /rav/ to /ro/"]
+
+dicCODE["change the word root's transliteration from /sav/ to /so/"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["res"] = replace(d["res"], "sav" => "so"); d),
+        Dict(:in => ["res"], :out => ["res"]))
 
 dicCODE["mark it as prefix"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -919,3 +931,51 @@ dicCODE["move the longest substring of the input that exists in affixes and star
     Functor((d,e=nothing,f=nothing) ->
         (d["l_affix"] = py"""recu_affixes_subs"""(d["affix"], d["pos"]); d),
             Dict(:in => ["affix"], :out => ["l_affix"]))
+
+dicCODE["update the word's pos according to the database!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (synCode = d["SynCatCode"];
+         d["pos"] = py"""d_map_FLEXI"""[synCode]; d),
+            Dict(:in => ["SynCatCode"], :out => ["pos"]))
+
+dicCODE["is there anything after it?"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["state"] = last(findlast(d["d_substring"], d["word_total"])) == length("abc") ?
+            "no" : "yes"; d),
+        Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
+
+
+dicCODE["is there anything before it?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = first(findfirst(d["d_substring"], d["word_total"])) == 1 ?
+                "no" : "yes"; d),
+            Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
+
+dicCODE["add it to the beginning of its transliteration"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = d["res"]*get(d, "res_root", ""); d),
+            Dict(:in => ["res_root", "res"], :out => ["res"]))
+
+dicCODE["add it to the end of its transliteration"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = get(d, "res_root", "")*d["res"]; d),
+            Dict(:in => ["res_root", "res"], :out => ["res"]))
+
+dicCODE["is the longest substring, رو recognized as a verb?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["pos"] = "Verb" ? "yes" : "no"; d),
+            Dict(:in => ["res_root", "res"], :out => ["res"]))
+
+dicCODE["transliterate each side of the underscore separately in proper order and add a space between them"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = map(w -> (dd = copy(dataN);
+                              dd["word"] = w;
+                              dd["pos"] = d["pos"];
+                              interfaceName = "transliterator";
+                              node = e[interfaceName];
+                              runAgent(node, e, f, dd)),
+                    split(d["word"], "_")) |>
+                        (D -> join(D, " "));
+         d["root"] = d["word"]; # to end computation
+         d),
+            Dict(:in => ["lemma"], :out => ["res"]))

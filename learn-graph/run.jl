@@ -118,10 +118,9 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
                     tagger.tag |>
                         (D -> map(d -> (dd = copy(dataM);
                                         dd["pos"] = processPOS(d[2]);
-                                        #dd["word"] = d[2] != "Punctuation" ?
-                                        #        join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
-                                        dd["word"] = d[1];
-					dd["state"] = nothing;
+                                        dd["word"] = d[2] != "Punctuation" ?
+                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
+                                        dd["state"] = nothing;
 
                             try
 

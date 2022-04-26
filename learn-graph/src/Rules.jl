@@ -741,8 +741,9 @@ dicCODE["mark it as prefix"] =
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
       (nWord = length(collect(d["word"]));
-      lemma = replace(d["lemma"], "آ"  =>
-                      "ا");
+       #lemma = replace(d["lemma"], "آ"  =>
+        #              "ا");
+       lemma = d["lemma"];
        n = length(collect(lemma));
        idx = nothing;
        for i=reverse(1:nWord-n+1)
@@ -935,20 +936,23 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 dicCODE["update the word's pos according to the database!"] =
     Functor((d,e=nothing,f=nothing) ->
         (synCode = d["SynCatCode"];
-         d["pos"] = py"""d_map_FLEXI"""[synCode]; d),
+         d["pos"] = get(py"""d_map_FLEXI""",synCode, d["pos"]); d),
             Dict(:in => ["SynCatCode"], :out => ["pos"]))
 
 dicCODE["is there anything after it?"] =
-Functor((d,e=nothing,f=nothing) ->
-    (d["state"] = last(findlast(d["d_substring"], d["word_total"])) == length("abc") ?
-            "no" : "yes"; d),
-        Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["d_substring"]["suffix"] != "" ? "yes" : "no"; d),
+    #last(findlast(d["d_substring"], d["word_total"])) == length("word_total") ?
+    #        "no" : "yes";
+    #d),
+            Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
 
 
 dicCODE["is there anything before it?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = first(findfirst(d["d_substring"], d["word_total"])) == 1 ?
-                "no" : "yes"; d),
+        (d["state"] = d["state"] = d["d_substring"]["prefix"] != "" ? "yes" : "no"; d),
+        #first(findfirst(d["d_substring"][], d["word_total"])) == 1 ?
+        #        "no" : "yes"; d),
             Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
 
 dicCODE["add it to the beginning of its transliteration"] =

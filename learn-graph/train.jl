@@ -20,6 +20,8 @@ function parse_commandline()
     @add_arg_table! s begin
         "--path-lucidchart-csv"
             help = "path to the graph csv"
+        "--dir-path-lucidchart-csv"
+            help = "path to directory containing graph csv's"
         "--brain-entry"
             help = "brain entry"
         "--path-model"
@@ -35,13 +37,30 @@ end
 parsedArgs = parse_commandline()
 
 
-graphName = parsedArgs["path-lucidchart-csv"]
 modelName = parsedArgs["path-model"]
 brainEntry = lowercase(parsedArgs["brain-entry"])
 entryFound = false
 
 # Parse csv data
-df = DataFrame(CSV.File(graphName))
+df = Nothing
+if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing)) 
+    
+    println("processing directory::", parsedArgs["dir-path-lucidchart-csv"])
+    dirName = parsedArgs["dir-path-lucidchart-csv"]
+    df = filter(s -> s[end-3:end] == ".csv", readdir(parsedArgs["dir-path-lucidchart-csv"])) |>
+        (gNs -> map(gN -> (println("process file::", gN);
+                           DataFrame(CSV.File(dirName*gN))), gNs)) |>
+            (vgNs -> vcat(vgNs...))
+    
+else
+    
+    println("process file::", parsedArgs["path-lucidchart-csv"])
+    df = DataFrame(CSV.File(parsedArgs["path-lucidchart-csv"]))
+    
+end
+
+
+# Preprocess Nodes
 df[!,"Label"] = map(x -> ismissing(x) ? Missing : lowercase(x), df[!,"Text Area 1"])
 
 df_Nodes = filter(row -> row.Name in ["Decision", "Process", "Terminator"], df)

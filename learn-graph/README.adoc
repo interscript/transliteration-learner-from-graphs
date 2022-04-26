@@ -124,10 +124,13 @@ python script_to_build_assets.py
 ----
 
 * Train
+Code is built from a single csv file or from the .csv files put into
+a directory, as resp. the second and third lines below.
 [source,bash]
 ----
 julia train.jl –-help
 julia train.jl --path-lucidchart-csv resources/TestFarsiTrans.csv --brain-entry transliterator --path-model resources/TestFarsiTrans.dat
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliterator --path-model resources/Model5.dat
 ----
 
 * Transliterate single string (with debugging mode)

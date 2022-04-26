@@ -746,11 +746,17 @@ dicCODE["mark it as suffix"] =
        lemma = d["lemma"];
        n = length(collect(lemma));
        idx = nothing;
+       @label redoPlease;
        for i=reverse(1:nWord-n+1)
            if join(collect(d["word"])[i:i+n-1], "") == lemma
                idx = i
                break
            end
+       end;
+       if isnothing(idx)
+            lemma = replace(d["lemma"], "آ"  =>
+                                        "ا")
+            @goto redoPlease
        end;
        d["suffix"] = join(collect(d["word"])[idx+n:end], "");
        d["res_root"] = d["res"];

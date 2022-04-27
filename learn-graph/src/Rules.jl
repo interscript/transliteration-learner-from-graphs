@@ -741,17 +741,22 @@ dicCODE["mark it as prefix"] =
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
       (nWord = length(collect(d["word"]));
-       if haskey(d, "d_substring")
+       # trying to solve all the cases
+       lemma = split(d["word"], "#") |>
+                (L -> map(l -> [l, replace(l, "آ" =>
+                               "ا")],
+                          L)) |>
+                    (L -> vcat(L...)) |>
+                        (L -> filter(l -> contains(d["word"], l), L));
+    println("@@@@", lemma);
+       if length(lemma) == 0
            lemma = d["d_substring"]["suffix"]
        else
-           lemma = filter(l -> contains(d["word"], l),
-                [d["lemma"], replace(d["lemma"], "آ" =>
-                               "ا")])
+           lemma = lemma[1]
        end;
-       #lemma = d["lemma"];
+
        n = length(collect(lemma));
        idx = nothing;
-       #@label redoPlease;
        for i=reverse(1:nWord-n+1)
            if join(collect(d["word"])[i:i+n-1], "") == lemma
                idx = i

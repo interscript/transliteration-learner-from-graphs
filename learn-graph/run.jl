@@ -109,7 +109,7 @@ m = 1
 if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 
-    df_Test = DataFrame(CSV.File("data/test.csv")) #_data.csv"))
+    df_Test = DataFrame(CSV.File("data/test.csv"))
 
     df_Test[!,"transModel"] =
         map(d -> d |>
@@ -124,6 +124,7 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
                             try
 
+                                # println(dd["word"], " : ", dd["pos"])
                                 dd["pos"] == "Punctuation" ?
                                     dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd);
 
@@ -158,14 +159,13 @@ else # transliterate the file
                     hazm.word_tokenize |>
                         tagger.tag |>
                             (Ws -> map(d -> (dd = copy(dataM);
-                             # println(d[1]);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
                                                 join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
                                         dd["state"] = nothing;
 
                                         try
-
+                                            
                                             dd["pos"] == "Punctuation" || strip(dd["word"]) == "" ?
                                                 dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
 

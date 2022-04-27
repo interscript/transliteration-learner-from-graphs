@@ -748,7 +748,6 @@ dicCODE["mark it as suffix"] =
                           L)) |>
                     (L -> vcat(L...)) |>
                         (L -> filter(l -> contains(d["word"], l), L));
-    println("@@@@", lemma);
        if length(lemma) == 0
            lemma = d["d_substring"]["suffix"]
        else

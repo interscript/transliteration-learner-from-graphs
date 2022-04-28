@@ -592,7 +592,7 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
                 "no"
             end; d),
         # d["l_res"][end][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no"; d),
-            Dict(:in => ["l_res"], :out => ["state"]))
+            Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["does the transliteration of the segment before it end in any of the /a,e,o,a,u/ sounds?"] =
@@ -719,16 +719,35 @@ Functor((d,e=nothing,f=nothing) ->
 dicCODE["mark it as prefix"] =
     Functor((d,e=nothing,f=nothing) ->
         (nWord = length(collect(d["word"]));
-         lemma = replace(d["lemma"], "آ"  =>
-                        "ا");
+         # trying to solve all the cases
+         lemmas = split(d["lemma"], "#") |>
+                  (L -> map(l -> [l, replace(l, "آ" =>
+                                 "ا")],
+                            L)) |>
+                      (L -> vcat(L...)) |>
+                          (L -> filter(l -> contains(d["word"], l), L));
+         if haskey(d, "d_substring") #length(lemmas) == 0
+             lemma = d["d_substring"]["root"]
+         else
+             lemmas = split(d["lemma"], "#") |>
+                      (L -> map(l -> [l, replace(l, "آ" =>
+                                     "ا")],
+                                L)) |>
+                          (L -> vcat(L...)) |>
+                              (L -> filter(l -> contains(d["word"], l), L))
+             lemma = lemmas[1]
+         end;
+
          n = length(collect(lemma));
          idx = nothing;
-         for i=1:nWord-n+1
+         for i=reverse(1:nWord-n+1)
              if join(collect(d["word"])[i:i+n-1], "") == lemma
                  idx = i
                  break
              end
          end;
+
+         d["suffix"] = join(collect(d["word"])[idx+n:end], "");
          d["prefix"] = join(collect(d["word"])[1:idx-1]);
          d["affix"] = d["prefix"];
          d["data"] = py"""affix_search"""(d["prefix"]);
@@ -742,16 +761,22 @@ dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
       (nWord = length(collect(d["word"]));
        # trying to solve all the cases
-       lemma = split(d["word"], "#") |>
+       lemmas = split(d["lemma"], "#") |>
                 (L -> map(l -> [l, replace(l, "آ" =>
                                "ا")],
                           L)) |>
                     (L -> vcat(L...)) |>
                         (L -> filter(l -> contains(d["word"], l), L));
-       if length(lemma) == 0
-           lemma = d["d_substring"]["suffix"]
+       if haskey(d, "d_substring") #length(lemmas) == 0
+           lemma = d["d_substring"]["root"]
        else
-           lemma = lemma[1]
+           lemmas = split(d["lemma"], "#") |>
+                    (L -> map(l -> [l, replace(l, "آ" =>
+                                   "ا")],
+                              L)) |>
+                        (L -> vcat(L...)) |>
+                            (L -> filter(l -> contains(d["word"], l), L))
+           lemma = lemmas[1]
        end;
 
        n = length(collect(lemma));
@@ -762,11 +787,7 @@ dicCODE["mark it as suffix"] =
                break
            end
        end;
-       #if isnothing(idx)
-        #    lemma = replace(d["lemma"], "آ"  =>
-        #                                "ا")
-        #    @goto redoPlease
-       #end;
+
        d["suffix"] = join(collect(d["word"])[idx+n:end], "");
        d["res_root"] = d["res"];
        delete!(d, "res");
@@ -797,21 +818,16 @@ dicCODE["add it to the end of the root's transliteration"] =
 
 dicCODE["undo the change to the verb root and use it!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (w = collect(d["lemma"]);
-         idx = nothing;
-         for (i,v) in enumerate(w)
-             if v == 'ا'
-                 idx = i ; break
-             end
-         end;
-        d["res"] = string(join(replace(w[1:idx],
-                        'ا' => 'آ'), ""),
-                    join(w[idx+1:end],""));
-        d),
+        (lemmas = split(d["lemma"], "#") |>
+            (L -> map(l -> [replace(l, "آ" =>
+                        "ا"),
+                    replace(l, "ا" =>
+                        "آ")], L)) |> (L -> vcat(L...)) |>
+                            (L -> filter(l -> contains(d["word"], l), L));
+         d["lemma"] = lemmas[1]; d),
             Dict(:in => ["lemma"], :out => ["res"]))
 
 
-#dicCODE["undo the change to the verb root and use it! "] = dicCODE["undo the change to the verb root and use it!"]
 
 
 dicCODE["return the concatenation of all the returned transliterations."] =

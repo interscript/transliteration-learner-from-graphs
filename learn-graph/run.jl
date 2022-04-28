@@ -126,7 +126,9 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
                                 # println(dd["word"], " : ", dd["pos"])
                                 dd["pos"] == "Punctuation" ?
-                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd);
+                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd) |>
+                                            (w -> replace(w, "-''"=>"", "-'"=>""));
+                        
 
                             catch
 

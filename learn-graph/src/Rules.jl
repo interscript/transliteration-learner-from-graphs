@@ -14,7 +14,42 @@ dataN = Dict{String, Any}(
 dicCODE = Dict{String, Functor}()
 
 
-# transliterator
+#####################
+# preprocessor      #
+#####################
+
+dicCODE["normalize the text!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["text"] = py"""normalise"""(d["text"]); d),
+        Dict(:in => ["text"], :out => ["text"]))
+
+dicCODE["tokenize the text!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["text"] = hazm.word_tokenize(d["text"]); d),
+        Dict(:in => ["text"], :out => ["text"]))
+
+dicCODE["recognize parts of speech in the text!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["text"] = tagger.tag(d["text"]); d),
+        Dict(:in => ["text"], :out => ["text"]))
+
+dicCODE["run transliterator on each word!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        d,
+        Dict(:in => ["text"], :out => ["text"]))
+#===
+┌ Warning: ("unimplemented Node:: Id", 4, " Name: ", "normalize the text!")
+└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
+┌ Warning: ("unimplemented Node:: Id", 5, " Name: ", "tokenize the text!")
+└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
+┌ Warning: ("unimplemented Node:: Id", 6, " Name: ", "recognize parts of speech in the text!")
+└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
+┌ Warning: ("unimplemented Node:: Id", 7, " Name: ", "run transliterator on each word!")
+===#
+
+#####################
+# transliterator    #
+#####################
 
 dicCODE["do nothing!"] =
     Functor((d,e=nothing,f=nothing) -> d,
@@ -641,13 +676,13 @@ dicCODE["is there anything after the word root?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] = if length(d["lemma"]) == length(d["word"])
             "no"
-        else
+         else
             lemma = replace(d["lemma"], "آ"  =>
                             "ا");
-        contains(d["word"], lemma) ?
-            length(d["word"]) < last(findlast(reverse(lemma), reverse(d["word"]))) ? "yes" : "no" :
+         contains(d["word"], lemma) ?
+            last(findlast(lemma, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
             "no"
-        end; d),
+         end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
 
@@ -703,10 +738,20 @@ dicCODE["is the word root, شو recognized as a verb?"] =
         (d["state"] = d["pos"] == "Verb" && d["lemma"] == "شو" ? "yes" : "no"; d),
             Dict(:in => ["data", "pos"], :out => ["state", "res"]))
 
+dicCODE["is the word root, شنو recognized as a verb?"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["state"] = d["pos"] == "Verb" && d["lemma"] == "شنو" ? "yes" : "no"; d),
+        Dict(:in => ["data", "pos"], :out => ["state", "res"]))
+
 dicCODE["change the word root's transliteration from /rav/ to /ro/"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = replace(d["res"], "rav" => "ro"); d),
             Dict(:in => ["res"], :out => ["res"]))
+
+dicCODE["change the word root's transliteration from /senav/ to /seno/"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["res"] = replace(d["res"], "Senav" => "Seno"); d),
+        Dict(:in => ["res"], :out => ["res"]))
 
 dicCODE["change its transliteration from /rav/ to /ro/"] =
     dicCODE["change the word root's transliteration from /rav/ to /ro/"]

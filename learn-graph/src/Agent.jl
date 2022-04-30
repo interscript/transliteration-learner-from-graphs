@@ -71,7 +71,8 @@ function runAgent(node::Node,
             if node.children == nothing
 
                 @label __OUT
-                return haskey(data, "res") ? data["res"] : data["word"]
+                return haskey(data, "res") ?
+                    data["res"] : data["word"]
 
             end
 

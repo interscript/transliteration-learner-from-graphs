@@ -3,6 +3,12 @@
 include("hazm/py_code.jl")
 
 
+dataM = Dict{String, Any}(
+            "word" => nothing,
+            "pos" => nothing,
+            "state" => nothing,
+            "brain" => nothing);
+
 dataN = Dict{String, Any}(
             "word" => nothing,
             "pos" => nothing,
@@ -35,17 +41,18 @@ dicCODE["recognize parts of speech in the text!"] =
 
 dicCODE["run transliterator on each word!"] =
     Functor((d,e=nothing,f=nothing) ->
-        d,
-        Dict(:in => ["text"], :out => ["text"]))
-#===
-┌ Warning: ("unimplemented Node:: Id", 4, " Name: ", "normalize the text!")
-└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
-┌ Warning: ("unimplemented Node:: Id", 5, " Name: ", "tokenize the text!")
-└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
-┌ Warning: ("unimplemented Node:: Id", 6, " Name: ", "recognize parts of speech in the text!")
-└ @ Main ~/WORK/REPO/transliteration-learner-from-graphs/learn-graph/src/Graphs.jl:64
-┌ Warning: ("unimplemented Node:: Id", 7, " Name: ", "run transliterator on each word!")
-===#
+        (l_res = map(wp -> (wrd = wp[1];
+                            pos = wp[2];
+                            dd = copy(dataM);
+                            dd["word"] = wrd;
+                            dd["pos"] = pos;
+                            dd["pos"] == "Punctuation" ?
+                                dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd) |>
+                                    (w -> replace(w, "-''"=>"", "-'"=>""))),
+                    d["text"]);
+         d["res"] = join(l_res, " "); d),
+            Dict(:in => ["text"], :out => ["res"]))
+
 
 #####################
 # transliterator    #
@@ -508,12 +515,14 @@ dicCODE["is the word to-which it's attached, a number or چند?"] =
             Dict(:in => ["pos", "affix"], :out => ["state"]))
 
 dicCODE["is the verb root to-which it's attached, marked as v2 in the database?"] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = d["SynCatCode"]=="V2" ? "yes" : "no"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["SynCatCode"]=="V2" ? "yes" : "no"; d),
             Dict(:in => ["SynCatCode"], :out => ["state"]))
 
 dicCODE["does the verb root to-which it's attached, end in any of the /e, a, u/ sounds?"] =
-    Functor((d,e=nothing,f=nothing) -> d,
-            Dict(:in => ["verb_root"], :out => ["state"]))
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["res_root"][end] in ['e', 'A', 'u'] ? "yes" : "no"; d),
+            Dict(:in => ["res_root"], :out => ["state"]))
 
 dicCODE["is there a space or semi-space before it?"] =
     Functor((d,e=nothing,f=nothing) ->

@@ -130,7 +130,7 @@ a directory, as resp. the second and third lines below.
 ----
 julia train.jl –-help
 julia train.jl --path-lucidchart-csv resources/TestFarsiTrans.csv --brain-entry transliterator --path-model resources/TestFarsiTrans.dat
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliterator --path-model resources/Model5.dat
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/Model5.dat
 ----
 
 * Transliterate single string (with debugging mode)

@@ -490,7 +490,7 @@ dicCODE["is the word before it a verb?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
             if d["affix"] == get(d, "suffix", false) # affix?
-                haskey(d,"lemma") && d["pos"] == "Verb" ? "yes" : "no"; # jair
+                haskey(d,"lemma") && d["pos"] == "Verb" ? "yes" : "no";
             elseif d["affix"] == get(d, "prefix", "nothing") # suffix
                 if haskey(d, "pre_pos")
                     d["pre_pos"] == "Verb" ? "yes" : "no"
@@ -920,30 +920,32 @@ dicCODE["transliterate it using affix-handler"] =
 dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
         (interfaceName = "affix-handler";
-         d["l_res"] = if length(d["l_affix"]) == 1
-                w = d["l_affix"][1];
-                w != "" ?
-                    [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]
-            else
-                k = haskey(d, "suffix") ? "suffix" : "prefix"
-                segm = nothing;
-                map(iw ->   (i = iw[1];
-                             w = iw[2];
-                             dd = copy(dataN);
-                             dd["word"] = w;
-                             dd["affix"] = w;
-                             dd["brain"] = interfaceName;
-                             dd[k] = w;
-                             dd["pos"] = k == "suffix" ?
-                                        i == 0 ? d["pos"] : "nothing" :
-                                        i == length(d["l_affix"]) ?
-                                                    d["pos"] : "nothing";
-                             dd["segm"] = segm;
-                             node = e[interfaceName];
-                             runAgent(node, e, f, dd)),
-                        enumerate(d["l_affix"]));
+         if length(d["l_affix"]) == 1
+             d["l_res"] = (w = d["l_affix"][1];
+                           w != "" ?
+                            [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]);
+         else
+             d["l_res"] = [];
+             k = haskey(d, "suffix") ? "suffix" : "prefix";
+             segm = nothing;
+             for iw in enumerate(d["l_affix"])
+                 i = iw[1];
+                 w = iw[2];
+                 dd = copy(dataN);
+                 dd["word"] = w;
+                 dd["affix"] = w;
+                 dd["brain"] = interfaceName;
+                 dd[k] = w;
+                 dd["pos"] = k == "suffix" ?
+                    i == 0 ? d["pos"] : "nothing" :
+                        i == length(d["l_affix"]) ?
+                            d["pos"] : "nothing";
+                 dd["segm"] = length(d["l_res"]) == 0 ? nothing : d["l_res"][end];
+                 node = e[interfaceName];
+                 push!(d["l_res"],
+                       runAgent(node, e, f, dd));
             end;
-         d),
+         end; d),
             Dict(:in => ["l_affix"], :out => ["l_res"]))
 
 

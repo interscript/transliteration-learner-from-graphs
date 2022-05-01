@@ -927,20 +927,20 @@ dicCODE["run affix-handler on affix vector"] =
             else
                 k = haskey(d, "suffix") ? "suffix" : "prefix"
                 segm = nothing;
-                map(iw ->
-                            (i = iw[1];
+                map(iw ->   (i = iw[1];
                              w = iw[2];
                              dd = copy(dataN);
                              dd["word"] = w;
                              dd["affix"] = w;
+                             dd["brain"] = interfaceName;
                              dd[k] = w;
                              dd["pos"] = k == "suffix" ?
                                         i == 0 ? d["pos"] : "nothing" :
-                                        i == length(d["l_affix"]) ? d["pos"] : "nothing";
+                                        i == length(d["l_affix"]) ?
+                                                    d["pos"] : "nothing";
                              dd["segm"] = segm;
                              node = e[interfaceName];
-                             segm = runAgent(node, e, f, dd);
-                             segm),
+                             runAgent(node, e, f, dd)),
                         enumerate(d["l_affix"]));
             end;
          d),

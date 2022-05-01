@@ -627,15 +627,14 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
             if !isnothing(get(d, "segm", nothing))
-                d["segm"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+                d["segm"][end] in ['A', 'u', 'i'] ? "yes" : "no";
             elseif haskey(d, "l_res")
-                d["l_res"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+                d["l_res"][end] in ['A', 'u', 'i'] ? "yes" : "no";
             elseif (haskey(d, "res_root") && haskey(d, "suffix") && length(d["res_root"]) > 0)
-                d["res_root"][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no";
+                d["res_root"][end] in ['A', 'u', 'i'] ? "yes" : "no";
             else
                 "no"
             end; d),
-        # d["l_res"][end][end] in ['A', 'a', 'e', 'i'] ? "yes" : "no"; d),
             Dict(:in => [], :out => ["state"]))
 
 
@@ -675,7 +674,7 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
          elseif haskey(d, "l_res")
             d["l_res"][end][end] in ['A', 'a', 'e', 'o', 'u', 'i'] ? "yes" : "no"
          else
-            d["res_root"][end] in ['A', 'e', 'o', 'u'] ? "yes" : "no"
+            d["res_root"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no"
          end;
          d),
             Dict(:in => [], :out => ["state"]))

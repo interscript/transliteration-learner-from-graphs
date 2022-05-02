@@ -151,7 +151,29 @@ else # transliterate the file
 
     using ProgressBars
     
+    function preprocessData(data, window=6, space=4)
+    
+        d_data = []
+        for d in ProgressBar(data)
+    
+            w = split(d)
+            for i=1:space:length(w) 
+
+                push!(d_data, 
+                      w[i:min(end,i+window)])
+        
+                if i+window > length(w)
+                    break
+                end
+        
+            end
+        end
+        d_data
+        
+    end
+    
     ProgressBar(readlines(parsedArgs["file-name"], keep=true) |> 
+                            preprocessData |>
                                 (D -> filter(s -> strip(s) != "", D))) |> 
       (D ->
         map(d ->

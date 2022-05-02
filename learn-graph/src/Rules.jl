@@ -673,8 +673,10 @@ dicCODE["does the transliteration of the segment before it end in any of the /a,
             d["segm"][end] in ['A', 'a', 'e', 'o','u', 'i'] ? "yes" : "no"
          elseif haskey(d, "l_res")
             d["l_res"][end][end] in ['A', 'a', 'e', 'o', 'u', 'i'] ? "yes" : "no"
-         else
+         elseif haskey(d, "res_root")
             d["res_root"][end] in ['A', 'a', 'e', 'o', 'u'] ? "yes" : "no"
+         else
+             "no"
          end;
          d),
             Dict(:in => [], :out => ["state"]))

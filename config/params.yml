@@ -1,0 +1,14 @@
+nnets: {}
+prod:
+  SourceCHARS: "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
+  SpecialSymbols:
+    - "<unk>"
+    - "<pad>"
+    - "<bos>"
+    - "<eos>"
+  onnx_path: "../resources"
+  vocab_transform: "../resources/vocab_transform.yaml"
+  TargetCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz"
+transliteration:
+  window: 6
+  space: 4

@@ -11,18 +11,18 @@ module Transliterator
 
     def initialize(config)
 
-      @config = config
-
+      @config = config["prod"]
       @transformers = get_transformers()
       @encoders = get_encoders()
+      @languages = get_vocab()
 
     end
 
 
     def transliterate_file(path)
 
-      texts = File.read(path).split("\n").map(&:strip)
-      texts.map {|t| transliterate_text(t)}
+      File.read(path).split("\n").map(&:strip).map \
+        {|t| transliterate_text(@languages.clean(t))}
 
     end
 
@@ -30,19 +30,19 @@ module Transliterator
     def transliterate_text(txt)
 
       # transliteration steps with error handling
-      #begin
+      begin
 
         src = @encoders.encode_src(txt)
         tgt = @transformers.greedy_decode(src)
         str = @encoders.decode_tgt(tgt)
         str
 
-      #rescue
+      rescue
 
-      #  p("error processing string: " + txt)
-      #  txt
+        p("error processing string: " + txt)
+        txt
 
-      #end
+      end
 
     end
 
@@ -57,6 +57,12 @@ module Transliterator
     def get_encoders()
 
       FarsiEncoder.new(@config)
+
+    end
+
+    def get_vocab()
+
+      Languages.new(@config)
 
     end
 

@@ -38,7 +38,7 @@ end
 
 parser = parser()
 
-config_path = parser.has_key?(:config) ? parser[:config] : "../config/model.yml"
+config_path = parser.has_key?(:config) ? parser[:config] : "../config/params.yml"
 config = YAML.load(File.read(config_path))
 
 

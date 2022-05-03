@@ -1,28 +1,33 @@
 
 module Transliterator
 
-  module Farsi
+  class Languages
 
-    Farsi_CHARS = "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
-    Special_symbols = ["<unk>", "<pad>", "<bos>", "<eos>"]
+    attr_accessor :SourceCHARS, :TargetCHARS, :SpecialSymbols
 
-    #def pad(arr, length, no_eos=False, no_sos=False):
-    #return numpy.pad(arr, (0, length - len(arr)), constant_values="<pad>")
+    def initialize(config)
 
+        @SourceCHARS = config["SourceCHARS"]
+        @TargetCHARS = config["TargetCHARS"]
+        @SpecialSymbols = config["SpecialSymbols"]
 
-    #def prepare_line(seq_length, vocab, no_sos=False, no_eos=False):
-    #return lambda line: list(map(
-    #  lambda c: vocab[c],
-    #  pad(list(line), seq_length, no_sos=no_sos, no_eos=no_eos)
-    # ))
+    end
 
-  end
+    # 'a   a  a a'-> 'a a a a'
+    def collapse_whitespace(txt)
 
-  module Transliterate
+      txt.gsub(/[[:space:]]+/, " ")
 
-    Transliterated_CHARS = "ACMSXZabcdefghijklmnopqrstuvwxyz"
+    end
 
-    Special_symbols = ["<unk>", "<pad>", "<bos>", "<eos>"]
+    # basic normalisation & clean up
+    def clean(txt)
+
+      txt = collapse_whitespace(txt)
+      # rm chars not within SourceCHARS
+      txt.chars.select {|c| @SourceCHARS.include? c}.join()
+
+    end
 
   end
 

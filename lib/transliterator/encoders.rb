@@ -12,7 +12,7 @@ module Transliterator
     def initialize(config)
 
       @max_len = config[:max_len]
-      @vocab_transform = YAML.load(File.read(config[:vocab_transform]))
+      @vocab_transform = YAML.load(File.read(config["vocab_transform"]))
 
       src_lang = "farsi"
       tgt_lang = "transliterated"
@@ -33,7 +33,7 @@ module Transliterator
 
       txt.gsub("ﯼ",
                   "ﻱ")
-                  
+
       txt.gsub("ک",
                   "ك")
 

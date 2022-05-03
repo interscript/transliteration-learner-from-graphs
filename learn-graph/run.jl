@@ -152,7 +152,14 @@ else # transliterate the file
     using ProgressBars
     
     function preprocessData(data, window=6, space=4)
-    
+        
+        # load params
+        if isfile("resources/transliterationParams.json")
+            dParams = JSON.Parser.parsefile("resources/transliterationParams.json")
+            window = dParams["window"]
+            space = dParams["space"]
+        end
+        
         d_data = []
         for d in ProgressBar(data)
     
@@ -168,7 +175,7 @@ else # transliterate the file
         
             end
         end
-        d_data
+        map(d -> join(d, " "), d_data)
         
     end
     

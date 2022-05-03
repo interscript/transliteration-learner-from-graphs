@@ -1,0 +1,8 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1
+1,Document,,,,,,,,,,Demo: Mappings
+2,Page,,,,,,,,,,Page 1
+3,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Mapping
+4,Process,Flowchart Shapes,2,,,,,,,,map each char with mapping
+5,Process,Flowchart Shapes,2,,,,,,,,"Done, do nothing!"
+6,Line,,2,,,3,4,None,Arrow,,
+7,Line,,2,,,4,5,None,Arrow,,

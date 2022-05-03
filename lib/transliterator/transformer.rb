@@ -8,11 +8,9 @@ module Transliterator
   # A generic diacritizer to be overloaded by the respective languages.
   class Transformer
 
-    attr_accessor :onnx_session
-
     def initialize(config)
 
-      onnx_models_path = config[:onnx_path]
+      onnx_models_path = config["onnx_path"]
 
       # load inference model from model_path
       token_src_embbedding_path = onnx_models_path+"/token_src_embbedding.onnx"

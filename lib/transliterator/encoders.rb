@@ -6,13 +6,10 @@ module Transliterator
 
   class FarsiEncoder
 
-    #include Farsi
-    #include Transliterate
-
     def initialize(config)
 
-      @max_len = config[:max_len]
-      @vocab_transform = YAML.load(File.read(config[:vocab_transform]))
+      @max_len = config["max_len"]
+      @vocab_transform = YAML.load(File.read(config["vocab_transform"]))
 
       src_lang = "farsi"
       tgt_lang = "transliterated"

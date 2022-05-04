@@ -42,22 +42,42 @@ entryFound = false
 
 # Parse csv data
 df = Nothing
+S = 0
+
 if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing)) 
     
-    println("processing directory::", parsedArgs["dir-path-lucidchart-csv"])
+    #println(S)
+    #global S
+
+    @warn "processing directory::", parsedArgs["dir-path-lucidchart-csv"]
     dirName = parsedArgs["dir-path-lucidchart-csv"]
+    
+
+    
+    
     df = filter(s -> s[end-3:end] == ".csv", readdir(parsedArgs["dir-path-lucidchart-csv"])) |>
-        (gNs -> map(gN -> (println("process file::", gN);
-                           DataFrame(CSV.File(dirName*gN))), gNs)) |>
+        (gNs -> map(gN -> (@info "process file::", gN;
+                           df = DataFrame(CSV.File(dirName*gN));
+                           global S;
+                           df[!,"Id"] = map(d -> d + S, df[!,"Id"]);
+                           df[!,"Line Destination"] = map(d -> ismissing(d) ? d : d + S,
+                                                          df[!,"Line Destination"]);
+                           df[!,"Line Source"] = map(d -> ismissing(d) ? d : d + S,
+                                                     df[!,"Line Source"]);
+                           S = S + size(df)[1];
+                           df),
+                    gNs)) |>
             (vgNs -> vcat(vgNs...))
     
 else
     
-    println("process file::", parsedArgs["path-lucidchart-csv"])
+    @warn "process file::", parsedArgs["path-lucidchart-csv"]
     df = DataFrame(CSV.File(parsedArgs["path-lucidchart-csv"]))
     
 end
 
+# println(df)
+CSV.write("bla.csv", df)
 
 # Preprocess Nodes
 df[!,"Label"] = map(x -> ismissing(x) ? Missing : lowercase(x), df[!,"Text Area 1"])
@@ -69,7 +89,7 @@ df_Brains = filter(row -> row.Name in ["Curly Brace Note"], df);
 
 dicBRAINS = Dict{String, Node}()
 
-brainsList = df_Brains[!, "Label"]
+brainsList = df_Brains[!, "Label"] #|> unique
 
 
 if !(brainEntry in brainsList)
@@ -87,8 +107,10 @@ for b in brainsList
     try
 
         dicBRAINS[b] = get_node(b, df_Brains) |>
-                (D -> (n=Node(D, nothing); n.x[:depth]=0; n)) |>
-                    (N -> createTree(N, df_Nodes, df_Arrows, df_Brains))
+                (D -> 
+                    (n=Node(D, nothing); n.x[:depth]=0; n)) |>
+                    (N -> 
+                         createTree(N, df_Nodes, df_Arrows, df_Brains))
 
     catch
 

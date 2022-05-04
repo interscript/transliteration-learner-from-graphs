@@ -77,7 +77,7 @@ After python & julia dependencies and have been taken care of,
 as described in the steps below, one can start to transliterate in debug mode:
 [source,bash]
 ----
-julia transliterateSingleString.jl --path-model resources/Model0.1.dat  --farsi-text مزایایی --pos-tagging noun
+julia runDBGCode.jl --path-model resources/Model0.1.dat  --farsi-text مزایایی --pos-tagging noun
 ----
 
 
@@ -136,8 +136,8 @@ julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry prepr
 * Transliterate single string (with debugging mode)
 [source,bash]
 ----
-julia transliterateSingleString.jl –-help
-julia transliterateSingleString.jl --path-model resources/TestFarsiTrans.dat --farsi-text یویو --pos-tagging noun
+julia runDBGCode.jl –-help
+julia runDBGCode.jl --path-model resources/TestFarsiTrans.dat --farsi-text یویو --pos-tagging noun
 ----
 
 * Run Tests (data data/tests.csv)

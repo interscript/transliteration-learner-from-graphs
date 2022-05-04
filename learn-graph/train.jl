@@ -99,7 +99,6 @@ for b in brainsList
 end
 
 
-println("save data to: ", modelName)
 serialize(modelName, Dict(:dicBrains => dicBRAINS,
                           :df_Nodes => df_Nodes,
                           :entry => brainEntry))

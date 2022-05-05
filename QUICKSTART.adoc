@@ -69,11 +69,109 @@ julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transl
 
 The code should output a list of warning messages:
 
+┌ Warning: ("unimplemented Node:: Id", 6, " Name: ", "map all letters utilising table and @ to a")
+
+This means that the logic needs to be coded.
+This is done under */learn-graph/src/Rules.jl*.
+
+
 
 ===== Code Snippets Implementation
 
+Code building is based on the following ideas and tools:
+
+[source,ruby]
+----
+# computation state
+dataSTATE = Dict{String, Any}(
+            "state" => nothing,
+            "brain" => nothing);
+
+# Dictionary with the commands
+dicCODE = Dict{String, Functor}()
+----
+
+Next examples are basic node implementations:
+[source,ruby]
+----
+# Node terminating computation
+dicCODE["done, terminate"] =
+    #===
+        Basic form of functors:
+            d: data
+            e: dicBRAINS
+            f: df_Nodes
+
+        Inputs and Outputs are specified
+        :in => "l_transliterated" # list of
+        :out => "res" # field expected at end of (sub)sequence
+    ===#
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+            d["res"] = d["txt"]
+            d
+        end, # identity
+        Dict(:in => ["txt"],
+             :out => ["res"]))
+
+dicCODE["bind transliterated words together"] =
+    #===
+      Implimentation of simple node
+    ===#
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+          # ["a", "cat"] -> "a cat"
+          d["txt"] = join(d["l_transl_wrds"], " ");
+          d
+        end,
+        Dict(:in => ["l_transl_wrds"],
+             :out => ["txt"]))
+
+----
+
+Above, for more code stability, :in and :out fields necessary for the
+computational flow to be performed most be specified.
+"res" allow to terminate a (sub)flow returning a particular value rather than
+the full computation state.
+
+It can be useful to review how to call an other part of the
+diagram and here also to loop over that process.
+
+[source,ruby]
+----
+dicCODE["apply mappings on each word"] =
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+          d["l_transl_wrds"] =
+            map(wrd ->
+                begin
+                    dd = copy(dataSTATE)
+                    dd["wrd"] = wrd
+                    interfaceName = "mapping"
+                    node = e[interfaceName]
+                    runAgent(node, e, f, dd)
+                end,
+                d["l_wrds"])
+          d
+        end,
+        Dict(:in => ["l_wrds"],
+             :out => ["l_transl_wrds"]))
+----
+
+More examples can be found under *learn-graph/resources/RulesSamples/*
+and code and functions can be copied *learn-graph/src/Rules.jl*.
+
+===== Create code from dir
+
+
+===== Run Python, external code and others
+
 ===== Run Tests and transliteration
 
+[source,sh]
+----
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/DirDemo.dat
+----
 
 === Neural networks
 

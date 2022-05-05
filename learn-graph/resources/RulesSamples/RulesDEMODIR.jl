@@ -21,7 +21,7 @@ dicCODE = Dict{String, Functor}()
 # mappings          #
 #####################
 
-dicCODE["done, do nothing!"] =
+dicCODE["done, terminate!"] =
     #===
         Basic form of functors:
             d: data
@@ -29,8 +29,11 @@ dicCODE["done, do nothing!"] =
             f: df_Nodes
     ===#
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = d["wrd"]; d), # identity
-        Dict(:in => ["wrd"], :out => ["res"]))
+        begin
+            d["res"] = d["l_transliterated"]
+            d
+        end, # identity
+        Dict(:in => ["l_transliterated"], :out => ["res"]))
 
 dicCODE["has a or b?"] =
     #===

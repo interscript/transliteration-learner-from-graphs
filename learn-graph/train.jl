@@ -11,12 +11,12 @@ include("src/Agent.jl")
 include("src/Rules.jl")
 
 
-
 function parse_commandline()
 
     s = ArgParseSettings()
 
     @add_arg_table! s begin
+
         "--path-lucidchart-csv"
             help = "path to the graph csv"
         "--dir-path-lucidchart-csv"
@@ -44,12 +44,11 @@ entryFound = false
 df = Nothing
 S = 0
 
-if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing)) 
-
+if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing))
 
     @info "PROCESSING DIR::", parsedArgs["dir-path-lucidchart-csv"]
     dirName = parsedArgs["dir-path-lucidchart-csv"]
-        
+
     df = filter(s -> s[end-3:end] == ".csv", readdir(parsedArgs["dir-path-lucidchart-csv"])) |>
         (gNs -> map(gN -> (@info "process file::", gN;
                            df = DataFrame(CSV.File(dirName*gN));
@@ -63,12 +62,12 @@ if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing))
                            df),
                     gNs)) |>
             (vgNs -> vcat(vgNs...))
-    
+
 else
-    
+
     @info "PROCESSING FILE::", parsedArgs["path-lucidchart-csv"]
     df = DataFrame(CSV.File(parsedArgs["path-lucidchart-csv"]))
-    
+
 end
 
 
@@ -100,9 +99,9 @@ for b in brainsList
     try
 
         dicBRAINS[b] = get_node(b, df_Brains) |>
-                (D -> 
+                (D ->
                     (n=Node(D, nothing); n.x[:depth]=0; n)) |>
-                    (N -> 
+                    (N ->
                          createTree(N, df_Nodes, df_Arrows, df_Brains))
 
     catch

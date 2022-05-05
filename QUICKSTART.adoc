@@ -1,0 +1,52 @@
+= QUICKSTART
+
+=== Simple Transliteration Model
+
+We implement the following simple transliteration model:
+
+* a -> b, b -> c, c -> d, d -> e, ..., z -> a
+
+The steps below are going to allow us to implement:
+
+1. *design diagram*
+2. *diagram based code*
+  * generate code
+  * run tests
+2. *build transliteration data*
+3. *neural network model*
+  * train model
+  * export model to onnx
+4. *run ruby code*
+
+=== Design Diagram
+
+We have designed the following diagram with lucidchart:
+ https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.png[diagram]
+
+It represents a simple strategy that we broke down into 3 steps:
+
+* Transliteration, bundling the steps below
+* Preprocessor: clean up chars, lower case, ...
+* Mapping: applying the above transformation on characters
+
+A strategy can be thought as a structure through which data "flows"
+and gets processed by the various operations represented by the nodes (~functional programming).
+
+In the design, the following conventions are currently supported:
+
+1. *Entries*
+    * represent: logic flows starts
+    * "Curly Brace Note"
+2. *Nodes*
+    * represent: computational nodes specifying uniquely some operations
+    * "Process", "Decision", "Terminator"
+3. *Connections*
+  * represent: logical steps
+  * "unlabelled directed arrows" "labelled directed arrows"
+   (in arbitrary number)
+
+Entries can be activated in the following ways:
+
+1. specifying main entry when building code
+2. calling entry via node: e.g. "Preprocessor"
+3. or calling for a recursion or loop: e.g. "process each word with mapping"

@@ -129,15 +129,15 @@ a directory, as resp. the second and third lines below.
 [source,bash]
 ----
 julia train.jl –-help
-julia train.jl --path-lucidchart-csv resources/TestFarsiTrans.csv --brain-entry transliterator --path-model resources/TestFarsiTrans.dat
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/Model5.dat
+julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliterator --path-model resources/Demo.dat
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/Demo.dat
 ----
 
 * Transliterate single string (with debugging mode)
 [source,bash]
 ----
 julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/Model.dat --text abcd
+julia runDBGCode.jl --path-model resources/Demo.dat --text "abcd efgh"
 ----
 
 * Run Tests (data data/tests.csv)

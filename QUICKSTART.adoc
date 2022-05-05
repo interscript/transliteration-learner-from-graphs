@@ -75,7 +75,6 @@ This means that the logic needs to be coded.
 This is done under */learn-graph/src/Rules.jl*.
 
 
-
 ===== Code Snippets Implementation
 
 Code building is based on the following ideas and tools:
@@ -163,15 +162,21 @@ and code and functions can be copied *learn-graph/src/Rules.jl*.
 
 ===== Create code from dir
 
+Alternatively, code can be generated from multiple .csv files
+as the ones in *learn-graph/resources/modelDir/*.
+This approach allows for more  a more atomic approach, sub components
+can be separated and tweaked.
+[source,sh]
+----
+cd learn-graph
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/DirDemo.dat
+----
 
 ===== Run Python, external code and others
 
 ===== Run Tests and transliteration
 
-[source,sh]
-----
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/DirDemo.dat
-----
+
 
 === Neural networks
 

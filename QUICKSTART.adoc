@@ -45,8 +45,40 @@ In the design, the following conventions are currently supported:
   * "unlabelled directed arrows" "labelled directed arrows"
    (in arbitrary number)
 
-Entries can be activated in the following ways:
+Entries are activated in the following ways:
 
 1. specifying main entry when building code
 2. calling entry via node: e.g. "Preprocessor"
 3. or calling for a recursion or loop: e.g. "process each word with mapping"
+
+So in the diagram, the computational flow is jumping between subdiagrams.
+
+=== Transliteration Code Generation
+
+Diagram designs on lucidchart can be exported as csv.
+
+
+[source,sh]
+----
+# going to learn-graph repo.
+cd learn-graph
+# install deps
+julia packageInstall.jl
+julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
+----
+
+The code should output a list of warning messages:
+
+
+===== Code Snippets Implementation
+
+===== Run Tests and transliteration
+
+
+=== Neural networks
+
+===== Generate Transliteration Data
+===== Train Neural Networks
+===== Export Neural Networks to Onnx
+
+=== Run ruby Code

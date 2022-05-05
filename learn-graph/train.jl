@@ -45,16 +45,11 @@ df = Nothing
 S = 0
 
 if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing)) 
-    
-    #println(S)
-    #global S
 
-    @warn "processing directory::", parsedArgs["dir-path-lucidchart-csv"]
+
+    @info "PROCESSING DIR::", parsedArgs["dir-path-lucidchart-csv"]
     dirName = parsedArgs["dir-path-lucidchart-csv"]
-    
-
-    
-    
+        
     df = filter(s -> s[end-3:end] == ".csv", readdir(parsedArgs["dir-path-lucidchart-csv"])) |>
         (gNs -> map(gN -> (@info "process file::", gN;
                            df = DataFrame(CSV.File(dirName*gN));
@@ -71,13 +66,11 @@ if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing))
     
 else
     
-    @warn "process file::", parsedArgs["path-lucidchart-csv"]
+    @info "PROCESSING FILE::", parsedArgs["path-lucidchart-csv"]
     df = DataFrame(CSV.File(parsedArgs["path-lucidchart-csv"]))
     
 end
 
-# println(df)
-CSV.write("bla.csv", df)
 
 # Preprocess Nodes
 df[!,"Label"] = map(x -> ismissing(x) ? Missing : lowercase(x), df[!,"Text Area 1"])
@@ -89,7 +82,7 @@ df_Brains = filter(row -> row.Name in ["Curly Brace Note"], df);
 
 dicBRAINS = Dict{String, Node}()
 
-brainsList = df_Brains[!, "Label"] #|> unique
+brainsList = df_Brains[!, "Label"] |> unique
 
 
 if !(brainEntry in brainsList)

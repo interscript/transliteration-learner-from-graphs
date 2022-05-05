@@ -137,7 +137,7 @@ julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry prepr
 [source,bash]
 ----
 julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/TestFarsiTrans.dat --farsi-text یویو --pos-tagging noun
+julia runDBGCode.jl --path-model resources/Model.dat --text abcd
 ----
 
 * Run Tests (data data/tests.csv)

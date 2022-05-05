@@ -5,8 +5,6 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 4,Process,Flowchart Shapes,2,,,,,,,,Preprocessor
 5,Process,Flowchart Shapes,2,,,,,,,,apply mappings on each word
 6,Process,Flowchart Shapes,2,,,,,,,,join transliterated words
-7,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
-8,Line,,2,,,4,5,None,Arrow,,
-9,Line,,2,,,5,6,None,Arrow,,
-10,Line,,2,,,3,4,None,Arrow,,
-11,Line,,2,,,6,7,None,Arrow,,
+7,Line,,2,,,5,6,None,Arrow,,
+8,Line,,2,,,3,4,None,Arrow,,
+9,Line,,2,,,4,5,None,Arrow,,

@@ -72,14 +72,12 @@ function runAgent(node::Node,
 
                 @label __OUT
                 return haskey(data, "res") ?
-                    data["res"] : data["word"]
+                    data["res"] : data #["word"]
 
             end
 
             if length(node.children) > 1
                 
-                println(length(node.children))
-                println(node.children)
                 state = data["state"]
                 @info "response::> ", state
                 id = node.x[:map][state]

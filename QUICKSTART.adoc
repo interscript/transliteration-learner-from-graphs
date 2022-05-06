@@ -310,7 +310,7 @@ sys	0m0.572s
 ----
 > python script_train_transformer_on_transliteration.py
 100%|███████████████████████████████████████████| 34/34 [00:14<00:00,  2.36it/s]
-Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,            Epoch time = 14.431s
+Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,       git      Epoch time = 14.431s
 ----
 ===== Export Neural Networks to Onnx
 

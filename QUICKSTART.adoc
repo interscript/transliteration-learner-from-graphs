@@ -160,6 +160,7 @@ dicCODE["apply mappings on each word"] =
 More examples can be found under *learn-graph/resources/RulesSamples/*
 and code and functions can be copied *learn-graph/src/Rules.jl*.
 
+
 ===== Create code from dir
 
 Alternatively, code can be generated from multiple .csv files
@@ -172,7 +173,50 @@ cd learn-graph
 julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/DirDemo.dat
 ----
 
+
 ===== Run Python, external code and others
+
+====== Python Snippets
+[source,ruby]
+----
+using PyCall
+
+py"""
+latin_chars = 'abcdefghijklmnopqrstuvwxyz '
+
+def do_whatever(txt):
+    ...
+    return whatever
+
+d_dic = {'a': 'b', ...}
+"""
+
+# assets and code can be called in following fashions
+py"""do_whatever"""("some text")
+
+py"""d_dic"""['a']
+----
+
+With the julia module https://www.juliapackages.com/p/pycall[pycall].
+
+Alternatively, the python code can be put in another file, e.g. py_code.jl, written between
+"""py ... """ and called as in our farsi code:
+[source,ruby]
+----
+include("rel_path/py_code.jl")
+----
+
+====== External Programs
+
+To run external program and bash commands and process their imputs,
+one can proceed as follows:
+[source,ruby]
+----
+# > ./a.out $word
+read(`a.out $word`, String)
+# > echo $wrd | sed s/z/@/g
+read(pipeline(`echo $wrd`, `sed s/z/@/g`), String)
+----
 
 ===== Run Tests and transliteration
 

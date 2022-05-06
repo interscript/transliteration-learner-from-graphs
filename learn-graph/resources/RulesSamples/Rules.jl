@@ -136,11 +136,11 @@ dicCODE["map all letters utilising table and @ to a"] =
     Functor((d,e=nothing,f=nothing) ->
         begin
             wrd = d["wrd"]
-            d["wrd"] = join([py"""d_maps"""[string(c)] for c in wrd
+            d["res"] = join([py"""d_maps"""[string(c)] for c in wrd
                      if c!='\n'])
                          d
         end,
-            Dict(:in => ["wrd"], :out => ["wrd"]))
+            Dict(:in => ["wrd"], :out => ["res"]))
 
 py"""
 latin_chars = 'abcdefghijklmnopqrstuvwxyz '

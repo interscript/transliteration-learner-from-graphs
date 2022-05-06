@@ -5,28 +5,16 @@ using CSV
 using DataFrames
 using ArgParse
 using Serialization
-
-
-include("src/Graphs.jl")
-include("src/Rules.jl")
-include("src/Agent.jl")
-include("src/Metrics.jl")
-
 using Logging
 Logging.disable_logging(Logging.Info)
 
-using PyCall
-
-hazm = pyimport("hazm")
-
-PATH_HAZM = "resources/postagger.model"
-PATH_FLEXICON = "resources/"
+#using PyCall
 
 
-stemmer = hazm.Stemmer()
-lemmatizer = hazm.Lemmatizer()
-normalizer = hazm.Normalizer()
-tagger = hazm.POSTagger(model=PATH_HAZM)
+include("src/Graphs.jl")
+include("src/Agent.jl")
+include("src/Metrics.jl")
+include("src/Rules.jl")
 
 
 function parse_commandline()
@@ -64,48 +52,13 @@ graph = dicBRAINS[entryBrain]
 
 
 # prepare data
-dataM = Dict{String, Any}(
-            "word" => nothing,
-            "pos" => nothing,
-            "pre_pos" => nothing,
-            "state" => nothing, # used for messages back to system
-            "brain" => entryBrain) # current brain or graph
+dataM = dataSTATE
 
 
-VOCABFARSI = " !\"()+-./0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz{}«»،؛؟ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی\u200c"
-VOCABFARSI =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
-
-function processPOS(pos)
-
-    l_supported_POS = vcat(py"""l_PoS""",
-                       collect(keys(py"""d_map_FLEXI""")),
-                       collect(keys(py"""d_map_HAZM""")))
-
-    if !(pos in l_supported_POS)
-
-        @error pos, "pos unrecognised, needs to be within: ", l_supported_POS
-        exit()
-
-    else
-
-        if pos in collect(keys(py"""d_map_FLEXI"""))
-
-            pos = py"""d_map_FLEXI"""[pos]
-
-        elseif pos in collect(keys(py"""d_map_HAZM"""))
-
-            pos = py"""d_map_HAZM"""[pos]
-
-        end
-
-    end
-
-    pos
-
-end
+dicParams = YAML.load_file("../config/params.yml")
+SOURCECHARS = dicParams["transliteration"]["SourceCHARS"]
 
 
-m = 1
 if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 
@@ -119,7 +72,7 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
                         (D -> map(d -> (dd = copy(dataM);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
+                                                join(filter(c -> c in SOURCECHARS, d[1]), "") : d[1];
                                         dd["state"] = nothing;
 
                             try
@@ -185,7 +138,7 @@ else # transliterate the file
                             (Ws -> map(d -> (dd = copy(dataM);
                                         dd["pos"] = processPOS(d[2]);
                                         dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
+                                                join(filter(c -> c in SOURCECHARS, d[1]), "") : d[1];
                                         dd["state"] = nothing;
 
                                         try

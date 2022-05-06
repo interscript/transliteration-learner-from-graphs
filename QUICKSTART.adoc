@@ -176,7 +176,7 @@ julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry prepr
 
 ===== Run Python, external code and others
 
-====== Python Snippets
+====== Python Snippets & Modules
 [source,ruby]
 ----
 using PyCall
@@ -195,7 +195,15 @@ d_dic = {'a': 'b', ...}
 py"""do_whatever"""("some text")
 
 py"""d_dic"""['a']
+
+# as do the modules be imported and used in the code:
+hazm = pyimport("hazm")
+stemmer = hazm.Stemmer()
+lemmatizer = hazm.Lemmatizer()
+normalizer = hazm.Normalizer()
+tagger = hazm.POSTagger(model=PATH_HAZM)
 ----
+
 
 With the julia module https://www.juliapackages.com/p/pycall[pycall].
 
@@ -219,6 +227,54 @@ read(pipeline(`echo $wrd`, `sed s/z/@/g`), String)
 ----
 
 ===== Run Tests and transliteration
+
+====== Run DBG mode
+We find useful to run the built code with a full
+verbose mode:
+[source,bash]
+----
+> julia runDBGCode.jl --path-model resources/FullDemo.dat --text "abcd efgh"
+Dict{String, Any}("txt" => "abcd efgh", "brain" => "transliteration", "state" => nothing)
+[ Info: ("brain name ::> ", "transliteration")
+[ Info: ("data::> ", Dict{String, Any}("txt" => "abcd efgh", "brain" => "transliteration", "state" => nothing))
+[ Info: ("brain name ::> ", "preprocessor")
+[ Info: ("node::> ", "normalize the text!")
+Dict{String, Any}("txt" => "abcd efgh", "brain" => "transliteration", "state" => nothing)
+[ Info: ("data::> ", Dict{String, Any}("txt" => "abcd efgh", "brain" => "transliteration", "state" => nothing))
+[ Info: ("node::> ", "tokenize the text!")
+[ Info: ("data::> ", Dict{String, Any}("txt" => "abcd efgh", "brain" => "preprocessor", "l_wrds" => SubString{String}["abcd", "efgh"], "state" => nothing))
+[ Info: ("node::> ", "process each word with mapping")
+[ Info: ("brain name ::> ", "mapping")
+[ Info: ("node::> ", "has word the char z?")
+[ Info: ("response::> ", "no")
+[ Info: ("data::> ", Dict{String, Any}("brain" => nothing, "wrd" => "abcd", "state" => "no"))
+[ Info: ("node::> ", "map all letters utilising table and @ to a")
+[ Info: ("data::> ", Dict{String, Any}("brain" => "mapping", "wrd" => "abcd", "res" => "bcde", "state" => "no"))
+[ Info: ("node::> ", "has word the char z?")
+[ Info: ("response::> ", "no")
+[ Info: ("data::> ", Dict{String, Any}("brain" => "mapping", "wrd" => "abcd", "res" => "bcde", "state" => "no"))
+[ Info: ("node::> ", "map all letters utilising table and @ to a")
+[ Info: ("brain name ::> ", "mapping")
+[ Info: ("node::> ", "has word the char z?")
+[ Info: ("response::> ", "no")
+[ Info: ("data::> ", Dict{String, Any}("brain" => nothing, "wrd" => "efgh", "state" => "no"))
+[ Info: ("node::> ", "map all letters utilising table and @ to a")
+[ Info: ("data::> ", Dict{String, Any}("brain" => "mapping", "wrd" => "efgh", "res" => "defg", "state" => "no"))
+[ Info: ("node::> ", "has word the char z?")
+[ Info: ("response::> ", "no")
+[ Info: ("data::> ", Dict{String, Any}("brain" => "mapping", "wrd" => "efgh", "res" => "defg", "state" => "no"))
+[ Info: ("node::> ", "map all letters utilising table and @ to a")
+[ Info: ("data::> ", Dict{String, Any}("txt" => "abcd efgh", "brain" => "preprocessor", "l_transl_wrds" => ["bcde", "defg"], "l_wrds" => SubString{String}["abcd", "efgh"], "state" => nothing))
+[ Info: ("node::> ", "bind transliterated words together")
+[ Info: ("data::> ", Dict{String, Any}("txt" => "bcde defg", "brain" => "preprocessor", "l_transl_wrds" => ["bcde", "defg"], "l_wrds" => SubString{String}["abcd", "efgh"], "state" => nothing))
+[ Info: ("node::> ", "done, terminate")
+bcde defg
+----
+This allows to track the states and debug the codes.
+
+====== Run Transliteration
+
+====== Run Tests
 
 
 

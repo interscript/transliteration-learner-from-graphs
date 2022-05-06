@@ -2,13 +2,13 @@
 
 using Graphs
 using CSV
+using YAML
 using DataFrames
 using ArgParse
 using Serialization
 using Logging
 Logging.disable_logging(Logging.Info)
-
-#using PyCall
+# using PyCall
 
 
 include("src/Graphs.jl")
@@ -31,6 +31,9 @@ function parse_commandline()
                     excepted if file-name = data/test.csv \n
                     in that case, tests are performed."
 
+        "--file-name-out"
+            help = "file-name for transliterations output."
+
     end
 
     parse_args(s)
@@ -47,116 +50,133 @@ data = deserialize(parsedArgs["path-model"])
 
 entryBrain = data[:entry]
 dicBRAINS = data[:dicBrains]
-df_Nodes = data[:df_Nodes]
+dfNodes = data[:df_Nodes]
 graph = dicBRAINS[entryBrain]
 
 
 # prepare data
-dataM = dataSTATE
+dataSTATE = Dict{String, Any}(
+            "txt" => nothing,
+            "state" => nothing, # used for messages back to system
+            "brain" => entryBrain)
 
 
 dicParams = YAML.load_file("../config/params.yml")
-SOURCECHARS = dicParams["transliteration"]["SourceCHARS"]
+SOURCECHARS = dicParams["transliteration"]["SOURCECHARS"]
 
 
-if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
+if parsedArgs["file-name"] in ["data/test_benchmark.csv", "test"] # Run the test
 
 
-    df_Test = DataFrame(CSV.File("data/test.csv"))
+    dfTest = DataFrame(CSV.File("data/test_benchmark.csv"))
 
-    df_Test[!,"transModel"] =
-        map(d -> d |>
-            py"""normalise""" |>
-                hazm.word_tokenize |>
-                    tagger.tag |>
-                        (D -> map(d -> (dd = copy(dataM);
-                                        dd["pos"] = processPOS(d[2]);
-                                        dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in SOURCECHARS, d[1]), "") : d[1];
-                                        dd["state"] = nothing;
+    dfTest[!,"translitModel"] =
+        map(t ->
 
-                            try
+                begin
 
-                                # println(dd["word"], " : ", dd["pos"])
-                                dd["pos"] == "Punctuation" ?
-                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd) |>
-                                            (w -> replace(w, "-''"=>"", "-'"=>""));
-                        
+                    state = copy(dataSTATE)
+                    try
 
-                            catch
+                        # computation
+                        state["txt"] = chomp(t)
+                        runAgent(graph, dicBRAINS, dfNodes, state)
 
-                                println("DBG:: ", dd["word"], " : ", dd["pos"]);
-                                dd["word"]
+                    catch
 
-                            end), D)) |>
-                                (L -> join(L, " ")), 
-            df_Test[!,"orig"])
+                        println("DBG:: error in: ", state["txt"])
 
-    ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"], df_Test[!, "orig"])
+                    end
 
-    df_Bugs = df_Test[ids,:]
+                end,
+
+            dfTest[!,"source"])
+
+    ids = evaluation(dfTest[!, "translit"], dfTest[!, "translitModel"]) #, df_Test[!, "orig"])
+
+    dfBugs = dfTest[ids,:]
 
     println("error summary in: data/test_debug.csv")
-    CSV.write("data/test_debug.csv", df_Bugs)
+    CSV.write("data/test_debug.csv", dfBugs)
 
 
 else # transliterate the file
 
+    fileNameOUT = parsedArgs["file-name-out"]
+
+    fileNameOUT = isnothing(fileNameOUT) ?
+                        nothing : open(parsedArgs["file-name-out"], "w")
+
     using ProgressBars
-    
-    function preprocessData(data, window=6, space=4)
-    
+
+    doPreprocessData = dicParams["transliteration"]["preprocessData"]
+    window = dicParams["transliteration"]["window"]
+    space = dicParams["transliteration"]["space"]
+
+    function preprocessData(data)
+
+        #===
+            function preprocessing data,
+            it is useful to shorten sentences so that data can be
+            used to train nnetworks.
+
+            window: max length of the text snippets
+            space: shift for building snippets
+        ===#
+
         d_data = []
         for d in ProgressBar(data)
-    
-            w = split(d)
-            for i=1:space:length(w) 
 
-                push!(d_data, 
-                      w[i:min(end,i+window)])
-        
+            w = split(d)
+            for i=1:space:length(w)
+
+                push!(d_data,
+                      join(w[i:min(end,i+window)], " "))
+
                 if i+window > length(w)
                     break
                 end
-        
+
             end
         end
         d_data
-        
+
     end
-    
-    ProgressBar(readlines(parsedArgs["file-name"], keep=true) |> 
-                            preprocessData |>
-                                (D -> filter(s -> strip(s) != "", D))) |> 
+
+    ProgressBar(readlines(parsedArgs["file-name"], keep=true) |>
+                        (D ->
+                            filter(s -> strip(s) != "", D))) |>
+                            (D ->
+                                doPreprocessData ? preprocessData(D) : D) |>
+
       (D ->
-        map(d ->
-            (println("f::"*chomp(d));
-             chomp(d) |>
-                py"""normalise""" |>
-                    hazm.word_tokenize |>
-                        tagger.tag |>
-                            (Ws -> map(d -> (dd = copy(dataM);
-                                        dd["pos"] = processPOS(d[2]);
-                                        dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in SOURCECHARS, d[1]), "") : d[1];
-                                        dd["state"] = nothing;
+        map(t ->
+                begin
 
-                                        try
-                                            
-                                            dd["pos"] == "Punctuation" || strip(dd["word"]) == "" ?
-                                                dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
+                    state = copy(dataSTATE)
 
-                                        catch
+                    try
 
-                                            println("DBG:: ", dd["word"], " : ", dd["pos"]);
-                                            dd["word"];
-                                            ### exit(); # ""
+                        # computation
+                        txt = chomp(t)
+                        state["txt"] = txt
+                        translit = runAgent(graph, dicBRAINS, dfNodes, state)
 
-                                        end),
-                                        # runAgent(graph, dicBRAINS, df_Nodes, dd)
-                                    Ws)) |>
-                            (L -> "t::"*join(L, " ")) |>
-                                println),
+                        # write line by line to STDOUT or file
+                        isnothing(fileNameOUT) ?
+                            println(string(txt, "|",translit)) :
+                            CSV.write(fileNameOUT,
+                                      DataFrame(Dict("source" => txt,
+                                                     "translit" => translit)),
+                                      append=true)
+
+                    catch
+
+                        println("DBG:: error in: ", state["txt"])
+
+                    end
+
+                end,
             D))
 
 end

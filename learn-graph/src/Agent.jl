@@ -77,7 +77,7 @@ function runAgent(node::Node,
             end
 
             if length(node.children) > 1
-                
+
                 state = data["state"]
                 @info "response::> ", state
                 id = node.x[:map][state]

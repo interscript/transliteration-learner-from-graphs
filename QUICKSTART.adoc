@@ -273,15 +273,40 @@ bcde defg
 This allows to track the states and debug the codes.
 
 ====== Run Transliteration
+[source,bash]
+----
+# run transliteration
+julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
+# run transliteration into file
+julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
+----
 
 ====== Run Tests
-
-
+Runs tests, shows bugs and write them to csv:
+[source,bash]
+----
+> julia run.jl --path-model resources/FullDemo.dat --file-name test
+words accuracy: 1.0
+error summary in: data/test_debug.csv
+----
+Errors were written in data/test_debug.csv.
 
 === Neural networks
 
 ===== Generate Transliteration Data
+Afert transliteration has been generated, as in Run Transliteration,
+training data is created.
+[source,bash]
+----
+>julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out data/test_train.txt
+100.0%┣████████████████████████████████████████┫ 830/830 [00:00<00:00, 2.2kit/s]
+
+real	0m40.863s
+user	0m40.212s
+sys	0m0.572s
+----
 ===== Train Neural Networks
+
 ===== Export Neural Networks to Onnx
 
 === Run ruby Code

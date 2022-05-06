@@ -1,11 +1,14 @@
 nnets: {}
 transliteration:
-  SourceCHARS: "abcdefghijklmnopqrstuvwxyz "
-  SpecialSymbols:
+  preprocessData: true
+  SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "
+  TARGETCHARS: "abcdefghijklmnopqrstuvwxyz "
+  window: 6
+  onnx_path: "../resources"
+  space: 4
+  vocab_transform: "../resources/vocab_transform.yaml"
+  SPECIALSYMBOLS:
     - "<unk>"
     - "<pad>"
     - "<bos>"
     - "<eos>"
-  onnx_path: "../resources"
-  vocab_transform: "../resources/vocab_transform.yaml"
-  TargetCHARS: "abcdefghijklmnopqrstuvwxyz "

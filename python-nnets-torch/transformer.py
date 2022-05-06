@@ -93,7 +93,7 @@ def generate_square_subsequent_mask(sz):
     return mask
 
 
-def create_mask(src, tgt):
+def create_mask(src, tgt, PAD_IDX=1):
     src_seq_len = src.shape[0]
     tgt_seq_len = tgt.shape[0]
 

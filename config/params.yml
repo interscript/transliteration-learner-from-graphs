@@ -1,4 +1,10 @@
-nnets: {}
+nnets:
+  EMB_SIZE: 512
+  NHEAD: 8
+  FFN_HID_DIM: 512
+  BATCH_SIZE: 32
+  NUM_ENCODER_LAYERS: 3
+  NUM_DECODER_LAYERS: 3
 transliteration:
   preprocessData: true
   SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "
@@ -6,7 +12,9 @@ transliteration:
   window: 6
   onnx_path: "../resources"
   space: 4
+  max_str_len: 100
   vocab_transform: "../resources/vocab_transform.yaml"
+  TRAIN_DATA: "../learn-graph/data/test_train.txt"
   SPECIALSYMBOLS:
     - "<unk>"
     - "<pad>"

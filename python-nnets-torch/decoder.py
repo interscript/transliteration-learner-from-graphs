@@ -17,10 +17,11 @@ def sequential_transforms(*transforms):
     return func
 
 
-def tokenizer(text):
+def tokenizer(text, VOCAB):
+    text = str(text)
     for s in '.,!;:?':
-        text = text.replace(s, ' '+s+' ')
-    return text.split()
+        text = text.replace(s, ' '+str(s)+' ')
+    return ''.join([c for c in text if c in VOCAB]).split()
 
 
 def tensor_transform(token_ids: List[int]):

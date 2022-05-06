@@ -1,11 +1,12 @@
 
-
+import yaml
 import pandas as pd
 import pickle
-import torch
-import torch.nn as nn
+import tqdm
 from timeit import default_timer as timer
 
+import torch
+import torch.nn as nn
 
 from torchtext.data.utils import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
@@ -13,7 +14,7 @@ from torch.utils.data import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 from typing import Iterable, List
 
-
+# own libs
 import transformer as tmer
 import decoder as dcder
 
@@ -24,29 +25,37 @@ import decoder as dcder
 drive.mount('/content/drive')
 """
 
+with open('../config/params.yml', 'r') as f:
+    params = yaml.safe_load(f)
+
+SRC_CHARS = params['transliteration']['SOURCECHARS']
+TGT_CHARS = params['transliteration']['TARGETCHARS']
+MAX_STR_LEN = params['transliteration']['max_str_len']
+
 
 ### Load and preprocess data
 
-def check_farsi(txt):
-    for c in list('ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی'):
-        if c in txt:
-            return False
-    return True
+def clean_chars(txt, CHARS):
+    txt = str(txt)
+    return ''.join([c for c in txt if c in CHARS]).strip()
+
 
 def check_length(txt):
-    return True if len(txt) < 100 else False
+    return True if 0 < len(txt) < MAX_STR_LEN else False
 
 
-PATH_DATA = '../resources/data_farsi_translit.csv'
-df = pd.read_csv(PATH_DATA)
+TRAIN_DATA = '../learn-graph/data/test_train.txt'
+df = pd.read_csv(TRAIN_DATA,
+                 names=['source', 'transliterated'])
 
-df['transliterated'] = [d[:-1] for d in df['trans']]
-df['farsi'] = [d[:-1] for d in df['farsi']]
-df['no_farsi'] = [check_farsi(d) and check_length(d) for d in df['transliterated']]
-df = df[df['no_farsi'] == True]
+# clean up / normalise data
+df['source'] = [clean_chars(d, SRC_CHARS) for d in df['source']]
+df['transliterated'] = [clean_chars(d, TGT_CHARS) for d in df['transliterated']]
+df['valid'] = [check_length(d[0]) and check_length(d[1]) for d in zip(df['source'], df['transliterated'])]
+df = df[df['valid'] == True]
+del df['valid']
 N = df.shape[0]
-df = df[:int(N/2)]
-
+print('data st length: ', N)
 
 
 ### Build model
@@ -54,23 +63,22 @@ df = df[:int(N/2)]
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-SRC_LANGUAGE = 'farsi'
+SRC_LANGUAGE = 'source'
 TGT_LANGUAGE = 'transliterated'
 
 # Define special symbols and indices
-UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
+# UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
 
 # Make sure the tokens are in order of their indices to properly insert them in vocab
-special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
+special_symbols = params['transliteration']['SPECIALSYMBOLS']
+UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = list(range(len(special_symbols)))
 
 # Place-holders
 token_transform = {}
 vocab_transform = {}
 
-
-token_transform[SRC_LANGUAGE] = lambda txt: dcder.tokenizer(txt)
-token_transform[TGT_LANGUAGE] = lambda txt: dcder.tokenizer(txt)
-
+token_transform[SRC_LANGUAGE] = lambda txt: dcder.tokenizer(txt, SRC_CHARS)
+token_transform[TGT_LANGUAGE] = lambda txt: dcder.tokenizer(txt, TGT_CHARS)
 
 # helper function to yield list of tokens
 def yield_tokens(data_iter: Iterable, language: str) -> List[str]:
@@ -99,17 +107,19 @@ for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
 
 # code to store load vocab and transform data
 
-"""
+# """
 import pickle
 
-with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
+# on google colab
+#with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
+with open('data/vocab_transform.pickle', 'wb') as handle:
     pickle.dump(vocab_transform, handle, protocol=pickle.HIGHEST_PROTOCOL)
+# """
 
-""";
-
+"""
 with open('../resources/vocab_transform.pickle', 'rb') as handle:
     vocab_transform = pickle.load(handle)
-
+"""
     
 # Build Model
 
@@ -117,12 +127,12 @@ torch.manual_seed(0)
 
 SRC_VOCAB_SIZE = len(vocab_transform[SRC_LANGUAGE])
 TGT_VOCAB_SIZE = len(vocab_transform[TGT_LANGUAGE])
-EMB_SIZE = 512
-NHEAD = 8
-FFN_HID_DIM = 512
-BATCH_SIZE = 128
-NUM_ENCODER_LAYERS = 3
-NUM_DECODER_LAYERS = 3
+EMB_SIZE = params['nnets']['EMB_SIZE'] # 512
+NHEAD = params['nnets']['NHEAD'] # 8
+FFN_HID_DIM = params['nnets']['FFN_HID_DIM'] # 512
+BATCH_SIZE = params['nnets']['BATCH_SIZE'] # 128
+NUM_ENCODER_LAYERS = params['nnets']['NUM_ENCODER_LAYERS'] # 3
+NUM_DECODER_LAYERS = params['nnets']['NUM_DECODER_LAYERS'] # 3
 
 transformer = tmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE,
                                  NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM)
@@ -178,7 +188,7 @@ def train_epoch(model, optimizer):
 
         tgt_input = tgt[:-1, :]
 
-        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input)
+        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = tmer.create_mask(src, tgt_input)
 
         logits = model(src, tgt_input, src_mask, tgt_mask,src_padding_mask, tgt_padding_mask, src_padding_mask)
 
@@ -208,7 +218,7 @@ def evaluate(model):
 
         tgt_input = tgt[:-1, :]
 
-        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = create_mask(src, tgt_input)
+        src_mask, tgt_mask, src_padding_mask, tgt_padding_mask = tmer.create_mask(src, tgt_input)
 
         logits = model(src, tgt_input, src_mask, tgt_mask,src_padding_mask, tgt_padding_mask, src_padding_mask)
 
@@ -220,7 +230,6 @@ def evaluate(model):
 
 
 # Train Model
-
 NUM_EPOCHS = 20
 
 for epoch in range(1, NUM_EPOCHS+1):

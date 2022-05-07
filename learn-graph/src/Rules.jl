@@ -924,8 +924,14 @@ dicCODE["run affix-handler on affix vector"] =
         (interfaceName = "affix-handler"; # jair
          if length(d["l_affix"]) == 1
              d["l_res"] = (w = d["l_affix"][1];
-                           w != "" ?
-                            [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]);
+                           dd = copy(dataN);
+                           dd["word"] = w;
+                           dd["pos"] = d["pos"];
+                           interfaceName = "terminator";
+                           node = e[interfaceName];
+                           runAgent(node, e, f, dd));
+                           #w != "" ?
+                        #    [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]);
          else
              d["l_res"] = [];
              k = haskey(d, "suffix") ? "suffix" : "prefix";
@@ -1019,6 +1025,17 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
 dicCODE["move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector. if the input is not empty and no substring of the input can be found in affixes, move contents of affix vector back to the input then run terminator on it."] =
     Functor((d,e=nothing,f=nothing) ->
         (d["l_affix"] = py"""recu_affixes_subs"""(d["affix"], d["pos"]); d),
+        #===
+         if length(d["l_affix"]) >  1
+             d
+         else
+             dd = copy(dataN);
+             dd["word"] = d["affix"];
+             dd["pos"] = d["pos"];
+             interfaceName = "terminator";
+             node = e[interfaceName];
+             runAgent(node, e, f, dd)
+         end)===#
             Dict(:in => ["affix"], :out => ["l_affix"]))
 
 dicCODE["update the word's pos according to the database!"] =

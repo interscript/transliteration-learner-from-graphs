@@ -64,7 +64,7 @@ graph = dicBRAINS[entryBrain]
 
 
 data = Dict{String, Any}(
-            "txt" => parsedArgs["text"],
+            "text" => parsedArgs["text"],
             "state" => nothing, # used for messages back to system
             "brain" => entryBrain)
             # "pos" => parsedArgs["pos-tagging"]) # current brain or graph

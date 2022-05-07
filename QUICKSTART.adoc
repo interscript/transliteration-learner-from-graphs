@@ -170,7 +170,7 @@ can be separated and tweaked.
 [source,sh]
 ----
 cd learn-graph
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/DirDemo.dat
+julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliteration --path-model resources/DirDemo.dat
 ----
 
 
@@ -320,5 +320,30 @@ Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,       git   
 save model: data/model_basic_epoch_20.pt
 ----
 ===== Export Neural Networks to Onnx
-
+As next step, on can export the transformer to ONNX format.
+This occurs after its decomposition into submodels.
+[source,bash]
+----
+> python script_transformers_decomposed_to_onnx.py
+test:
+source:  a
+target:   b
+Export token src embbedding
+Export token tgt embbedding
+Export Positional Encoding
+Export Generator
+Export Encoder
+Export Decoder
+Write Vocab Transform
+----
 === Run ruby Code
+Finally, one can run the *ruby code*.
+In principle, necessary variable are specified in *config/params.yml*.
+[source,bash]
+----
+# transliterate string
+> ruby script_transliteration.rb --text "a b c d"
+b c d e
+# transliterate files
+> ruby script_transliteration.rb --text_filename test.txt
+----

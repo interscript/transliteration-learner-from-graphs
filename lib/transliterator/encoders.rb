@@ -4,15 +4,17 @@ require_relative "vocab"
 
 module Transliterator
 
-  class FarsiEncoder
+  class Encoder
 
     def initialize(config)
 
-      @max_len = config["max_len"]
-      @vocab_transform = YAML.load(File.read(config["vocab_transform"]))
+      @max_len = config["transliteration"]["max_str_len"]
 
-      src_lang = "farsi"
-      tgt_lang = "transliterated"
+      vocab_path = config["transliteration"]["VOCAB_TRAFO"]
+      @vocab_transform = YAML.load(File.read(vocab_path))
+
+      src_lang = config["transliteration"]["SRC_LAN"]
+      tgt_lang = config["transliteration"]["TGT_LAN"]
 
       @src_s_to_id = @vocab_transform[src_lang].map.with_index { |s, i| [s, i] }.to_h
       @src_id_to_s = @vocab_transform[src_lang].map.with_index { |s, i| [i, s] }.to_h
@@ -27,13 +29,6 @@ module Transliterator
 
       # clean and collapse whitespaces
       txt = txt.gsub(/[[:space:]]+/, " ").strip
-
-      txt.gsub("ﯼ",
-                  "ﻱ")
-                  
-      txt.gsub("ک",
-                  "ك")
-
       txt.split()
 
     end

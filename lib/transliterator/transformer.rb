@@ -10,25 +10,26 @@ module Transliterator
 
     def initialize(config)
 
-      onnx_models_path = config["onnx_path"]
+
+      @onnx_models_path = config["transliteration"]["ONNX_RUBY_DIR"]
 
       # load inference model from model_path
-      token_src_embbedding_path = onnx_models_path+"/token_src_embbedding.onnx"
+      token_src_embbedding_path = @onnx_models_path+"token_src_embbedding.onnx"
       @token_src_embedding = OnnxRuntime::Model.new(token_src_embbedding_path)
 
-      token_tgt_embbedding_path = onnx_models_path+"/token_tgt_embbedding.onnx"
+      token_tgt_embbedding_path = @onnx_models_path+"token_tgt_embbedding.onnx"
       @token_tgt_embedding = OnnxRuntime::Model.new(token_tgt_embbedding_path)
 
-      positional_embbedding_path = onnx_models_path+"/positional_embbedding.onnx"
+      positional_embbedding_path = @onnx_models_path+"positional_embbedding.onnx"
       @positional_embedding = OnnxRuntime::Model.new(positional_embbedding_path)
 
-      transformer_generator_path = onnx_models_path+"/transformer_generator.onnx"
+      transformer_generator_path = @onnx_models_path+"transformer_generator.onnx"
       @transformer_generator = OnnxRuntime::Model.new(transformer_generator_path)
 
-      transformer_encoder_path = onnx_models_path+"/transformer_encoder.onnx"
+      transformer_encoder_path = @onnx_models_path+"transformer_encoder.onnx"
       @transformer_encoder = OnnxRuntime::Model.new(transformer_encoder_path)
 
-      transformer_decoder_path = onnx_models_path+"/transformer_decoder.onnx"
+      transformer_decoder_path = @onnx_models_path+"transformer_decoder.onnx"
       @transformer_decoder = OnnxRuntime::Model.new(transformer_decoder_path)
 
     end
@@ -83,7 +84,6 @@ module Transliterator
 
           sz = ys.length
           tgt_mask = create_mask(sz)
-
           out = decode(ys, memory, tgt_mask)
           d_outs = {outs: [out.transpose[0][-1]]}
 

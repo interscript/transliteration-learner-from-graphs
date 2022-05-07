@@ -8,9 +8,9 @@ module Transliterator
 
     def initialize(config)
 
-        @SourceCHARS = config["SourceCHARS"]
-        @TargetCHARS = config["TargetCHARS"]
-        @SpecialSymbols = config["SpecialSymbols"]
+        @SourceCHARS = config["transliteration"]["SOURCECHARS"]
+        @TargetCHARS = config["transliteration"]["TARGETCHARS"]
+        @SpecialSymbols = config["transliteration"]["SPECIALSYMBOLS"]
 
     end
 

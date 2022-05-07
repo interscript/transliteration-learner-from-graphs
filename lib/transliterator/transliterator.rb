@@ -11,7 +11,7 @@ module Transliterator
 
     def initialize(config)
 
-      @config = config["prod"]
+      @config = config #["prod"]
 
       @transformers = get_transformers()
       @encoders = get_encoders()
@@ -31,19 +31,20 @@ module Transliterator
     def transliterate_text(txt)
 
       # transliteration steps with error handling
-      begin
+      #begin
 
         src = @encoders.encode_src(txt)
+        p(src)
         tgt = @transformers.greedy_decode(src)
         str = @encoders.decode_tgt(tgt)
         str
 
-      rescue
+      #rescue
 
-        p("error processing string: " + txt)
-        txt
+      #  p("error processing string: " + txt)
+      #  txt
 
-      end
+      #end
 
     end
 
@@ -57,7 +58,7 @@ module Transliterator
 
     def get_encoders()
 
-      FarsiEncoder.new(@config)
+      Encoder.new(@config)
 
     end
 

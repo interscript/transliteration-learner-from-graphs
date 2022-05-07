@@ -1,4 +1,4 @@
-SRC_LAN
+
 import yaml
 import pandas as pd
 import pickle
@@ -66,9 +66,8 @@ df_test = pd.read_csv(TEST_DATA)
 ### Build model
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
-SRC_LAN = 'source'
-TGT_LAN = 'transliterated'
+SRC_LAN = params['transliteration']['SRC_LAN']
+TGT_LAN = params['transliteration']['TGT_LAN']
 
 
 # Make sure the tokens are in order of their indices to properly insert them in vocab
@@ -78,8 +77,6 @@ UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = list(range(len(special_symbols)))
 
 # Place-holders
 token_transform = {}
-vocab_transform = {}
-
 token_transform[SRC_LAN] = lambda txt: dcder.tokenizer(txt, SRC_CHARS)
 token_transform[TGT_LAN] = lambda txt: dcder.tokenizer(txt, TGT_CHARS)
 
@@ -90,7 +87,7 @@ def yield_tokens(data_iter: Iterable, language: str) -> List[str]:
     for data_sample in data_iter:
         yield token_transform[language](data_sample[language_index[language]])
 
-
+vocab_transform = {}
 for ln in [SRC_LAN, TGT_LAN]:
     # Training data Iterator
     train_iter = list(zip(df[SRC_LAN],

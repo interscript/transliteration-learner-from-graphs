@@ -241,9 +241,9 @@ for epoch in range(1, NUM_EPOCHS+1):
 
     df_test = pd.read_csv("../resources/test.csv")
 
-    df_test["trans0_9"] = [translate(transformer, d) for d in df_test["orig"]]
+    df_test["trans0_9"] = [dcder.translate(transformer, d) for d in df_test["orig"]]
     # df_test.to_csv('drive/MyDrive/test_data/df_test_'+str(epoch)+'.csv')
-    ids = evaluation(df_test["trans"], df_test["trans0_9"], df_test["orig"])
+    ids = dcder.evaluation(df_test["trans"], df_test["trans0_9"])
 
     print('save model:::::')
     torch.save(transformer.state_dict(),

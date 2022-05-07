@@ -90,7 +90,7 @@ def translate(model: torch.nn.Module,
 
 import re
 
-def evaluation(trans_orig, trans_model, orig):
+def evaluation(trans_orig, trans_model):
     l_bugs = []
     tp, fp = 0, 0
     for i, d in enumerate(zip(trans_orig, trans_model)):

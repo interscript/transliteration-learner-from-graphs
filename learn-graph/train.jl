@@ -42,20 +42,29 @@ entryFound = false
 
 # Parse csv data
 df = Nothing
-if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing)) 
-    
+S = 0
+if !isnothing(get(parsedArgs, "dir-path-lucidchart-csv", nothing))
+
     println("processing directory::", parsedArgs["dir-path-lucidchart-csv"])
     dirName = parsedArgs["dir-path-lucidchart-csv"]
     df = filter(s -> s[end-3:end] == ".csv", readdir(parsedArgs["dir-path-lucidchart-csv"])) |>
         (gNs -> map(gN -> (println("process file::", gN);
-                           DataFrame(CSV.File(dirName*gN))), gNs)) |>
+                           df = DataFrame(CSV.File(dirName*gN));
+                           global S;
+                           df[!,"Id"] = map(d -> d + S, df[!,"Id"]);
+                           df[!,"Line Destination"] = map(d -> ismissing(d) ? d : d + S,
+                                       df[!,"Line Destination"]);
+                           df[!,"Line Source"] = map(d -> ismissing(d) ? d : d + S,
+                                  df[!,"Line Source"]);
+                           S = S + size(df)[1];
+                           df), gNs)) |>
             (vgNs -> vcat(vgNs...))
-    
+
 else
-    
+
     println("process file::", parsedArgs["path-lucidchart-csv"])
     df = DataFrame(CSV.File(parsedArgs["path-lucidchart-csv"]))
-    
+
 end
 
 

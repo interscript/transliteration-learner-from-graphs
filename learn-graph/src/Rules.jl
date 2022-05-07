@@ -921,7 +921,7 @@ dicCODE["transliterate it using affix-handler"] =
 
 dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
-        (interfaceName = "affix-handler";
+        (interfaceName = "affix-handler"; # jair
          if length(d["l_affix"]) == 1
              d["l_res"] = (w = d["l_affix"][1];
                            w != "" ?

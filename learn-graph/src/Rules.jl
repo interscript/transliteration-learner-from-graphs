@@ -20,6 +20,35 @@ dataN = Dict{String, Any}(
 dicCODE = Dict{String, Functor}()
 
 
+function processPOS(pos)
+
+    l_supported_POS = vcat(py"""l_PoS""",
+                       collect(keys(py"""d_map_FLEXI""")),
+                       collect(keys(py"""d_map_HAZM""")))
+
+    if !(pos in l_supported_POS)
+
+        @error "pos unrecognised, needs to be within: ", l_supported_POS
+        exit()
+
+    else
+
+        if pos in collect(keys(py"""d_map_FLEXI"""))
+
+            pos = py"""d_map_FLEXI"""[pos]
+
+        elseif pos in collect(keys(py"""d_map_HAZM"""))
+
+            pos = py"""d_map_HAZM"""[pos]
+
+        end
+
+    end
+
+    pos
+
+end
+
 #####################
 # preprocessor      #
 #####################
@@ -36,22 +65,28 @@ dicCODE["tokenize the text!"] =
 
 dicCODE["recognize parts of speech in the text!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["text"] = tagger.tag(d["text"]); d),
-        Dict(:in => ["text"], :out => ["text"]))
+        (d["wrd+pos"] = tagger.tag(d["text"]); d),
+        Dict(:in => ["text"], :out => ["wrd+pos"]))
 
 dicCODE["run transliterator on each word!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (l_res = map(wp -> (wrd = wp[1];
-                            pos = wp[2];
+        (#===#
+         l_res = map(wp -> (wrd = wp[1];
+                            pos = wp[2] |> processPOS;
                             dd = copy(dataM);
                             dd["word"] = wrd;
                             dd["pos"] = pos;
+                            interfaceName = "transliterator";
+                            node = e[interfaceName];
                             dd["pos"] == "Punctuation" ?
-                                dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd) |>
+                                dd["word"] : runAgent(node, e, f, dd) |>
                                     (w -> replace(w, "-''"=>"", "-'"=>""))),
-                    d["text"]);
-         d["res"] = join(l_res, " "); d),
-            Dict(:in => ["text"], :out => ["res"]))
+                    d["wrd+pos"]);
+         d["res"] = join(l_res, " ");
+         #===#
+         #d["res"] = "abc";
+         d),
+            Dict(:in => ["wrd+pos"], :out => ["res"]))
 
 
 #####################

@@ -1,4 +1,4 @@
-
+SRC_LAN
 import yaml
 import pandas as pd
 import pickle
@@ -67,8 +67,8 @@ df_test = pd.read_csv(TEST_DATA)
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-SRC_LANGUAGE = 'source'
-TGT_LANGUAGE = 'transliterated'
+SRC_LAN = 'source'
+TGT_LAN = 'transliterated'
 
 
 # Make sure the tokens are in order of their indices to properly insert them in vocab
@@ -80,21 +80,21 @@ UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = list(range(len(special_symbols)))
 token_transform = {}
 vocab_transform = {}
 
-token_transform[SRC_LANGUAGE] = lambda txt: dcder.tokenizer(txt, SRC_CHARS)
-token_transform[TGT_LANGUAGE] = lambda txt: dcder.tokenizer(txt, TGT_CHARS)
+token_transform[SRC_LAN] = lambda txt: dcder.tokenizer(txt, SRC_CHARS)
+token_transform[TGT_LAN] = lambda txt: dcder.tokenizer(txt, TGT_CHARS)
 
 # helper function to yield list of tokens
 def yield_tokens(data_iter: Iterable, language: str) -> List[str]:
-    language_index = {SRC_LANGUAGE: 0, TGT_LANGUAGE: 1}
+    language_index = {SRC_LAN: 0, TGT_LAN: 1}
 
     for data_sample in data_iter:
         yield token_transform[language](data_sample[language_index[language]])
 
 
-for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
+for ln in [SRC_LAN, TGT_LAN]:
     # Training data Iterator
-    train_iter = list(zip(df[SRC_LANGUAGE],
-                          df[TGT_LANGUAGE]))
+    train_iter = list(zip(df[SRC_LAN],
+                          df[TGT_LAN]))
 
     # Create torchtext's Vocab object
     vocab_transform[ln] = build_vocab_from_iterator(yield_tokens(train_iter, ln),
@@ -104,7 +104,7 @@ for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
 
 # Set UNK_IDX as the default index. This index is returned when the token is not found.
 # If not set, it throws RuntimeError when the queried token is not found in the Vocabulary.
-for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
+for ln in [SRC_LAN, TGT_LAN]:
     vocab_transform[ln].set_default_index(UNK_IDX)
 
 
@@ -116,13 +116,13 @@ print('print vocab_transform to ', vocab_transform_path)
 with open(vocab_transform_path, 'wb') as handle:
     pickle.dump(vocab_transform, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    
+
 # Build Model
 
 torch.manual_seed(0)
 
-SRC_VOCAB_SIZE = len(vocab_transform[SRC_LANGUAGE])
-TGT_VOCAB_SIZE = len(vocab_transform[TGT_LANGUAGE])
+SRC_VOCAB_SIZE = len(vocab_transform[SRC_LAN])
+TGT_VOCAB_SIZE = len(vocab_transform[TGT_LAN])
 EMB_SIZE = params['nnets']['EMB_SIZE'] # 512
 NHEAD = params['nnets']['NHEAD'] # 8
 FFN_HID_DIM = params['nnets']['FFN_HID_DIM'] # 512
@@ -154,7 +154,7 @@ transformer.eval();
 
 # src and tgt language text transforms to convert raw strings into tensors indices
 text_transform = {}
-for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
+for ln in [SRC_LAN, TGT_LAN]:
     text_transform[ln] = dcder.sequential_transforms(token_transform[ln], #Tokenization
                                                vocab_transform[ln], #Numericalization
                                                dcder.tensor_transform) # Add BOS/EOS and create tensor
@@ -164,8 +164,8 @@ for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
 def collate_fn(batch):
     src_batch, tgt_batch = [], []
     for src_sample, tgt_sample in batch:
-        src_batch.append(text_transform[SRC_LANGUAGE](src_sample.rstrip("\n")))
-        tgt_batch.append(text_transform[TGT_LANGUAGE](tgt_sample.rstrip("\n")))
+        src_batch.append(text_transform[SRC_LAN](src_sample.rstrip("\n")))
+        tgt_batch.append(text_transform[TGT_LAN](tgt_sample.rstrip("\n")))
 
     src_batch = pad_sequence(src_batch, padding_value=PAD_IDX)
     tgt_batch = pad_sequence(tgt_batch, padding_value=PAD_IDX)
@@ -175,7 +175,7 @@ def collate_fn(batch):
 def train_epoch(model, optimizer):
     model.train()
     losses = 0
-    train_iter = list(zip(df[SRC_LANGUAGE], df[TGT_LANGUAGE]))[:N]
+    train_iter = list(zip(df[SRC_LAN], df[TGT_LAN]))[:N]
     train_dataloader = DataLoader(train_iter, batch_size=BATCH_SIZE, collate_fn=collate_fn)
 
     for src, tgt in tqdm.tqdm(train_dataloader):
@@ -204,7 +204,7 @@ def evaluate(model):
     model.eval()
     losses = 0
 
-    val_iter = list(zip(df[SRC_LANGUAGE], df[TGT_LANGUAGE]))[-100000:]
+    val_iter = list(zip(df[SRC_LAN], df[TGT_LAN]))[-100000:]
     val_dataloader = DataLoader(val_iter, batch_size=BATCH_SIZE,
                                 collate_fn=collate_fn)
 
@@ -236,7 +236,7 @@ for epoch in range(1, NUM_EPOCHS+1):
     print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
 
 
-    df_test["translit_model"] = [dcder.translate(transformer, text_transform, vocab_transform, SRC_LANGUAGE, TGT_LANGUAGE, d) for d in df_test["source"]]
+    df_test["translit_model"] = [dcder.translate(transformer, text_transform, vocab_transform, SRC_LAN, TGT_LAN, d) for d in df_test["source"]]
 
     ids = dcder.evaluation(df_test["translit"], df_test["translit_model"])
     print('errors:', df_test.loc[ids])

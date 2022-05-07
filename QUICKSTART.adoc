@@ -313,6 +313,11 @@ examples after ~15 epochs.
 > python script_train_transformer_on_transliteration.py
 100%|███████████████████████████████████████████| 34/34 [00:14<00:00,  2.36it/s]
 Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,       git      Epoch time = 14.431s
+...
+...
+...
+{'accuracy': 1.0}
+save model: data/model_basic_epoch_20.pt
 ----
 ===== Export Neural Networks to Onnx
 

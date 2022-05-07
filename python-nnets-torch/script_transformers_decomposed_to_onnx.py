@@ -1,46 +1,48 @@
 
 import pickle
+import yaml
 
 import torch
 from typing import Iterable, List
 from torch.nn.utils.rnn import pad_sequence
 
-
-import transformer as tfmer 
+# own libs
+import transformer as tfmer
 import decoder as dcder
 
+with open('../config/params.yml', 'r') as f:
+    params = yaml.safe_load(f)
 
-# Define special symbols and indices
-UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
+SRC_CHARS = params['transliteration']['SOURCECHARS']
+TGT_CHARS = params['transliteration']['TARGETCHARS']
+MAX_STR_LEN = params['transliteration']['max_str_len']
 
-# Make sure the tokens are in order of their indices to properly insert them in vocab
-special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
 
 # Languages tags
-SRC_LANGUAGE = 'farsi'
-TGT_LANGUAGE = 'transliterated'
+SRC_LAN = 'farsi'
+TGT_LAN = 'transliterated'
 
 # Load vocabulary data
-with open('../resources/vocab_transform.pickle', 'rb') as handle:
+with open(params['nnets']['VOCAB_TRAFO'], 'rb') as handle:
     vocab_transform = pickle.load(handle)
-    
+
 # NNets params
-SRC_VOCAB_SIZE = len(vocab_transform[SRC_LANGUAGE])
-TGT_VOCAB_SIZE = len(vocab_transform[TGT_LANGUAGE])
-EMB_SIZE = 512
-NHEAD = 8
-FFN_HID_DIM = 512
-BATCH_SIZE = 128
-NUM_ENCODER_LAYERS = 3
-NUM_DECODER_LAYERS = 3
+SRC_VOCAB_SIZE = len(vocab_transform[SRC_LAN])
+TGT_VOCAB_SIZE = len(vocab_transform[TGT_LAN])
+EMB_SIZE = params['nnets']['EMB_SIZE'] # 512
+NHEAD = params['nnets']['NHEAD'] # 8
+FFN_HID_DIM = params['nnets']['FFN_HID_DIM'] # 512
+BATCH_SIZE = params['nnets']['BATCH_SIZE'] # 128
+NUM_ENCODER_LAYERS = params['nnets']['NUM_ENCODER_LAYERS'] # 3
+NUM_DECODER_LAYERS = params['nnets']['NUM_DECODER_LAYERS'] # 3
 
 # init Transformer
 transformer = tfmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE,
-                                 NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM)
+                                       NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM)
 
 
 # Load model
-MODEL_PATH = "../resources/model_trained_transformer.pt" 
+MODEL_PATH = "../resources/model_trained_transformer.pt"
 transformer.load_state_dict(
     torch.load(MODEL_PATH, map_location=torch.device('cpu')))
 transformer.eval();
@@ -48,16 +50,16 @@ transformer.eval();
 
 # Transforms dict
 token_transform = {}
-token_transform[SRC_LANGUAGE] = lambda txt: dcder.tokenizer(txt) 
-token_transform[TGT_LANGUAGE] = lambda txt: dcder.tokenizer(txt) 
+token_transform[SRC_LAN] = lambda txt: dcder.tokenizer(txt)
+token_transform[TGT_LAN] = lambda txt: dcder.tokenizer(txt)
 
 text_transform = {}
-for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
+for ln in [SRC_LAN, TGT_LAN]:
     text_transform[ln] = dcder.sequential_transforms(token_transform[ln], #Tokenization
                                                vocab_transform[ln], #Numericalization
                                                dcder.tensor_transform) # Add BOS/EOS and create tensor
 
-    
+
 ### Decipher example
 
 src_sentence = 'باز آ باز آ هر آنچه هستی باز آ'
@@ -71,15 +73,15 @@ assert type(deciphered) == str
 ### Export token_embbedding
 
 batch_size = 16
-source_length = 8 
+source_length = 8
 target_length = 8
 
-input_vocab_size = len(vocab_transform[SRC_LANGUAGE])
+input_vocab_size = len(vocab_transform[SRC_LAN])
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))
 
 
 # Export the model
-torch.onnx.export(transformer.src_tok_emb, 
+torch.onnx.export(transformer.src_tok_emb,
                   (src),
                   "../resources/token_src_embbedding.onnx",
                   input_names=['src'],
@@ -89,11 +91,11 @@ torch.onnx.export(transformer.src_tok_emb,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=True,  # whether to execute constant folding for optimizatio
-                )  
+                )
 
 # Export the model
 tgt = src
-torch.onnx.export(transformer.tgt_tok_emb, 
+torch.onnx.export(transformer.tgt_tok_emb,
                   (tgt),
                   "../resources/token_tgt_embbedding.onnx",
                   input_names=['tgt'],
@@ -103,7 +105,7 @@ torch.onnx.export(transformer.tgt_tok_emb,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=True,  # whether to execute constant folding for optimizatio
-                )  
+                )
 
 
 
@@ -111,7 +113,7 @@ torch.onnx.export(transformer.tgt_tok_emb,
 
 tokens =  transformer.src_tok_emb(src)
 
-torch.onnx.export(transformer.positional_encoding, # transformer.src_tok_emb, 
+torch.onnx.export(transformer.positional_encoding, # transformer.src_tok_emb,
                   (tokens),
                   "../resources/token_embbedding.onnx",
                   input_names=['tokens'],
@@ -126,7 +128,7 @@ torch.onnx.export(transformer.positional_encoding, # transformer.src_tok_emb,
 
 ### Export Generator
 
-src = text_transform[SRC_LANGUAGE](src_sentence).view(-1, 1)
+src = text_transform[SRC_LAN](src_sentence).view(-1, 1)
 num_tokens = src.shape[0]
 src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
 memory = transformer.encode(src, src_mask)
@@ -155,7 +157,7 @@ torch.onnx.export(transformer.generator,
                   "../resources/transformer_generator.onnx",
                   input_names=['outs'],
                   output_names=['output'],  # the model's output names
-                  # dynamic_axes={'outs': 
+                  # dynamic_axes={'outs':
                   #               {1: 'vocab_size'}}, # {0: 'source_length', 1: 'batch_size'}},
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
@@ -171,7 +173,7 @@ src =  transformer.positional_encoding(transformer.src_tok_emb(src))
 src_mask = torch.randint(
     0, 2, (source_length, source_length)).bool()
 
-torch.onnx.export(transformer.transformer.encoder, 
+torch.onnx.export(transformer.transformer.encoder,
                   (src, src_mask),
                   "../resources/transformer_encoder.onnx",
                   input_names=['src', 'src_mask'],
@@ -191,7 +193,7 @@ start_symbol=BOS_IDX
 DEVICE = 'cpu'
 
 src_sentence = 'باز آ باز آ هر آنچه هستی باز آ'
-src = text_transform[SRC_LANGUAGE](src_sentence).view(-1, 1)
+src = text_transform[SRC_LAN](src_sentence).view(-1, 1)
 num_tokens = src.shape[0]
 src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
 
@@ -204,7 +206,7 @@ tgt = transformer.positional_encoding(
                           transformer.tgt_tok_emb(ys))
 # out = transformer.transformer.decoder(tgt, memory, tgt_mask)
 
-torch.onnx.export(transformer.transformer.decoder, 
+torch.onnx.export(transformer.transformer.decoder,
                   (tgt, memory, tgt_mask),
                   "../resources/transformer_decoder.onnx",
                   input_names=['tgt', 'memory', 'tgt_mask'],
@@ -224,7 +226,7 @@ import yaml
 v_farsi = vocab_transform['farsi']
 v_trans = vocab_transform['transliterated']
 
-d = {'farsi': v_farsi.vocab.get_itos(), 
+d = {'farsi': v_farsi.vocab.get_itos(),
      'transliterated': v_trans.vocab.get_itos()}
 
 with open('../resources/vocab_transform.yaml', 'w') as outfile:

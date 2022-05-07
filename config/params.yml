@@ -8,6 +8,8 @@ nnets:
   TRAIN_DATA: "../learn-graph/data/test_train.txt" # train data for nnets
   TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
   VOCAB_TRAFO: "data/vocab_transform.pickle" # vocab trafo
+  MODEL_PATH: "data/model_basic_epoch_20.pt"
+  ONNX_DIR: "resources/"
 
 transliteration:
   preprocessData: true

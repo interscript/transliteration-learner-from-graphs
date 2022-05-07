@@ -306,6 +306,8 @@ user	0m40.212s
 sys	0m0.572s
 ----
 ===== Train Neural Networks
+The example below should have converged against the test
+examples after ~15 epochs.
 [source,bash]
 ----
 > python script_train_transformer_on_transliteration.py

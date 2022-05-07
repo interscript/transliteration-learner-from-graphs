@@ -44,7 +44,8 @@ def check_length(txt):
     return True if 0 < len(txt) < MAX_STR_LEN else False
 
 
-TRAIN_DATA = '../learn-graph/data/test_train.txt'
+# train data
+TRAIN_DATA = params['nnets']['TRAIN_DATA']
 df = pd.read_csv(TRAIN_DATA,
                  names=['source', 'transliterated'])
 
@@ -55,21 +56,23 @@ df['valid'] = [check_length(d[0]) and check_length(d[1]) for d in zip(df['source
 df = df[df['valid'] == True]
 del df['valid']
 N = df.shape[0]
-print('data st length: ', N)
+print('train data length: ', N)
+
+# test data
+TEST_DATA = params['nnets']['TEST_DATA']
+df_test = pd.read_csv(TEST_DATA)
 
 
 ### Build model
-
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 SRC_LANGUAGE = 'source'
 TGT_LANGUAGE = 'transliterated'
 
-# Define special symbols and indices
-# UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
 
 # Make sure the tokens are in order of their indices to properly insert them in vocab
+# Define special symbols and indices
 special_symbols = params['transliteration']['SPECIALSYMBOLS']
 UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = list(range(len(special_symbols)))
 
@@ -106,20 +109,13 @@ for ln in [SRC_LANGUAGE, TGT_LANGUAGE]:
 
 
 # code to store load vocab and transform data
-
-# """
-import pickle
-
 # on google colab
-#with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
-with open('data/vocab_transform.pickle', 'wb') as handle:
+# with open('drive/MyDrive/Transformer/vocab_transform.pickle', 'wb') as handle:
+vocab_transform_path = params['nnets']['VOCAB_TRAFO']
+print('print vocab_transform to ', vocab_transform_path)
+with open(vocab_transform_path, 'wb') as handle:
     pickle.dump(vocab_transform, handle, protocol=pickle.HIGHEST_PROTOCOL)
-# """
 
-"""
-with open('../resources/vocab_transform.pickle', 'rb') as handle:
-    vocab_transform = pickle.load(handle)
-"""
     
 # Build Model
 
@@ -237,15 +233,15 @@ for epoch in range(1, NUM_EPOCHS+1):
     train_loss = train_epoch(transformer, optimizer)
     end_time = timer()
     val_loss = evaluate(transformer)
-    print((f"Epoch: {epoch},            Train loss: {train_loss:.3f},            Val loss: {val_loss:.3f},            "f"Epoch time = {(end_time - start_time):.3f}s"))
+    print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
 
-    df_test = pd.read_csv("../resources/test.csv")
 
-    df_test["trans0_9"] = [dcder.translate(transformer, d) for d in df_test["orig"]]
-    # df_test.to_csv('drive/MyDrive/test_data/df_test_'+str(epoch)+'.csv')
-    ids = dcder.evaluation(df_test["trans"], df_test["trans0_9"])
+    df_test["translit_model"] = [dcder.translate(transformer, text_transform, vocab_transform, SRC_LANGUAGE, TGT_LANGUAGE, d) for d in df_test["source"]]
 
-    print('save model:::::')
+    ids = dcder.evaluation(df_test["translit"], df_test["translit_model"])
+    print('errors:', df_test.loc[ids])
+    model_save = 'data/model_basic_epoch_'+str(epoch)+'.pt'
+    print('save model: '+ model_save )
     torch.save(transformer.state_dict(),
-               '../resources/model_basic_epoch_'+str(epoch)+'.pt')
-    print('model saved:::::')
+               'data/model_basic_epoch_'+str(epoch)+'.pt')
+    # print('model saved:::::')

@@ -5,6 +5,10 @@ nnets:
   BATCH_SIZE: 32
   NUM_ENCODER_LAYERS: 3
   NUM_DECODER_LAYERS: 3
+  TRAIN_DATA: "../learn-graph/data/test_train.txt" # train data for nnets
+  TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
+  VOCAB_TRAFO: "data/vocab_transform.pickle" # vocab trafo
+
 transliteration:
   preprocessData: true
   SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "

@@ -74,9 +74,11 @@ def greedy_decode(model, src, src_mask, max_len, start_symbol):
 
 
 # actual function to translate input sentence into target language
-def translate(model: torch.nn.Module, 
-              text_transform: dict, 
-              vocab_transform: dict, 
+def translate(model: torch.nn.Module,
+              text_transform: dict,
+              vocab_transform: dict,
+              SRC_LANGUAGE: str,
+              TGT_LANGUAGE: str,
               src_sentence: str):
     model.eval()
     src = text_transform[SRC_LANGUAGE](src_sentence).view(-1, 1)
@@ -94,6 +96,7 @@ def evaluation(trans_orig, trans_model):
     l_bugs = []
     tp, fp = 0, 0
     for i, d in enumerate(zip(trans_orig, trans_model)):
+
         l_orig = [s for s in re.split('[ ?.,!:;]', d[0].strip()) if s != '']
         l_model = [s for s  in re.split('[ ?.,!:;]', d[1].strip()) if s != '']
 
@@ -107,6 +110,10 @@ def evaluation(trans_orig, trans_model):
         if not correct:
             l_bugs.append({"id": i, "trans": d[0], "trans_model": d[1]})
 
-    print({"accuracy": tp / (tp + fp)})
-    return [d["id"] for d in l_bugs]
+    if tp + fp == 0:
+        score = 0.
+    else:
+        score = tp / (tp + fp)
 
+    print({"accuracy": score})
+    return [d["id"] for d in l_bugs]

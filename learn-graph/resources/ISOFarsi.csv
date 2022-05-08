@@ -1,0 +1,17 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1
+1,Document,,,,,,,,,,"ISO - Strict and Fully Reversible, Univocal, with Short Vowels Only Transliterated if Written in the Source Text"
+2,Page,,,,,,,,,,Page 1
+3,Decision,Flowchart Shapes,2,,,,,,,,Is the character found in the mapping?
+4,Process,Flowchart Shapes,2,,,,,,,,Change all instances of ي and ك and ۀ in the text to ی and ک and هٔ
+5,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Transliterator
+6,Process,Flowchart Shapes,2,,,,,,,,Return its transliteration!
+7,Decision,Flowchart Shapes,2,,,,,,,,Is it ّ?
+8,Process,Flowchart Shapes,2,,,,,,,,Repeat last character's transliteration and underline both.
+9,Process,Flowchart Shapes,2,,,,,,,,Return the character!
+10,Line,,2,,,4,3,None,Arrow,,
+11,Line,,2,,,5,4,None,Arrow,,
+12,Line,,2,,,3,6,None,Arrow,,Yes
+13,Line,,2,,,3,7,None,Arrow,,No
+14,Line,,2,,,7,8,None,Arrow,,Yes
+15,Line,,2,,,7,9,None,Arrow,,No
+16,Page,,,,,,,,,,Page 2

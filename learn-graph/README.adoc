@@ -41,22 +41,8 @@ Obviously, the nodes and entries have to be connected by arrows in a consistent
 manner.
 
 
-==== Hazm library
-
-Core of the strategy is the Hazm library, allowing to perform various operations
-on farsi texts like tokenization, lemmatization, PoS tagging, ...
-
 ==== Mappings
 
-Basis for the transliteration strategy are various mappings:
-https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/raw_mappings.zip[link to mappings]
-
-Following files are expected to be placed into /resources:
-
-  *  Affixes.xlsx
-  *  Entries.xlsx
-  *  PoS_mappings.csv
-  *  postagger.model
 
 
 ==== Models
@@ -110,18 +96,6 @@ julia packageInstall.jl
 
 ==== Commands
 
-* Build ressources:
-In python for legacy reasons.
-Code is expecting following ressources /resources:
-
-      Affixes.xlsx; Entries.xlsx; farsi_assets.pickle; postagger.model; PoS_mappings.csv
-
-and builds:
-      farsi_assets.pickle
-[source,bash]
-----
-python script_to_build_assets.py
-----
 
 * Train
 Code is built from a single csv file or from the .csv files put into
@@ -129,15 +103,15 @@ a directory, as resp. the second and third lines below.
 [source,bash]
 ----
 julia train.jl –-help
-julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliterator --path-model resources/Demo.dat
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/Demo.dat
+julia train.jl --path-lucidchart-csv resources/ISOFarsi.csv --brain-entry transliterator --path-model resources/ISOFarsi.dat
+# julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry translator --path-model resources/ISOFarsi.dat
 ----
 
 * Transliterate single string (with debugging mode)
 [source,bash]
 ----
 julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/Demo.dat --text "abcd efgh"
+julia runDBGCode.jl --path-model resources/ISOFarsi.dat --text "abcd efgh"
 ----
 
 * Run Tests (data data/tests.csv)
@@ -146,7 +120,7 @@ run diacritization on file:
 [source,bash]
 ----
 julia run.jl –-help
-julia run.jl --path-model resources/TestFarsiTrans.dat --file-name data/test_poems.txt
+julia run.jl --path-model resources/ISOFarsi.dat --file-name data/test_poems.txt
 ----
 
 run tests, with scores and error summary:

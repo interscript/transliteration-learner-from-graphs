@@ -199,4 +199,11 @@ def recu_affixes_subs(wrd, pos_pos=None, pos_neg=None):
 
     return [wrd]
 
+
+def check_all_in_affixes(l_ws):
+    for w in l_ws:
+        if df_Affixes[df_Affixes['Affix']==w].shape[0] == 0:
+            return False
+    return True
+
 """

@@ -692,7 +692,11 @@ dicCODE["does the transliteration of the segment before it end in /i/?"] =
          elseif haskey(d, "l_res")
              d["l_res"][end][end] == 'i' ? "yes" : "no"
          elseif haskey(d, "res_root")
-             d["res_root"][end] == 'i' ? "yes" : "no"
+             if d["res_root"] == ""
+                 "no"
+             else
+                 d["res_root"][end] == 'i' ? "yes" : "no"
+             end
          else
             "no"
          end; d),
@@ -843,20 +847,19 @@ dicCODE["mark it as prefix"] =
          d),
             Dict(:in => ["word", "lemma"], :out => ["prefix"]))
 
-
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->
       (nWord = length(collect(d["word"]));
        # trying to solve all the cases
-       lemmas = split(d["lemma"], "#") |>
-                (L -> map(l -> [l, replace(l, "آ" =>
-                               "ا")],
-                          L)) |>
-                    (L -> vcat(L...)) |>
-                        (L -> filter(l -> contains(d["word"], l), L));
        if haskey(d, "d_substring") #length(lemmas) == 0
            lemma = d["d_substring"]["root"]
        else
+           lemmas = split(d["lemma"], "#") |>
+                    (L -> map(l -> [l, replace(l, "آ" =>
+                                   "ا")],
+                              L)) |>
+                        (L -> vcat(L...)) |>
+                            (L -> filter(l -> contains(d["word"], l), L))
            lemmas = split(d["lemma"], "#") |>
                     (L -> map(l -> [l, replace(l, "آ" =>
                                    "ا")],
@@ -881,7 +884,7 @@ dicCODE["mark it as suffix"] =
        d["affix"] = d["suffix"];
        d["data"] = py"""affix_search"""(d["affix"]);
        d["brain"] = "hacktobesurebrainsjump"; d),
-        Dict(:in => ["word", "lemma"], :out => ["suffix"]))
+        Dict(:in => ["word"], :out => ["suffix"]))
 
 
 dicCODE["add it to the beginning of the root's transliteration"] =
@@ -950,20 +953,16 @@ dicCODE["transliterate it using affix-handler"] =
             d["brain"] = brainName; d),
             Dict(:in => [], :out => ["res"]))
 
-
 dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
-        (interfaceName = "affix-handler"; # jair
-         if length(d["l_affix"]) == 1
-             d["l_res"] = (w = d["l_affix"][1];
-                           dd = copy(dataN);
-                           dd["word"] = w;
+        (if d["l_affix"] == []
+             d["l_res"] = (dd = copy(dataN);
+                           dd["word"] = d["affix"];
                            dd["pos"] = d["pos"];
                            interfaceName = "terminator";
                            node = e[interfaceName];
-                           runAgent(node, e, f, dd));
-                           #w != "" ?
-                        #    [py"""get_in_affixes"""(w, d["pos"])[1]] : [""]);
+                           [runAgent(node, e, f, dd)])
+
          else
              d["l_res"] = [];
              k = haskey(d, "suffix") ? "suffix" : "prefix";
@@ -974,7 +973,7 @@ dicCODE["run affix-handler on affix vector"] =
                  dd = copy(dataN);
                  dd["word"] = w;
                  dd["affix"] = w;
-                 dd["brain"] = interfaceName;
+                 dd["brain"] = "affix-handler";
                  dd[k] = w;
                  dd["pos"] = k == "suffix" ?
                     i == 0 ? d["pos"] : "nothing" :
@@ -1056,18 +1055,15 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
 
 dicCODE["move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector. if the input is not empty and no substring of the input can be found in affixes, move contents of affix vector back to the input then run terminator on it."] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["l_affix"] = py"""recu_affixes_subs"""(d["affix"], d["pos"]); d),
-        #===
-         if length(d["l_affix"]) >  1
-             d
-         else
-             dd = copy(dataN);
-             dd["word"] = d["affix"];
-             dd["pos"] = d["pos"];
-             interfaceName = "terminator";
-             node = e[interfaceName];
-             runAgent(node, e, f, dd)
-         end)===#
+        begin
+            if d["affix"] != ""
+                d["l_affix"] = py"""recu_affixes_subs"""(d["affix"], d["pos"])
+                if !py"""check_all_in_affixes"""(d["l_affix"])
+                    d["l_affix"] = []
+                end
+            end
+            d
+        end, # jair 1
             Dict(:in => ["affix"], :out => ["l_affix"]))
 
 dicCODE["update the word's pos according to the database!"] =

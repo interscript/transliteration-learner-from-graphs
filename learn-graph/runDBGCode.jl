@@ -70,9 +70,6 @@ data = Dict{String, Any}(
             # "pos" => parsedArgs["pos-tagging"]) # current brain or graph
             # additional states can be added
 
-data |>
-    println
-
 
 # run agent
 runAgent(graph, dicBRAINS, df_Nodes, data) |>

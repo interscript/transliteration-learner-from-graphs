@@ -49,6 +49,7 @@ function processPOS(pos)
 
 end
 
+
 #####################
 # preprocessor      #
 #####################
@@ -759,12 +760,14 @@ dicCODE["is it found in affixes?"] =
                 length(data) > 0 ? "yes" : "no"
          end;
          d),
-            Dict(:in => [], :out => ["state"]))
+        Dict(:in => [], :out => ["state"]))
 
 
 dicCODE["return the transliteration with t as its pos"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = py"""get_in_db"""(haskey(d, "affix") ? d["affix"] : d["word"], "T"); d),
+        (d["res"] = py"""get_in_db"""(haskey(d, "affix") ?
+                d["affix"] : d["word"], "T")[1];
+                d),
             Dict(:in => ["word"], :out => ["res"]))
 
 
@@ -811,12 +814,6 @@ dicCODE["mark it as prefix"] =
     Functor((d,e=nothing,f=nothing) ->
         (nWord = length(collect(d["word"]));
          # trying to solve all the cases
-         lemmas = split(d["lemma"], "#") |>
-                  (L -> map(l -> [l, replace(l, "آ" =>
-                                 "ا")],
-                            L)) |>
-                      (L -> vcat(L...)) |>
-                          (L -> filter(l -> contains(d["word"], l), L));
          if haskey(d, "d_substring") #length(lemmas) == 0
              lemma = d["d_substring"]["root"]
          else
@@ -845,7 +842,7 @@ dicCODE["mark it as prefix"] =
          d["res_root"] = haskey(d, "res_root") ? d["res_root"] : d["res"];
          delete!(d, "res");
          d),
-            Dict(:in => ["word", "lemma"], :out => ["prefix"]))
+            Dict(:in => ["word"], :out => ["prefix"]))
 
 dicCODE["mark it as suffix"] =
     Functor((d,e=nothing,f=nothing) ->

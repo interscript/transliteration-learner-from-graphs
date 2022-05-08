@@ -105,42 +105,39 @@ function processPOS(pos)
 end
 
 
-m = 1
+dataSTATE = Dict{String, Any}(
+            "text" => nothing, #parsedArgs["text"],
+            "state" => nothing, # used for messages back to system
+            "brain" => entryBrain)
+
 if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 
     df_Test = DataFrame(CSV.File("data/test.csv"))
 
     df_Test[!,"transModel"] =
-        map(d -> d |>
-            py"""normalise""" |>
-                hazm.word_tokenize |>
-                    tagger.tag |>
-                        (D -> map(d -> (dd = copy(dataM);
-                                        dd["pos"] = processPOS(d[2]);
-                                        dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
-                                        dd["state"] = nothing;
+        map(d ->
+            begin
 
-                            try
+                dd = copy(dataSTATE)
+                dd["text"] = d
+                
+                try
 
-                                # println(dd["word"], " : ", dd["pos"])
-                                dd["pos"] == "Punctuation" ?
-                                    dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd) |>
-                                            (w -> replace(w, "-''"=>"", "-'"=>""));
-                        
+                    wrd = runAgent(graph, dicBRAINS, df_Nodes, dd) |>
+                        (w -> replace(w, "-''"=>"", "-'"=>""))
+                    wrd
 
-                            catch
+                catch
 
-                                println("DBG:: ", dd["word"], " : ", dd["pos"]);
-                                dd["word"]
+                    println("DBG:: ", dd["text"]) #, " : ", dd["pos"]);
+                    join(dd["text"], " ")
 
-                            end), D)) |>
-                                (L -> join(L, " ")), 
+                 end
+            end,
             df_Test[!,"orig"])
 
-    ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"], df_Test[!, "orig"])
-
+    ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"])
     df_Bugs = df_Test[ids,:]
 
     println("error summary in: data/test_debug.csv")
@@ -150,38 +147,38 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 else # transliterate the file
 
     using ProgressBars
-    
+
     function preprocessData(data, window=6, space=4)
-        
+
         # load params
         if isfile("resources/transliterationParams.json")
             dParams = JSON.Parser.parsefile("resources/transliterationParams.json")
             window = dParams["window"]
             space = dParams["space"]
         end
-        
+
         d_data = []
         for d in ProgressBar(data)
-    
-            w = split(d)
-            for i=1:space:length(w) 
 
-                push!(d_data, 
+            w = split(d)
+            for i=1:space:length(w)
+
+                push!(d_data,
                       w[i:min(end,i+window)])
-        
+
                 if i+window > length(w)
                     break
                 end
-        
+
             end
         end
         map(d -> join(d, " "), d_data)
-        
+
     end
-    
-    ProgressBar(readlines(parsedArgs["file-name"], keep=true) |> 
+
+    ProgressBar(readlines(parsedArgs["file-name"], keep=true) |>
                             preprocessData |>
-                                (D -> filter(s -> strip(s) != "", D))) |> 
+                                (D -> filter(s -> strip(s) != "", D))) |>
       (D ->
         map(d ->
             (println("f::"*chomp(d));
@@ -196,7 +193,7 @@ else # transliterate the file
                                         dd["state"] = nothing;
 
                                         try
-                                            
+
                                             dd["pos"] == "Punctuation" || strip(dd["word"]) == "" ?
                                                 dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
 

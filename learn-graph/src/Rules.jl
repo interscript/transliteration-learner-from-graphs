@@ -70,8 +70,7 @@ dicCODE["recognize parts of speech in the text!"] =
 
 dicCODE["run transliterator on each word!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (#===#
-         l_res = map(wp -> (wrd = wp[1];
+        (l_res = map(wp -> (wrd = wp[1];
                             pos = wp[2] |> processPOS;
                             dd = copy(dataM);
                             dd["word"] = wrd;
@@ -83,8 +82,6 @@ dicCODE["run transliterator on each word!"] =
                                     (w -> replace(w, "-''"=>"", "-'"=>""))),
                     d["wrd+pos"]);
          d["res"] = join(l_res, " ");
-         #===#
-         #d["res"] = "abc";
          d),
             Dict(:in => ["wrd+pos"], :out => ["res"]))
 

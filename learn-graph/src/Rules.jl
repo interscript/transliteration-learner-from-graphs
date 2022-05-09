@@ -986,14 +986,14 @@ dicCODE["run affix-handler on affix vector"] =
                  dd = copy(dataN);
                  dd["word"] = w;
                  dd["affix"] = w;
-                 dd["brain"] = "affix-handler";
+                 dd["brain"] = bN; #d["brain"]; #"affix-handler";
                  dd[k] = w;
                  dd["pos"] = k == "suffix" ?
                     i == 0 ? d["pos"] : "nothing" :
                         i == length(d["l_affix"]) ?
                             d["pos"] : "nothing";
                  dd["segm"] = length(d["l_res"]) == 0 ? nothing : d["l_res"][end];
-                 node = e[interfaceName];
+                 node = e["affix-handler"];
                  push!(d["l_res"],
                        runAgent(node, e, f, dd));
             end;

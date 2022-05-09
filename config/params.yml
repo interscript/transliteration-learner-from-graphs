@@ -23,7 +23,7 @@ transliteration:
   ONNX_RUBY_DIR: "../python-nnets-torch/resources/"
   
   # For Diagram to code
-  preprocessData: true
+  preprocessData: false
   SOURCECHARS: "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی "
   TARGETCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz "
   window: 6

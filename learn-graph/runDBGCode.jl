@@ -44,7 +44,7 @@ graph = dicBRAINS[entryBrain]
 
 
 data = Dict{String, Any}(
-            "text" => parsedArgs["text"],
+            "txt" => parsedArgs["text"],
             "state" => nothing, # used for messages back to system
             "brain" => entryBrain)
 

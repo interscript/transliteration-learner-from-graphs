@@ -8,7 +8,7 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 7,Process,Flowchart Shapes,2,,,,,,,,Repeat last character's transliteration and underline both.
 8,Process,Flowchart Shapes,2,,,,,,,,Return the character!
 9,Curly Brace Note,Flowchart Shapes,2,,,,,,,,ISO-Strict
-10,Process,Flowchart Shapes,2,,,,,,,,Mapper
+10,Process,Flowchart Shapes,2,,,,,,,,Keep running Mapper till the input ends!
 11,Decision,Flowchart Shapes,2,,,,,,,,Is it ا?
 12,Process,Flowchart Shapes,2,,,,,,,,Return its transliteration!
 13,Decision,Flowchart Shapes,2,,,,,,,,Is the next character ل?

@@ -104,8 +104,8 @@ else # transliterate the file
 
     fileNameOUT = parsedArgs["file-name-out"]
 
-    fileNameOUT = isnothing(fileNameOUT) ?
-                        nothing : open(parsedArgs["file-name-out"], "w")
+    #fileNameOUT = isnothing(fileNameOUT) ?
+    #                    nothing : open(parsedArgs["file-name-out"], "w")
 
     using ProgressBars
 
@@ -162,17 +162,14 @@ else # transliterate the file
                         state["txt"] = txt
                         translit = runAgent(graph, dicBRAINS, dfNodes, state)
 
-                        # write line by line to STDOUT or file
-                        isnothing(fileNameOUT) ?
-                            println(string(txt, "|",translit)) :
-                            CSV.write(fileNameOUT,
-                                      DataFrame(Dict("source" => txt,
+                        CSV.write(fileNameOUT,
+                                     DataFrame(Dict("source" => txt,
                                                      "translit" => translit)),
-                                      append=true)
+                                     append=true)
 
                     catch
 
-                        println("DBG:: error in: ", state["txt"])
+                        println("DBG:: error with: ", txt)
 
                     end
 

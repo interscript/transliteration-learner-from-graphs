@@ -120,7 +120,6 @@ run diacritization on file:
 [source,bash]
 ----
 julia run.jl –-help
-julia run.jl --path-model resources/ISOFarsi.dat --file-name data/test_poems.txt
 # output to file
 julia run.jl --path-model resources/ISOFarsi.dat --file-name data/test_poems.txt --file-name-out out.txt
 ----

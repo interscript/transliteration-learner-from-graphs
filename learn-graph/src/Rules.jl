@@ -22,32 +22,85 @@ dicCODE = Dict{String, Functor}()
 
 
 # Node terminating computation
-
+#====
 dicCODE["keep running mapper till the input ends!"] =
     Functor((d,e=nothing,f=nothing) ->
         begin
-            dd = copy(dataSTATE)
-            dd["v_chars"] = collect(d["txt"])
-            dd["n_chars"] = length(dd["v_chars"])
-            dd["ix"] = 1;
-            dd["transliteration"] = "";
-            while dd["ix"] < dd["n_chars"]
+
+            v_chars = collect(d["txt"])
+            n_chars = length(v_chars) #d["v_chars"])
+            ix = 1
+
+            #dd["transliteration"] = ""
+            transliteration = []
+
+            while ix < n_chars+1
+
+                dd = copy(dataSTATE)
+                #d["txt"] = string('a', d["txt"])
+                dd["v_chars"] = v_chars #collect(d["txt"])
+                dd["n_chars"] = n_chars #length(dd["v_chars"])
+                dd["ix"] = ix
 
                 interfaceName = "mapper"
                 node = e[interfaceName]
-                c = dd["v_chars"][dd["ix"]]
-                t = runAgent(node, e, f, dd)
-                println("#############################")
-                    println("   ", c, " ===> ", t)
-                println("#############################")
-                dd["transliteration"] = dd["transliteration"] * t
+                #c = dd["v_chars"][dd["ix"]]
+                #println("char0:", c)
+                res = runAgent(node, e, f, dd)
+                println("222222222222222222222222 ", res)
+                println(res)
+                ix = dd["ix"]
+                push!(transliteration, res)
+                #println("@@@@@22", transliteration)
+                #println("#############################")
+                #println("   ", c, " ===> ", res)
+                #println("#############################")
+                #delete!(dd, "res")
+                #dd["transliteration"] = dd["transliteration"] * copy(res)
 
             end
-            d["res"] = dd["transliteration"]
+
+            d["res"] = join(transliteration) #dd["transliteration"]
             d
+
+        end,
+            Dict(:in => ["txt"], :out => ["transliteration"]))
+===#
+#===#
+dicCODE["keep running mapper till the input ends!"] =
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+
+            dd = copy(dataSTATE)
+            #d["txt"] = string('a', d["txt"])
+            dd["v_chars"] = collect(d["txt"])
+            dd["n_chars"] = length(dd["v_chars"])
+            dd["ix"] = 1
+            dd["transliteration"] = ""
+            transliteration = []
+
+            while dd["ix"] < dd["n_chars"]+1
+
+                interfaceName = "mapper"
+                node = e[interfaceName]
+                id = dd["ix"]
+                res = runAgent(node, e, f, dd)
+                push!(transliteration, res)
+                #println("#############################")
+                #println(dd["v_chars"][id:dd["ix"]-1])
+                @info "@@@@@@@", dd["v_chars"][id:dd["ix"]-1], " ===> ", res
+                #println("#############################")
+                delete!(dd, "res")
+                dd["transliteration"] = dd["transliteration"] * res
+
+            end
+
+            d["res"] = join(transliteration) #dd["transliteration"]
+            d
+
         end,
         Dict(:in => ["txt"], :out => ["transliteration"]))
-
+#===#
 dicCODE["return the character!"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = d["v_chars"][d["ix"]];
@@ -57,7 +110,9 @@ dicCODE["return the character!"] =
 dicCODE["return its transliteration!"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = dISOMapping[d["v_chars"][d["ix"]]];
-         d["ix"] = d["ix"] + 1; d),
+         d["ix"] = d["ix"] + 1;
+         println("DBG:: ", d);
+         d),
         Dict(:in => ["n_chars", "v_chars", "ix"], :out => ["res", "ix"]))
 
 dicCODE["is the character found in the mapping file?"] =

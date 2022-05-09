@@ -971,10 +971,7 @@ dicCODE["run affix-handler on affix vector"] =
                            dd["pos"] = d["pos"];
                            interfaceName = "terminator";
                            node = e[interfaceName];
-                           println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                           w = runAgent(node, e, f, dd);
-                           println(w);
-                           [w])
+                           [runAgent(node, e, f, dd)])
 
          else
              d["l_res"] = [];

@@ -2,6 +2,8 @@
 
 using Graphs
 using CSV
+using JSON
+using YAML
 using DataFrames
 using ArgParse
 using Serialization
@@ -43,6 +45,9 @@ function parse_commandline()
                     excepted if file-name = data/test.csv \n
                     in that case, tests are performed."
 
+        "--file-name-out"
+            help = "file-name for transliterations output."
+
     end
 
     parse_args(s)
@@ -72,8 +77,9 @@ dataM = Dict{String, Any}(
             "brain" => entryBrain) # current brain or graph
 
 
-VOCABFARSI = " !\"()+-./0123456789:<>ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz{}«»،؛؟ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی\u200c"
-VOCABFARSI =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
+dicParams = YAML.load_file("../config/params.yml")
+SOURCECHARS = dicParams["transliteration"]["SOURCECHARS"]
+
 
 function processPOS(pos)
 
@@ -121,7 +127,7 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
                 dd = copy(dataSTATE)
                 dd["text"] = d
-                
+
                 try
 
                     wrd = runAgent(graph, dicBRAINS, df_Nodes, dd) |>
@@ -146,68 +152,74 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
 else # transliterate the file
 
+    fileNameOUT = parsedArgs["file-name-out"]
+    fileNameOUT = isnothing(fileNameOUT) ?
+                        nothing : open(parsedArgs["file-name-out"], "w")
+    global fileNameOUT
+
     using ProgressBars
 
-    function preprocessData(data, window=6, space=4)
+    doPreprocessData = dicParams["transliteration"]["preprocessData"]
+    window = dicParams["transliteration"]["window"]
+    space = dicParams["transliteration"]["space"]
 
-        # load params
-        if isfile("resources/transliterationParams.json")
-            dParams = JSON.Parser.parsefile("resources/transliterationParams.json")
-            window = dParams["window"]
-            space = dParams["space"]
-        end
+    function preprocessData(data)
 
-        d_data = []
-        for d in ProgressBar(data)
+        if doPreprocessData
+            d_data = []
+            for d in ProgressBar(data)
 
-            w = split(d)
-            for i=1:space:length(w)
+                w = split(d)
+                for i=1:space:length(w)
 
-                push!(d_data,
-                      w[i:min(end,i+window)])
+                    push!(d_data,
+                        w[i:min(end,i+window)])
 
-                if i+window > length(w)
-                    break
+                    if i+window > length(w)
+                        break
+                    end
+
                 end
-
             end
+            map(d -> join(d, " "), d_data)
+        else
+            data
         end
-        map(d -> join(d, " "), d_data)
 
     end
 
     ProgressBar(readlines(parsedArgs["file-name"], keep=true) |>
                             preprocessData |>
                                 (D -> filter(s -> strip(s) != "", D))) |>
-      (D ->
-        map(d ->
-            (println("f::"*chomp(d));
-             chomp(d) |>
-                py"""normalise""" |>
-                    hazm.word_tokenize |>
-                        tagger.tag |>
-                            (Ws -> map(d -> (dd = copy(dataM);
-                                        dd["pos"] = processPOS(d[2]);
-                                        dd["word"] = d[2] != "Punctuation" ?
-                                                join(filter(c -> c in VOCABFARSI, d[1]), "") : d[1];
-                                        dd["state"] = nothing;
+        (D ->
+            map(t ->
+                begin
 
-                                        try
+                    state = copy(dataSTATE)
+                    txt = filter(s -> s in SOURCECHARS, chomp(t))
+                    state["text"] = txt
 
-                                            dd["pos"] == "Punctuation" || strip(dd["word"]) == "" ?
-                                                dd["word"] : runAgent(graph, dicBRAINS, df_Nodes, dd)
+                    try
 
-                                        catch
+                        # computation
+                        translit = runAgent(graph, dicBRAINS, df_Nodes, state) |>
+                            (w -> replace(w, "-''"=>"", "-'"=>""))
+                        global translit
+                        # write line by line to STDOUT or file
+                        isnothing(fileNameOUT) ?
+                            println(string(txt, "|",translit)) :
+                            CSV.write(fileNameOUT,
+                                    DataFrame(Dict("source" => txt,
+                                                   "translit" => translit)),
+                                              append=true)
 
-                                            println("DBG:: ", dd["word"], " : ", dd["pos"]);
-                                            dd["word"];
-                                            ### exit(); # ""
+                    catch
 
-                                        end),
-                                        # runAgent(graph, dicBRAINS, df_Nodes, dd)
-                                    Ws)) |>
-                            (L -> "t::"*join(L, " ")) |>
-                                println),
+                        println("DBG:: error in: ", txt)
+
+                    end
+
+            end,
             D))
 
 end

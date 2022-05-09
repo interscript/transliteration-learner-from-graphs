@@ -1,6 +1,5 @@
 nnets: {}
 prod:
-  SourceCHARS: "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
   SpecialSymbols:
     - "<unk>"
     - "<pad>"
@@ -10,5 +9,7 @@ prod:
   vocab_transform: "../resources/vocab_transform.yaml"
   TargetCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz"
 transliteration:
+  SOURCECHARS: "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
   window: 6
   space: 4
+  preprocessData: false

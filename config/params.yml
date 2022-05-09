@@ -24,8 +24,8 @@ transliteration:
   
   # For Diagram to code
   preprocessData: true
-  SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "
-  TARGETCHARS: "abcdefghijklmnopqrstuvwxyz "
+  SOURCECHARS: "ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی "
+  TARGETCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz "
   window: 6
   onnx_path: "../resources"
   space: 4

@@ -205,7 +205,8 @@ dicCODE["return âll for these three characters, and pass the 3rd next character
 
 dicCODE["repeat last character's transliteration and underline both."] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = string(d["transliteration"][end], '͟', d["transliteration"][end], '͟');
+        (d["res"] = string(d["transliteration"][end], '͟',
+                           d["transliteration"][end]);
          d["transliteration"] = join(collect(d["transliteration"])[1:end-1]);
          d["ix"] = d["ix"]+1; d),
         Dict(:in => ["transliteration", "v_chars", "ix"],

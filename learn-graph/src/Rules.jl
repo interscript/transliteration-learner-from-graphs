@@ -22,19 +22,47 @@ dicCODE = Dict{String, Functor}()
 
 dicCODE["return the character!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = d["txt"]; d),
-        Dict(:in => ["txt"], :out => ["res"]))
+        (d["res"] = d["char"]; d),
+        Dict(:in => ["chat"], :out => ["res"]))
 
 dicCODE["return its transliteration!"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = d["txt"]; d),
         Dict(:in => ["txt"], :out => ["res"]))
 
-dicCODE["is the character found in the mapping?"] =
-    Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = haskey(dISOMapping, d["char"]) ? "yes" : "no"; d),
-        Dict(:in => ["char"], :out => ["state"]))
 
+dicCODE["is the character found in the mapping file?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (!haskey(d, "ptr") ?
+            begin
+                d["v_chars"] = collect(d["txt"])
+                d["ix"] = 1;
+            end : "";
+         d["state"] = haskey(dISOMapping, d["v_chars"]d["ix"]) ? "yes" : "no";
+         d),
+        Dict(:in => ["txt"], :out => ["v_chars", "ix"]))
+
+dicCODE["is it ا?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["v_chars"]d["ix"] == "ا" ? "yes" : "no"; d),
+            Dict(:in => ["v_chars", "ix"], :out => ["state"]))
+
+dicCODE["is the next character ل?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["v_chars"]d["ix"] == "ل" ? "yes" : "no"; d),
+            Dict(:in => ["v_chars", "ix"], :out => ["state"]))
+
+dicCODE["is it ە?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = d["v_chars"]d["ix"] == "ە" ? "yes" : "no"; d),
+            Dict(:in => ["v_chars", "ix"], :out => ["state"]))
+
+dicCODE["is the next character ٔ?"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["state"] = d["v_chars"]d["ix"] == " ٔ" ? "yes" : "no"; d),
+        Dict(:in => ["v_chars", "ix"], :out => ["state"]))
+
+#===#
 dicCODE["change all instances of ي and ك and ۀ in the text to ی and ک and هٔ"] =
     #===
     d_corrects = {'ي' : 'ی',
@@ -47,11 +75,12 @@ dicCODE["change all instances of ي and ك and ۀ in the text to ی and ک and �
                                          'ک',
                                             'ي'=>
                                             'ی',
-                                                "ۀ" =>
+                                               "ۀ" =>
                                                 "هٔ")
             d
         end,
         Dict(:in => ["txt"], :out => ["txt"]))
+#===#
 
 dicCODE["is it ّ?"] =
     Functor((d,e=nothing,f=nothing) ->

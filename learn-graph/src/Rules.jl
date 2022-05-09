@@ -71,7 +71,8 @@ dicCODE["recognize parts of speech in the text!"] =
 
 dicCODE["run transliterator on each word!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (l_res = map(wp -> (wrd = wp[1];
+        (bN = d["brain"];
+         l_res = map(wp -> (wrd = wp[1];
                             pos = wp[2] |> processPOS;
                             dd = copy(dataM);
                             dd["word"] = wrd;
@@ -83,6 +84,7 @@ dicCODE["run transliterator on each word!"] =
                                     (w -> replace(w, "-''"=>"", "-'"=>""))),
                     d["wrd+pos"]);
          d["res"] = join(l_res, " ");
+         d["brain"] = bN;
          d),
             Dict(:in => ["wrd+pos"], :out => ["res"]))
 
@@ -174,7 +176,8 @@ dicCODE["does the segment after it start with ها?"] =
 
 dicCODE["transliterate the segment before u200c and mark the segment after u200c as suffix."] =
     Functor((d,e=nothing,f=nothing) ->
-        (lStr = collect(d["word"]);
+        (bN = d["brain"];
+         lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          # pre u200c
          dd = copy(dataN);
@@ -187,12 +190,14 @@ dicCODE["transliterate the segment before u200c and mark the segment after u200c
          # post u200c
          d["word"] = join(lStr[idx+1:end], "");
          d["affix"] = d["word"];
-         d["suffix"] = d["word"]; d),
+         d["suffix"] = d["word"];
+         d["brain"] = bN; d),
             Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["transliterate each side of it separately in proper order"] =
     Functor((d,e=nothing,f=nothing) ->
-        (lStr = collect(d["word"]);
+        (bN = d["brain"];
+         lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          dd = copy(dataN);
          # pre u200c
@@ -208,13 +213,15 @@ dicCODE["transliterate each side of it separately in proper order"] =
          interfaceName = "transliterator";
          node = e[interfaceName];
          w = runAgent(node, e, f, dd);
-         d["res"] = d["res"] * w; d),
+         d["res"] = d["res"] * w;
+         d["brain"] = bN; d),
             Dict(:in => ["word"], :out => ["state"]))
 
 # dicCODE["transliterate the segment after u200c as a verb and add mi to the beginning of it"] =
 dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatize it!\" and add mi to the beginning of it"] =
     Functor((d,e=nothing,f=nothing) ->
-        (lStr = collect(d["word"]);
+        (bN = d["brain"];
+         lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          prev_wrd = join(lStr[1:idx-1], "");
          wrd = join(lStr[idx+1:end], "");
@@ -224,12 +231,14 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          interfaceName = "transliterator"; # "verb-handler"
          node = e[interfaceName];
          res = wrd != "" ? "mi"*runAgent(node, e, f, dd) : "mi";
-         d["res"] = res; d),
+         d["res"] = res;
+         d["brain"] = bN;d),
             Dict(:in => ["word"], :out => ["res"]))
 
  dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatize it!\" and add nemi to the beginning of it"] =
     Functor((d,e=nothing,f=nothing) ->
-        (lStr = collect(d["word"]);
+        (bN = d["brain"];
+         lStr = collect(d["word"]);
          idx = indexin('\u200c', lStr)[1];
          wrd = join(lStr[idx+1:end], "");
          dd=copy(dataN);
@@ -237,7 +246,8 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd["pos"] = "Verb";
          interfaceName = "transliterator"; #"verb-handler"
          node = e[interfaceName];
-         d["res"] = "nemi"*runAgent(node, e, f, dd); d),
+         d["res"] = "nemi"*runAgent(node, e, f, dd);
+         d["brain"] = bN;d),
             Dict(:in => ["word"], :out => ["state"]))
 
 dicCODE["output its transliteration!"] =
@@ -272,7 +282,8 @@ dicCODE["does the root of the word exist in the database?"] =
 
 dicCODE["transliterate each side of underscore separately in proper order"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = map(w -> (dd = copy(dataN);
+        (bN = d["brain"];
+         d["res"] = map(w -> (dd = copy(dataN);
                               dd["word"] = w;
                               dd["pos"] = d["pos"];
                               interfaceName = "transliterator";
@@ -281,6 +292,7 @@ dicCODE["transliterate each side of underscore separately in proper order"] =
                     split(d["word"], "_")) |>
                         (D -> join(D, ""));
          d["root"] = d["word"]; # to end computation
+         d["brain"] = bN;
          d),
             Dict(:in => ["lemma"], :out => ["res"]))
 
@@ -925,7 +937,7 @@ dicCODE["return the concatenation of all the returned transliterations."] =
 
 dicCODE["transliterate it using affix-handler"] =
     Functor((d,e=nothing,f=nothing) ->
-        (brainName = d["brain"];
+        (bN = d["brain"];
          d["res"] = if haskey(d, "prefix")
                         (interfaceName = "affix-handler";
                          node = e[interfaceName];
@@ -947,18 +959,22 @@ dicCODE["transliterate it using affix-handler"] =
                          d["data"] = py"""affix_search"""(d["affix"]);
                          d["res_suffix"] = runAgent(node, e, f, d); d)
                     end;
-            d["brain"] = brainName; d),
+            d["brain"] = bN; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
-        (if d["l_affix"] == []
+        (bN = d["brain"];
+        if d["l_affix"] == []
              d["l_res"] = (dd = copy(dataN);
                            dd["word"] = d["affix"];
                            dd["pos"] = d["pos"];
                            interfaceName = "terminator";
                            node = e[interfaceName];
-                           [runAgent(node, e, f, dd)])
+                           println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                           w = runAgent(node, e, f, dd);
+                           println(w);
+                           [w])
 
          else
              d["l_res"] = [];
@@ -981,7 +997,8 @@ dicCODE["run affix-handler on affix vector"] =
                  push!(d["l_res"],
                        runAgent(node, e, f, dd));
             end;
-         end; d),
+         end;
+          d["brain"]=bN; d),
             Dict(:in => ["l_affix"], :out => ["l_res"]))
 
 
@@ -996,7 +1013,8 @@ dicCODE["find the longest substring of the input that exists in the database."] 
 
 dicCODE["transliterate each side of it separately in proper order and put its transliteration with the highest frequency between them."] =
     Functor((d,e=nothing,f=nothing) ->
-        (d_substrings = d["d_substring"];
+        (bN = d["brain"];
+         d_substrings = d["d_substring"];
          if typeof(d_substrings) == String
              d["res"] = d_substrings
              @goto OUT
@@ -1046,6 +1064,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
 
          d["res"] = string(prefix, root[1], suffix);
          @label OUT;
+         d["brain"] = bN;
          d),
             Dict(:in => ["d_substring"], :out => ["res"]))
 
@@ -1102,7 +1121,8 @@ dicCODE["is the longest substring, رو recognized as a verb?"] =
 
 dicCODE["transliterate each side of the underscore separately in proper order and add a space between them"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = map(w -> (dd = copy(dataN);
+        (bN = d["brain"];
+        d["res"] = map(w -> (dd = copy(dataN);
                               dd["word"] = w;
                               dd["pos"] = d["pos"];
                               interfaceName = "transliterator";
@@ -1111,5 +1131,6 @@ dicCODE["transliterate each side of the underscore separately in proper order an
                     split(d["word"], "_")) |>
                         (D -> join(D, " "));
          d["root"] = d["word"]; # to end computation
+         d["brain"] = bN;
          d),
             Dict(:in => ["lemma"], :out => ["res"]))

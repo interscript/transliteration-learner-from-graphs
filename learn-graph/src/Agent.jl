@@ -54,7 +54,7 @@ function runAgent(node::Node,
 
             end
 
-            if isnothing(node.children)
+            if isnothing(node.children) # || haskey(data, "res")
 
                 @goto __OUT
 

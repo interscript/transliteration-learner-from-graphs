@@ -205,9 +205,9 @@ dicCODE["return âll for these three characters, and pass the 3rd next character
 
 dicCODE["repeat last character's transliteration and underline both."] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = string(d["tranliteration"][end], '͟', d["tranliteration"][end], '͟');
+        (d["res"] = string(d["transliteration"][end], '͟', d["transliteration"][end], '͟');
          d["ix"] = d["ix"]+1; d),
-        Dict(:in => ["tranliteration", "v_chars", "ix"], :out => ["res", "ix"]))
+        Dict(:in => ["transliteration", "v_chars", "ix"], :out => ["res", "ix"]))
 
 dicCODE["return h for this character, and pass the next character to mapper"] =
 Functor((d,e=nothing,f=nothing) ->

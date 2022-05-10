@@ -61,10 +61,10 @@ Diagram designs on lucidchart can be exported as csv.
 [source,sh]
 ----
 # going to learn-graph repo.
-cd learn-graph
+> cd learn-graph
 # install deps
-julia packageInstall.jl
-julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
+> julia packageInstall.jl
+> julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
 ----
 
 The code should output a list of warning messages:
@@ -169,8 +169,12 @@ This approach allows for more  a more atomic approach, sub components
 can be separated and tweaked.
 [source,sh]
 ----
-cd learn-graph
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliteration --path-model resources/DirDemo.dat
+> cd learn-graph
+> ls resources/modelDir/*csv
+'resources/modelDir/Demo Mappings.csv'
+'resources/modelDir/Demo Transliteration.csv'
+'resources/modelDir/Demo Preprocessor.csv'
+> julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliteration --path-model resources/DirDemo.dat
 ----
 
 
@@ -276,9 +280,9 @@ This allows to track the states and debug the codes.
 [source,bash]
 ----
 # run transliteration
-julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
 # run transliteration into file
-julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
 ----
 
 ====== Run Tests
@@ -310,6 +314,10 @@ The example below should have converged against the test
 examples after ~15 epochs.
 [source,bash]
 ----
+> cd python-nnets-torch
+# install dependencies
+> pip install -r requirements.txt
+# train nnets
 > python script_train_transformer_on_transliteration.py
 100%|███████████████████████████████████████████| 34/34 [00:14<00:00,  2.36it/s]
 Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,       git      Epoch time = 14.431s
@@ -324,6 +332,7 @@ As next step, on can export the transformer to ONNX format.
 This occurs after its decomposition into submodels.
 [source,bash]
 ----
+# export to onnx
 > python script_transformers_decomposed_to_onnx.py
 test:
 source:  a
@@ -342,14 +351,14 @@ In principle, necessary variable are specified in *config/params.yml*.
 [source,bash]
 ----
 # transliterate string
->ruby script_transliteration.rb --text "ab"
+> ruby script_transliteration.rb --text "ab"
 bc
->ruby script_transliteration.rb --text "z"
+> ruby script_transliteration.rb --text "z"
 a
 # transliterate file
 echo ab > test.txt
 echo z >> test.txt
-ruby script_transliteration.rb --text_filename test.txt
+> ruby script_transliteration.rb --text_filename test.txt
 bc
 a
 ----

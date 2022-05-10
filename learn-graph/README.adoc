@@ -1,4 +1,4 @@
-== Farsi Learn
+== Strict ISO Farsi Example
 
 ==== Intro
 
@@ -16,14 +16,8 @@ both tasks and roles are well defined and confined.
 
 ==== Learning Strategy
 
-Original transliteration strategy https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/rules/rules.md[rules],
-in a typical format...
-
-In this project, we used lucidchart to generate a
-https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.png[diagram representation] of the above rules.
-
-Such lucidchart diagram can be learnt and encoded into code from its
-https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.csv[csv export].
+We refer to QUICKSTART and the article in docs in the main branch for explanations.
+ 
 
 ==== Diagram format
 
@@ -43,37 +37,8 @@ manner.
 
 ==== Mappings
 
+Here, *learn-graph/resources/Strict+ShortVowelsOnlyIf.txt*
 
-
-==== Models
-
-Our models can be downloaded
-https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/models.zip[here].
-
-Files to be placed for instance into /resources are:
-
-  *  Model.csv
-  *  Model.dat
-  *  Model.png
-
-Model.dat is the precompiled model.
-
-==== Run
-After python & julia dependencies and have been taken care of,
-as described in the steps below, one can start to transliterate in debug mode:
-[source,bash]
-----
-julia runDBGCode.jl --path-model resources/Model0.1.dat  --farsi-text مزایایی --pos-tagging noun
-----
-
-
-==== Python Dependencies
-
-Has to be ran alongside the python dependencies for legacy reasons
-[source,bash]
-----
-pip install -r requirements.txt
-----
 
 
 ==== Install Julia
@@ -103,15 +68,14 @@ a directory, as resp. the second and third lines below.
 [source,bash]
 ----
 julia train.jl –-help
-julia train.jl --path-lucidchart-csv resources/ISOFarsi.csv --brain-entry iso-strict --path-model resources/ISOFarsi.dat
-# julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry translator --path-model resources/ISOFarsi.dat
+julia train.jl --path-lucidchart-csv resources/ISO-Strict.csv --brain-entry iso-strict --path-model resources/ISO-Strict.dat
 ----
 
 * Transliterate single string (with debugging mode)
 [source,bash]
 ----
 julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/ISOFarsi.dat --text "abcd efgh"
+julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text "abcd efgh"
 ----
 
 * Run Tests (data data/tests.csv)
@@ -121,7 +85,7 @@ run diacritization on file:
 ----
 julia run.jl –-help
 # output to file
-julia run.jl --path-model resources/ISOFarsi.dat --file-name data/test_poems.txt --file-name-out out.txt
+julia run.jl --path-model resources/ISO-Strict.dat --file-name data/test_poems.txt --file-name-out out.txt
 ----
 
 run tests, with scores and error summary:

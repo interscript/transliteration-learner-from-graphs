@@ -342,8 +342,14 @@ In principle, necessary variable are specified in *config/params.yml*.
 [source,bash]
 ----
 # transliterate string
-> ruby script_transliteration.rb --text "a b c d"
-b c d e
-# transliterate files
-> ruby script_transliteration.rb --text_filename test.txt
+>ruby script_transliteration.rb --text "ab"
+bc
+>ruby script_transliteration.rb --text "z"
+a
+# transliterate file
+echo ab > test.txt
+echo z >> test.txt
+ruby script_transliteration.rb --text_filename test.txt
+bc
+a
 ----

@@ -30,11 +30,14 @@ By default, code searching for following files under ../resources:
   * transformer_generator.onnx
 
 ===== Running code
-
+Given the small train data, the code is replicating simple examples only.
 [source,sh]
 ----
 # transliterate strings
-ruby script_transliteration.rb --text "a b c d"
+ruby script_transliteration.rb --text "ab"
+ruby script_transliteration.rb --text "z"
 # transliterate file
+echo ab > test.txt
+echo z >> test.txt
 ruby script_transliteration.rb --text_filename test.txt
 ----

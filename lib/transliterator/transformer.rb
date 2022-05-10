@@ -75,6 +75,7 @@ module Transliterator
 
     def greedy_decode(src)
 
+      # p(src)
       num_tokens = src.length
       max_len = num_tokens + 5
       src_mask = Array.new(num_tokens) { Array.new(num_tokens, false) }
@@ -83,7 +84,7 @@ module Transliterator
       start_symbol=2 # BOS_IDX
       ys = [[start_symbol]]
 
-      tgt_tokens = (0..max_len-2).map { |i|
+      tgt_tokens = (0..max_len-2+1).map { |i|
 
           sz = ys.length
           tgt_mask = create_mask(sz)
@@ -92,8 +93,8 @@ module Transliterator
 
           probas = @transformer_generator.predict(d_outs)
           max = probas["output"][0].each_with_index.max[1]
-          ys = ys + [[max]]
 
+          ys = ys + [[max]]
           if max == 3 # EOS_IDX
             break
           end

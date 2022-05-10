@@ -85,8 +85,10 @@ assert type(deciphered) == str
 ### Export token_embbedding
 
 batch_size = 1 # arbitrary but since ruby code is running one transliteration at time
-source_length = 50 # arbitrary length, medium snippets supported
-target_length = 50 # arbitrary length, medium snippets supported
+SRC_LEN = params['nnets']['ONNX_SRC_LEN']
+print('ONNX_SRC_LEN: ', SRC_LEN)
+source_length = SRC_LEN # arbitrary length, medium snippets supported
+target_length = SRC_LEN # arbitrary length, medium snippets supported
 
 input_vocab_size = len(vocab_transform[SRC_LAN])
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))

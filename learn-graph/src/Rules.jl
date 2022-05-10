@@ -179,12 +179,23 @@ dicCODE["return h’ for these two characters, and pass the 2nd next character t
          d["ix"] = d["ix"]+2; d),
          Dict(:in => ["n_chars", "v_chars", "ix"], :out => ["res", "ix"]))
 
+
+dicCODE["change all instances of ي and ك and ۀ in the text to ی and ک and هٔ "] =
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+            d["txt"] = replace(d["txt"], 'ك'=>
+                                     'ک',
+                                        'ي'=>
+                                        'ی',
+                                           "ۀ" =>
+                                            "هٔ")
+            d
+        end,
+        Dict(:in => ["txt"], :out => ["txt"]))
+
+#===
 dicCODE["change all instances of ي and ك and ۀ and ۹ in the text to ی and ک and هٔ and ٩"] =
-    #===
-    d_corrects = {'ي' : 'ی',
-                  'ك' : 'ک',
-                 'ۀ' : 'هٔ'}
-    ===#
+
     Functor((d,e=nothing,f=nothing) ->
         begin
             d["txt"] = replace(d["txt"], 'ك'=>
@@ -198,3 +209,4 @@ dicCODE["change all instances of ي and ك and ۀ and ۹ in the text to ی and �
             d
         end,
         Dict(:in => ["txt"], :out => ["txt"]))
+===#

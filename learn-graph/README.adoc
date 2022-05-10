@@ -75,7 +75,9 @@ julia train.jl --path-lucidchart-csv resources/ISO-Strict.csv --brain-entry iso-
 [source,bash]
 ----
 julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text "abcd efgh"
+julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text "رفتٌ رفتٌ"
+# or
+julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text ﺮﻔﺗٌ
 ----
 
 * Run Tests (data data/tests.csv)
@@ -91,5 +93,4 @@ julia run.jl --path-model resources/ISO-Strict.dat --file-name data/test_poems.t
 run tests, with scores and error summary:
 [source,bash]
 ----
-julia run.jl --path-model resources/TestFarsiTrans.dat --file-name test
 ----

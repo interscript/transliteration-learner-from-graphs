@@ -44,7 +44,7 @@ graph = dicBRAINS[entryBrain]
 
 
 data = Dict{String, Any}(
-            "txt" => parsedArgs["text"],
+            "txt" => filter(c -> !(c in ['ٍ', 'ٌ']), parsedArgs["text"]), # fix because 2 chars missing in tables
             "state" => nothing, # used for messages back to system
             "brain" => entryBrain)
 

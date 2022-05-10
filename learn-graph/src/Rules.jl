@@ -82,6 +82,11 @@ dicCODE["is it ە?"] =
         (d["state"] = d["v_chars"][d["ix"]] == 'ە' ? "yes" : "no"; d),
             Dict(:in => ["n_chars", "v_chars", "ix"], :out => ["state"]))
 
+dicCODE["is it ه?"] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["state"] = d["v_chars"][d["ix"]] == 'ه' ? "yes" : "no"; d),
+        Dict(:in => ["n_chars", "v_chars", "ix"], :out => ["state"]))
+
 dicCODE["is it ّ?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] = d["v_chars"][d["ix"]] == 'ّ' ? "yes" : "no"; d),
@@ -122,7 +127,7 @@ dicCODE["is the 2nd next character ل?"] =
 dicCODE["is the 3rd next character ه?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] =
-            if d["n_chars"] > d["ix"]+3
+            if d["n_chars"] > d["ix"]+2
                 d["v_chars"][d["ix"]+3] == 'ه' ? "yes" : "no";
             else
                 "no"
@@ -132,7 +137,7 @@ dicCODE["is the 3rd next character ه?"] =
 dicCODE["return allāh for these four characters and pass the 4th next character to mapper"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = "allāh";
-         d["ix"] = d["ix"]+3; d),
+         d["ix"] = d["ix"]+4; d),
          Dict(:in => ["n_chars", "v_chars", "ix"], :out => ["res", "ix"]))
 
 dicCODE["return â for this character, and pass the next character to mapper"] =

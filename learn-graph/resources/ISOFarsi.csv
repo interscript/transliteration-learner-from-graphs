@@ -18,7 +18,7 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 17,Process,Flowchart Shapes,2,,,,,,,,"Return âll for these three characters, and pass the 3rd next character to Mapper"
 18,Process,Flowchart Shapes,2,,,,,,,,"Return âl for these two characters, and pass the 2nd next character to Mapper"
 19,Process,Flowchart Shapes,2,,,,,,,,"Return â for this character, and pass the next character to Mapper"
-20,Decision,Flowchart Shapes,2,,,,,,,,Is it ە?
+20,Decision,Flowchart Shapes,2,,,,,,,,Is it ه?
 21,Decision,Flowchart Shapes,2,,,,,,,,Is the next character ٔ?
 22,Process,Flowchart Shapes,2,,,,,,,,"Return h’ for these two characters, and pass the 2nd next character to Mapper"
 23,Process,Flowchart Shapes,2,,,,,,,,"Return h for this character, and pass the next character to Mapper"

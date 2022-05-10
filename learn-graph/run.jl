@@ -148,7 +148,6 @@ else # transliterate the file
                             filter(s -> strip(s) != "", D))) |>
                             (D ->
                                 doPreprocessData ? preprocessData(D) : D) |>
-
       (D ->
         map(t ->
                 begin

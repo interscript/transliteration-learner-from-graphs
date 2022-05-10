@@ -4,37 +4,7 @@ The ruby implementation is importing nnets components to run transformers
 in ruby after they were trained and export with the python code/scripts.
 
 
-===== Transformer into Ruby
+===== ISO Strict Branch 
 
- The code has just the useful part of the transformer implemented.
- A transformer is a complex architecture applying various neural networks
-and here, only the encoding + "greedy decoding" + decoding were implemented.
+Main and Farsi branches are containing more info and quickstart. 
 
-The full transformer model can be trained and mapped into ONNX format with the python script
-in ../python-nnets-torch.
-
-===== Assets
-
-load ONNX models can be
-found https://github.com/secryst/transliteration-learner-from-graph-models[here].
-
-The code uses ../config/model.yml for the path params.
-By default, code searching for following files under ../resources:
-
-  * vocab_transform.yaml
-  * positional_embbedding.onnx
-  * transformer_decoder.onnx
-  * token_src_embbedding.onnx
-  * transformer_encoder.onnx
-  * token_tgt_embbedding.onnx
-  * transformer_generator.onnx
-
-===== Running code
-
-[source,sh]
-----
-# transliterate strings
-ruby script_transliteration.rb --text "باز آ باز آ هر آنچه هستی باز آ"
-# transliterate file
-ruby script_transliteration.rb --text_filename test.txt
-----

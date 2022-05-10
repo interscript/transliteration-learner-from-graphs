@@ -9,7 +9,7 @@ prod:
   vocab_transform: "../resources/vocab_transform.yaml"
   TargetCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz"
 transliteration:
-  SOURCECHARS: " ابپتثجچحخدذرزژسشصضطظعغفقکگلمنوهی"
+  SOURCECHARS: " ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
   window: 6
   space: 4
   preprocessData: false

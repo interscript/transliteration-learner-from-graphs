@@ -79,6 +79,7 @@ dataM = Dict{String, Any}(
 
 dicParams = YAML.load_file("../config/params.yml")
 SOURCECHARS = dicParams["transliteration"]["SOURCECHARS"]
+#SOURCECHARS =" ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
 
 
 function processPOS(pos)
@@ -126,7 +127,7 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
             begin
 
                 dd = copy(dataSTATE)
-                dd["text"] = d
+                dd["text"] = join(filter(c -> c in SOURCECHARS, d), "") # d
 
                 try
 

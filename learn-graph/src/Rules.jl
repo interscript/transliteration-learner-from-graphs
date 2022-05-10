@@ -78,6 +78,7 @@ dicCODE["run transliterator on each word!"] =
                             dd["word"] = wrd;
                             dd["pos"] = pos;
                             interfaceName = "transliterator";
+                            dd["brain"] = interfaceName;
                             node = e[interfaceName];
                             dd["pos"] == "Punctuation" ?
                                 dd["word"] : runAgent(node, e, f, dd) |>
@@ -892,7 +893,8 @@ dicCODE["mark it as suffix"] =
        delete!(d, "res");
        d["affix"] = d["suffix"];
        d["data"] = py"""affix_search"""(d["affix"]);
-       d["brain"] = "hacktobesurebrainsjump"; d),
+       d["brain"] = "hacktobesurebrainsjump"
+       ; d),
         Dict(:in => ["word"], :out => ["suffix"]))
 
 
@@ -966,12 +968,14 @@ dicCODE["run affix-handler on affix vector"] =
     Functor((d,e=nothing,f=nothing) ->
         (bN = d["brain"];
         if d["l_affix"] == []
-             d["l_res"] = (dd = copy(dataN);
+             d["l_res"] = (dd = copy(dataM);
                            dd["word"] = d["affix"];
                            dd["pos"] = d["pos"];
+                           dd["brain"] = d["brain"];
                            interfaceName = "terminator";
                            node = e[interfaceName];
-                           [runAgent(node, e, f, dd)])
+                           w = runAgent(node, e, f, dd);
+                           [w])
 
          else
              d["l_res"] = [];
@@ -1081,9 +1085,9 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
 dicCODE["update the word's pos according to the database!"] =
     Functor((d,e=nothing,f=nothing) ->
-        (synCode = d["SynCatCode"];
+        (synCode = get(d, "SynCatCode", nothing);
          d["pos"] = get(py"""d_map_FLEXI""",synCode, d["pos"]); d),
-            Dict(:in => ["SynCatCode"], :out => ["pos"]))
+            Dict(:in => [], :out => ["pos"]))
 
 dicCODE["is there anything after it?"] =
     Functor((d,e=nothing,f=nothing) ->

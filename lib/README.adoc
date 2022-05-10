@@ -6,7 +6,7 @@ in ruby after they were trained and export with the python code/scripts.
 
 ===== Transformer into Ruby
 
- The code has just the useful part of the transformer implemented.
+The code has just the useful part of the transformer implemented.
  A transformer is a complex architecture applying various neural networks
 and here, only the encoding + "greedy decoding" + decoding were implemented.
 

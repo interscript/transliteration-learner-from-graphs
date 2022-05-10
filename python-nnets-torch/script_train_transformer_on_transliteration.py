@@ -233,7 +233,8 @@ for epoch in range(1, NUM_EPOCHS+1):
     print((f"Epoch: {epoch}, Train loss: {train_loss:.3f}, Val loss: {val_loss:.3f}, "f"Epoch time = {(end_time - start_time):.3f}s"))
 
 
-    df_test["translit_model"] = [dcder.translate(transformer, text_transform, vocab_transform, SRC_LAN, TGT_LAN, d) for d in df_test["source"]]
+    df_test["translit_model"] = [dcder.translate(transformer, text_transform, vocab_transform, SRC_LAN, TGT_LAN, d) 
+                                 for d in df_test["source"]]
 
     ids = dcder.evaluation(df_test["translit"], df_test["translit_model"])
     print('errors:', df_test.loc[ids])

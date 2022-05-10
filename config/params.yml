@@ -1,19 +1,19 @@
 nnets:
 
-  EMB_SIZE: 64 # 512
+  EMB_SIZE: 512 
   NHEAD: 8
-  FFN_HID_DIM: 64 # 128 #512
+  FFN_HID_DIM: 512 
   BATCH_SIZE: 32
   NUM_ENCODER_LAYERS: 3
   NUM_DECODER_LAYERS: 3
-  TRAIN_DATA: "../learn-graph/data/test_train.txt" # train data for nnets
+  TRAIN_DATA: "../learn-graph/data/test_train.csv" # train data for nnets
   TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
   VOCAB_TRAFO: "resources/vocab_transform.pickle" # vocab trafo
   MODEL_PATH: "data/model_basic_epoch_20.pt"
-  # ONNX 
+  # ONNX
   ONNX_SRC_LEN: 50
   ONNX_DIR: "resources/"
-  
+
 
 transliteration:
 
@@ -23,7 +23,7 @@ transliteration:
   # From NNets
   VOCAB_TRAFO: "../python-nnets-torch/resources/vocab_transform.yaml" # vocab trafo
   ONNX_RUBY_DIR: "../python-nnets-torch/resources/"
-  
+
   # For Diagram to code
   preprocessData: true
   SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "

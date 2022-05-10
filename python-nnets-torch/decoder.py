@@ -96,7 +96,7 @@ def evaluation(trans_orig, trans_model):
     l_bugs = []
     tp, fp = 0, 0
     for i, d in enumerate(zip(trans_orig, trans_model)):
-
+        
         l_orig = [s for s in re.split('[ ?.,!:;]', d[0].strip()) if s != '']
         l_model = [s for s  in re.split('[ ?.,!:;]', d[1].strip()) if s != '']
 

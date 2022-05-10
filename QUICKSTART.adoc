@@ -302,7 +302,7 @@ Afert transliteration has been generated, as in Run Transliteration,
 training data is created.
 [source,bash]
 ----
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out data/test_train.txt
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out data/test_train.csv
 100.0%┣████████████████████████████████████████┫ 830/830 [00:00<00:00, 2.2kit/s]
 
 real	0m40.863s

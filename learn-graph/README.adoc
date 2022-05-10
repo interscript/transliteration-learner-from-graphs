@@ -1,8 +1,8 @@
-== Farsi Learn
+== Graph Learn
 
 ==== Intro
 
-Farsi learn is a software allowing a non technical experts to sketch
+Graph learn is a software allowing a non technical experts to sketch
 rules and logic steps needed for the task of transliteration of Farsi.
 
 We have created this system to speed up and make flexible this general
@@ -41,6 +41,10 @@ Obviously, the nodes and entries have to be connected by arrows in a consistent
 manner.
 
 
+==== Farsi Example
+A complex example integrating external python libraries can be found under
+https://github.com/interscript/transliteration-learner-from-graphs/tree/farsi/learn-graph[Farsi Example]
+
 ==== Hazm library
 
 Core of the strategy is the Hazm library, allowing to perform various operations
@@ -48,47 +52,58 @@ on farsi texts like tokenization, lemmatization, PoS tagging, ...
 
 ==== Mappings
 
-Basis for the transliteration strategy are various mappings:
-https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/raw_mappings.zip[link to mappings]
-
-Following files are expected to be placed into /resources:
-
-  *  Affixes.xlsx
-  *  Entries.xlsx
-  *  PoS_mappings.csv
-  *  postagger.model
-
 
 ==== Models
 
-Our models can be downloaded
-https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/models.zip[here].
+Demo Models are found in two places and correspond to the same example,
+the one in resources/modelDir being decomposed:
 
-Files to be placed for instance into /resources are:
+[source,bash]
+----
+> ls resources/*csv
+resources/FullDemo.csv
+> ls resources/modelDir/*.csv
+'resources/modelDir/Demo Mappings.csv'
+'resources/modelDir/Demo Transliteration.csv'
+'resources/modelDir/Demo Preprocessor.csv'
+----
 
-  *  Model.csv
-  *  Model.dat
-  *  Model.png
+==== build
+Build single file or from a dir:
+[source,bash]
+----
+# install lib
+> julia packageInstall.jl
+# build from file
+>julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
+# build from dir
+> julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry transliteration --path-model resources/DirDemo.dat
+----
 
-Model.dat is the precompiled model.
-
-==== Run
+==== Run DBG mode
 After python & julia dependencies and have been taken care of,
 as described in the steps below, one can start to transliterate in debug mode:
 [source,bash]
 ----
-julia runDBGCode.jl --path-model resources/Model0.1.dat  --farsi-text مزایایی --pos-tagging noun
+> julia runDBGCode.jl --path-model resources/FullDemo.dat --text "abcd efgh"
 ----
 
+==== Run transliteration
 
-==== Python Dependencies
 
-Has to be ran alongside the python dependencies for legacy reasons
 [source,bash]
 ----
-pip install -r requirements.txt
+# run transliteration
+julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
+# run transliteration into file
+julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
+# runs tests, shows bugs and write them to csv:
+> julia run.jl --path-model resources/FullDemo.dat --file-name test
 ----
 
+==== Python and other Dependencies
+
+Discussed in QUICKSTART
 
 ==== Install Julia
 
@@ -106,51 +121,4 @@ import Pkg; Pkg.add(``PyCall''); Pkg.build(``PyCall'')
 [source,bash]
 ----
 julia packageInstall.jl
-----
-
-==== Commands
-
-* Build ressources:
-In python for legacy reasons.
-Code is expecting following ressources /resources:
-
-      Affixes.xlsx; Entries.xlsx; farsi_assets.pickle; postagger.model; PoS_mappings.csv
-
-and builds:
-      farsi_assets.pickle
-[source,bash]
-----
-python script_to_build_assets.py
-----
-
-* Train
-Code is built from a single csv file or from the .csv files put into
-a directory, as resp. the second and third lines below.
-[source,bash]
-----
-julia train.jl –-help
-julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliterator --path-model resources/Demo.dat
-julia train.jl --dir-path-lucidchart-csv resources/modelDir/ --brain-entry preprocessor --path-model resources/Demo.dat
-----
-
-* Transliterate single string (with debugging mode)
-[source,bash]
-----
-julia runDBGCode.jl –-help
-julia runDBGCode.jl --path-model resources/Demo.dat --text "abcd efgh"
-----
-
-* Run Tests (data data/tests.csv)
-
-run diacritization on file:
-[source,bash]
-----
-julia run.jl –-help
-julia run.jl --path-model resources/TestFarsiTrans.dat --file-name data/test_poems.txt
-----
-
-run tests, with scores and error summary:
-[source,bash]
-----
-julia run.jl --path-model resources/TestFarsiTrans.dat --file-name test
 ----

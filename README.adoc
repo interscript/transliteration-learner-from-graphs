@@ -33,8 +33,8 @@ We also needed to make production code independant of some python libraries
 and details and easy to build.
 Our codes are generated from data in ways explained below.
 
-==== QuickStart
-The Library/strategy can be tried on a simple, https://github.com/interscript/transliteration-learner-from-graphs/blob/main/QUICKSTART.adoc[toy example]:
+==== QUICKSTART
+The Library/strategy can be tried on a simple, https://github.com/interscript/transliteration-learner-from-graphs/blob/main/QUICKSTART.adoc[QUICKSTART]:
 
 ==== Approach
 

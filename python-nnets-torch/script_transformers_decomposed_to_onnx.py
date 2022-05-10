@@ -84,9 +84,9 @@ assert type(deciphered) == str
 
 ### Export token_embbedding
 
-batch_size = 16
-source_length = 8
-target_length = 8
+batch_size = 1 # arbitrary but since ruby code is running one transliteration at time
+source_length = 50 # arbitrary length, medium snippets supported
+target_length = 50 # arbitrary length, medium snippets supported
 
 input_vocab_size = len(vocab_transform[SRC_LAN])
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))
@@ -135,7 +135,7 @@ torch.onnx.export(transformer.positional_encoding, # transformer.src_tok_emb,
                   ONNX_DIR+"positional_embbedding.onnx",
                   input_names=['tokens'],
                   output_names=['output'],  # the model's output names
-                  dynamic_axes={'tokens': {0: 'source_length', 1: 'batch_size'}},
+                  dynamic_axes={'tokens': {0: 'source_length'}}, #, 1: 'batch_size'}},
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
@@ -198,7 +198,7 @@ torch.onnx.export(transformer.transformer.encoder,
                   input_names=['src', 'src_mask'],
                   output_names=['output'],  # the model's output names
                   dynamic_axes={'src': {0: 'source_length', 1: 'batch_size'},
-                                'src_mask': {0: 'target_length', 1: 'target_length'}},
+                                'src_mask': {0: 'source_length', 1: 'source_length'}},
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
@@ -212,8 +212,10 @@ print('Export Decoder')
 start_symbol=BOS_IDX
 DEVICE = 'cpu'
 
-src_sentence = 'a abcd b d e f g h i j k l'
-src = text_transform[SRC_LAN](src_sentence).view(-1, 1)
+#src_sentence = 'a abcd b d e f g h i j k l'
+#src = text_transform[SRC_LAN](src_sentence).view(-1, 1)
+src = torch.randint(0, input_vocab_size, (source_length, batch_size))
+
 num_tokens = src.shape[0]
 src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
 
@@ -224,14 +226,18 @@ tgt_mask = (dcder.generate_square_subsequent_mask(ys.size(0))
                 .type(torch.bool)).to(DEVICE)
 tgt = transformer.positional_encoding(
                           transformer.tgt_tok_emb(ys))
+
 # out = transformer.transformer.decoder(tgt, memory, tgt_mask)
+tokens = transformer.tgt_tok_emb(ys)
 
 torch.onnx.export(transformer.transformer.decoder,
                   (tgt, memory, tgt_mask),
                   ONNX_DIR+"transformer_decoder.onnx",
                   input_names=['tgt', 'memory', 'tgt_mask'],
                   output_names=['output'],  # the model's output names
-                  dynamic_axes={'memory': {0: 'seq_length'}},
+                  dynamic_axes={'tgt': {0: 'source_length'},
+                                'memory': {0: 'source_length'}, 
+                                'tgt_mask': {0: 'target_length', 1: 'target_length'}},
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to

@@ -34,7 +34,7 @@ By default, code searching for following files under ../resources:
 [source,sh]
 ----
 # transliterate strings
-ruby script_transliteration.rb --text "باز آ باز آ هر آنچه هستی باز آ"
+ruby script_transliteration.rb --text "a b c d"
 # transliterate file
 ruby script_transliteration.rb --text_filename test.txt
 ----

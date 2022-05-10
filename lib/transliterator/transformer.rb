@@ -59,10 +59,13 @@ module Transliterator
     def decode(ys, memory, tgt_mask)
 
       d_tgt = {"tgt": ys}
+
       tokens = @token_tgt_embedding.predict(d_tgt)
       d_tokens = {"tokens": tokens["output"]}
+
       pos = @positional_embedding.predict(d_tokens)
       tgt = pos["output"]
+
       d_data = {tgt: tgt, memory: memory, tgt_mask: tgt_mask}
       out = @transformer_decoder.predict(d_data)
       out["output"]

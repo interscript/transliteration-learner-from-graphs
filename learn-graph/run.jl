@@ -204,6 +204,7 @@ else # transliterate the file
                         # computation
                         translit = runAgent(graph, dicBRAINS, df_Nodes, state) |>
                             (w -> replace(w, "-''"=>"", "-'"=>""))
+                        #translit = runAgent(graph, dicBRAINS, df_Nodes, state)
                         global translit
                         # write line by line to STDOUT or file
                         isnothing(fileNameOUT) ?

@@ -92,8 +92,7 @@ if parsedArgs["file-name"] in ["data/test_benchmark.csv", "test"] # Run the test
 
             dfTest[!,"source"])
 
-    ids = evaluation(dfTest[!, "translit"], dfTest[!, "translitModel"]) #, df_Test[!, "orig"])
-
+    ids = evaluation(dfTest[!, "translit"], dfTest[!, "translitModel"])
     dfBugs = dfTest[ids,:]
 
     println("error summary in: data/test_debug.csv")
@@ -161,7 +160,6 @@ else # transliterate the file
 
                         # computation
                         # filter 2 chars
-
                         state["txt"] = txt
                         translit = runAgent(graph, dicBRAINS, dfNodes, state)
 

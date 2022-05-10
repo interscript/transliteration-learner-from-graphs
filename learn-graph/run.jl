@@ -158,7 +158,8 @@ else # transliterate the file
                     try
 
                         # computation
-                        txt = chomp(t)
+                        # filter 2 chars
+                        txt = filter(c -> !(c in ['ٍ', 'ٌ']), filterchomp(t))
                         state["txt"] = txt
                         translit = runAgent(graph, dicBRAINS, dfNodes, state)
 

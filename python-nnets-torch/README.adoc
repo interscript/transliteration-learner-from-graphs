@@ -1,23 +1,12 @@
 == Train and Export Transliteration Models
 
-We are teaching transliteration farsi -> latine to neural networks.
-For doing it, we use a modern framework: transformers
+Example Implementing the QUICKSTART toy model.
 
-The code in this repository allows to train and export these Models
-into the ONNX format that is in turn used in the production done in Ruby.
-
-Paths would need to be adjusted, as this was a code running google collab.
+Params are in *../config/params.yml*
 
 ==== Data
 
-link to download https://github.com/secryst/transliteration-learner-from-graph-models/releases/download/v0/python-nnets-torch-models.zip[data]
-assets are to be placed into ../resources:
-
-  * data_farsi_translit.csv
-  * test.csv
-  * model_trained_transformer.pt
-  * vocab_transform.pickle
-
+Link to data is in params file.
 
 
 ==== Script to Train transliteration model

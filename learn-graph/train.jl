@@ -17,6 +17,7 @@ function parse_commandline()
     s = ArgParseSettings()
 
     @add_arg_table! s begin
+        
         "--path-lucidchart-csv"
             help = "path to the graph csv"
         "--dir-path-lucidchart-csv"

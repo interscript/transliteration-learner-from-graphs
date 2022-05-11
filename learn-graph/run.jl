@@ -146,7 +146,8 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
 
     ids = evaluation(df_Test[!, "trans"], df_Test[!, "transModel"])
     df_Bugs = df_Test[ids,:]
-
+    select!(df_Bugs, ["Unnamed: 0", "label", "orig", "trans", "transModel"])
+    
     println("error summary in: data/test_debug.csv")
     CSV.write("data/test_debug.csv", df_Bugs)
 

@@ -1121,8 +1121,8 @@ dicCODE["add it to the end of its transliteration"] =
 
 dicCODE["is the longest substring, رو recognized as a verb?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = d["pos"] = "Verb" ? "yes" : "no"; d),
-            Dict(:in => ["res_root", "res"], :out => ["res"]))
+        (d["state"] = d["pos"] == "Verb" ? "yes" : "no"; d),
+            Dict(:in => [], :out => ["state"]))
 
 dicCODE["transliterate each side of the underscore separately in proper order and add a space between them"] =
     Functor((d,e=nothing,f=nothing) ->

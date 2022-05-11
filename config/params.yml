@@ -7,9 +7,9 @@ prod:
     - "<eos>"
   onnx_path: "../resources"
   vocab_transform: "../resources/vocab_transform.yaml"
-  TargetCHARS: "ACMSXZabcdefghijklmnopqrstuvwxyz"
+  TargetCHARS: ".,?-ACMSXZabcdefghijklmnopqrstuvwxyz"
 transliteration:
-  SOURCECHARS: " '_ءآأؤئابةتثجحخدذرزسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
+  SOURCECHARS: " ۀهٔ!'ي_ءآأؤئابةتثجحخدذرزكسشصضطظعغـفقلمنهوَِْپچژکگی \u200c "
   window: 6
   space: 4
   preprocessData: false

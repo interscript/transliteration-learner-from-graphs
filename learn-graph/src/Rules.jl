@@ -736,17 +736,20 @@ dicCODE["is there anything after the word root?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] = if length(d["lemma"]) == length(d["word"])
             "no"
-         else
-             lemma = d["lemma"];
-             lemma2 = replace(d["lemma"], "آ"  =>
-                             "ا");
-             contains(d["word"], lemma2) ?
-                 last(findlast(lemma2, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
-                 "no"
-             contains(d["word"], lemma) ?
-                 last(findlast(lemma, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
-                 "no"
-         end; d),
+            else
+                begin
+                    lemma = d["lemma"]
+                    lemma2 = replace(d["lemma"], "آ"  =>
+                             "ا")
+                    if contains(d["word"], lemma2)
+                        last(findfirst(lemma2, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no"
+                    elseif contains(d["word"], lemma)
+                        last(findfirst(lemma, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no"
+                    else
+                        "no"
+                    end
+                end
+            end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 
 
@@ -885,7 +888,7 @@ dicCODE["mark it as suffix"] =
 
        n = length(collect(lemma));
        idx = nothing;
-       for i=reverse(1:nWord-n+1)
+       for i=1:nWord-n+1 # reverse(1:nWord-n+1)
            if join(collect(d["word"])[i:i+n-1], "") == lemma
                idx = i
                break

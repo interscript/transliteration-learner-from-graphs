@@ -126,7 +126,8 @@ if parsedArgs["file-name"] in ["data/test.csv", "test"] # Run the test
         map(d ->
             begin
 
-                dd = copy(dataSTATE)
+                dd = copy(dataSTATE)  
+                
                 dd["text"] = join(filter(c -> c in SOURCECHARS, d), "") # d
 
                 try

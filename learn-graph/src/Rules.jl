@@ -737,11 +737,15 @@ dicCODE["is there anything after the word root?"] =
         (d["state"] = if length(d["lemma"]) == length(d["word"])
             "no"
          else
-            lemma = replace(d["lemma"], "آ"  =>
-                            "ا");
-         contains(d["word"], lemma) ?
-            last(findlast(lemma, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
-            "no"
+             lemma = d["lemma"];
+             lemma2 = replace(d["lemma"], "آ"  =>
+                             "ا");
+             contains(d["word"], lemma2) ?
+                 last(findlast(lemma2, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
+                 "no"
+             contains(d["word"], lemma) ?
+                 last(findlast(lemma, d["word"])) < last(findlast(d["word"], d["word"])) ? "yes" : "no" :
+                 "no"
          end; d),
             Dict(:in => ["lemma", "word"], :out => ["state"]))
 

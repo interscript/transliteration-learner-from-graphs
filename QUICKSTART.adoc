@@ -21,7 +21,7 @@ The steps below are going to allow us to implement:
 === Design Diagram
 
 We have designed the following diagram with lucidchart:
- https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/Model1.0.png[diagram]
+ https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/FullDemo.png[diagram]
 
 It represents a simple strategy that we broke down into 3 steps:
 

@@ -1142,3 +1142,77 @@ dicCODE["transliterate each side of the underscore separately in proper order an
          d["brain"] = bN;
          d),
             Dict(:in => ["lemma"], :out => ["res"]))
+
+# MODEL 6
+
+dicCODE["move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector."] =
+    Functor((d,e=nothing,f=nothing) ->
+        (if !haskey(d, "l_affixes")
+            d["l_affixes"] = py"""recu_affixes_subs(d["affix"], pos_pos)""";
+            d["l_translit"] = [nothing for l in d["l_affixes"]]
+         end;
+         d),
+        Dict(:in => ["affix"], :out => ["l_affixes","l_translit"]))
+
+dicCODE["is the input empty"] =
+    Functor((d,e=nothing,f=nothing) ->
+    (d["state"] = length(filter(t -> isnothing(t), d["l_translit"])) == 0 ?
+        "yes" : "no";
+     if d["state"]
+         d["l_affix"] = d["l_affixes"]
+     end;
+     d),
+        Dict(:in => ["l_affixes","l_translit"], :out => ["state"]))
+
+dicCODE["can any substrings of the input be found in affixes?"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["state"] = py"""check_all_in_affixes"""(d["l_affixes"]) ?
+            "yes" : "no";
+         d),
+        Dict(:in => ["l_affixes","l_translit"], :out => ["state"]))
+
+dicCODE["move contents of affix vector back to the input then run transliterator on it."] =
+    Functor((d,e=nothing,f=nothing) ->
+        begin
+            nAffixes = length(d["l_affixes"])
+            for i=1:nAffixes
+                affix = d["l_affixes"][i]
+                w = get_in_affixes(affix)
+                if w == affix
+                    d["l_translit"][i] = w
+                else
+
+                    bN = d["brain"];
+                    k = haskey(d, "suffix") ? "suffix" : "prefix";
+                    segm = nothing;
+                    dd = copy(dataN);
+                    dd["word"] = w;
+                    dd["affix"] = w;
+                    dd["brain"] = bN;
+                    dd[k] = w;
+                    dd["pos"] = d["pos"];
+                    node = e["affix-handler"];
+                    d["l_translit"][i] = runAgent(node, e, f, dd)
+
+                end
+            end
+            d["res"] = join(d["l_translit"]);
+            d
+        end,
+    Dict(:in => ["affix","l_affixes","l_translit"], :out => ["res"]))
+
+dicCODE["run affix-handler on it"] =
+    Functor((d,e=nothing,f=nothing) ->
+        (bN = d["brain"];
+         k = haskey(d, "suffix") ? "suffix" : "prefix";
+         segm = nothing;
+         dd = copy(dataN);
+         dd["word"] = w;
+         dd["affix"] = w;
+         dd["brain"] = bN;
+         dd[k] = w;
+         dd["pos"] = d["pos"];
+         node = e["affix-handler"];
+         d["res"] = runAgent(node, e, f, dd);
+         d["brain"]=bN; d),
+         Dict(:in => ["affix"], :out => ["res"]))

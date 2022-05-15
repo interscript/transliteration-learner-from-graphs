@@ -1107,7 +1107,8 @@ dicCODE["is there anything after it?"] =
 
 dicCODE["is there anything before it?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = d["state"] = d["d_substring"]["prefix"] != "" ? "yes" : "no"; d),
+        (d["state"] = d["d_substring"]["prefix"] != "" ?
+                "yes" : "no"; d),
         #first(findfirst(d["d_substring"][], d["word_total"])) == 1 ?
         #        "no" : "yes"; d),
             Dict(:in => ["d_substring", "word_total"], :out => ["state"]))
@@ -1148,17 +1149,17 @@ dicCODE["transliterate each side of the underscore separately in proper order an
 dicCODE["move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector."] =
     Functor((d,e=nothing,f=nothing) ->
         (if !haskey(d, "l_affixes")
-            d["l_affixes"] = py"""recu_affixes_subs(d["affix"], pos_pos)""";
-            d["l_translit"] = [nothing for l in d["l_affixes"]]
+            d["l_affixes"] = py"""recu_affixes_subs"""(d["affix"], d["pos"]);
+            d["l_translit"] = ["" for l in d["l_affixes"]]
          end;
          d),
         Dict(:in => ["affix"], :out => ["l_affixes","l_translit"]))
 
 dicCODE["is the input empty"] =
     Functor((d,e=nothing,f=nothing) ->
-    (d["state"] = length(filter(t -> isnothing(t), d["l_translit"])) == 0 ?
+    (d["state"] = length(filter(t -> t == "", d["l_translit"])) == 0 ?
         "yes" : "no";
-     if d["state"]
+     if d["state"] == "yes"
          d["l_affix"] = d["l_affixes"]
      end;
      d),
@@ -1177,9 +1178,12 @@ dicCODE["move contents of affix vector back to the input then run transliterator
             nAffixes = length(d["l_affixes"])
             for i=1:nAffixes
                 affix = d["l_affixes"][i]
-                w = get_in_affixes(affix)
-                if w == affix
-                    d["l_translit"][i] = w
+                w = py"""get_in_affixes"""(affix, d["pos"])[1]
+                # println(w)
+                if w != affix
+
+                    d["l_translit"][i] = string(w)
+
                 else
 
                     bN = d["brain"];
@@ -1191,7 +1195,7 @@ dicCODE["move contents of affix vector back to the input then run transliterator
                     dd["brain"] = bN;
                     dd[k] = w;
                     dd["pos"] = d["pos"];
-                    node = e["affix-handler"];
+                    node = e["transliterator"];
                     d["l_translit"][i] = runAgent(node, e, f, dd)
 
                 end

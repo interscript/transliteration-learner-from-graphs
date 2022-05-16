@@ -21,8 +21,10 @@ The steps below are going to allow us to implement:
 === Design Diagram
 
 We have designed the following diagram with lucidchart:
- https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/FullDemo.png[diagram]
+ https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/FullDemo.pdf[diagram]
 
+
+image::learn-graph:resources:FullDemo.pdf[]
 It represents a simple strategy that we broke down into 3 steps:
 
 * Transliteration, bundling the steps below
@@ -350,6 +352,7 @@ Finally, one can run the *ruby code*.
 In principle, necessary variable are specified in *config/params.yml*.
 [source,bash]
 ----
+> cd lib
 # transliterate string
 > ruby script_transliteration.rb --text "ab"
 bc

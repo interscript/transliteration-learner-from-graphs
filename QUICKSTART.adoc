@@ -24,7 +24,7 @@ We have designed the following diagram with lucidchart:
  https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/FullDemo.pdf[diagram]
 
 
-image::learn-graph:resources:FullDemo.pdf[]
+image::/learn-graph/resources/FullDemo.pdf[Diagram used for demo]
 It represents a simple strategy that we broke down into 3 steps:
 
 * Transliteration, bundling the steps below

@@ -1,5 +1,6 @@
 
 import yaml
+import re
 import pandas as pd
 import pickle
 import tqdm
@@ -57,6 +58,25 @@ df = df[df['valid'] == True]
 del df['valid']
 N = df.shape[0]
 print('train data length: ', N)
+
+# Build vocabularies
+d_cnt_vocab = {}
+for s in tqdm.tqdm(df['source']):
+  for w in re.split('[ ?.,!:;،]', s.strip()):
+    if w != '':
+      if d_cnt_vocab.get(w, False):
+        d_cnt_vocab[w] = d_cnt_vocab[w] + 1
+      else:
+        d_cnt_vocab[w] = 1
+
+ONNX_DIR = params['nnets']['ONNX_DIR']
+print('Write Vocab Counter')
+with open(ONNX_DIR+'vocab_counter.yaml', 'w') as outfile:
+    yaml.dump(d_cnt_vocab, outfile)
+#cut_n = 1 # 1000
+#d_w_embedding = dict(sorted(d_cnt_vocab.items(), key=lambda x: x[1], reverse=True))
+#d_w_embedding = dict([(w,c) for w,c in d_w_embedding.items() if c >= cut_n])
+
 
 # test data
 TEST_DATA = params['nnets']['TEST_DATA']
@@ -223,7 +243,7 @@ def evaluate(model):
 
 
 # Train Model
-NUM_EPOCHS = 20
+NUM_EPOCHS = params['nnets']['NUM_EPOCHS'] # 25
 
 for epoch in range(1, NUM_EPOCHS+1):
     start_time = timer()

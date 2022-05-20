@@ -2,6 +2,13 @@ ab,bc
 abc,bcd
 abcd,bcde
 abcde,bcdef
+a b,b c
+a b c,b c d
+b c,c d
+b c,c d
+b c,c d
+b c,c d
+b c d,c d e
 a,b
 b,c
 c,d

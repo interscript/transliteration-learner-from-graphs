@@ -34,9 +34,6 @@ def tensor_transform(token_ids: List[int]):
 DEVICE = 'cpu'
 
 
-SRC_LANGUAGE = 'farsi'
-TGT_LANGUAGE = 'transliterated'
-
 # Define special symbols and indices
 UNK_IDX, PAD_IDX, BOS_IDX, EOS_IDX = 0, 1, 2, 3
 # Make sure the tokens are in order of their indices to properly insert them in vocab
@@ -85,11 +82,45 @@ def translate(model: torch.nn.Module,
     num_tokens = src.shape[0]
     src_mask = (torch.zeros(num_tokens, num_tokens)).type(torch.bool)
     tgt_tokens = greedy_decode(
-        model,  src, src_mask, max_len=num_tokens + 5, start_symbol=BOS_IDX).flatten()
+        model, src, src_mask, max_len=num_tokens + 5, start_symbol=BOS_IDX).flatten()
     return " ".join(vocab_transform[TGT_LANGUAGE].lookup_tokens(
         list(tgt_tokens.cpu().numpy()))).replace("<bos>", "").replace("<eos>", "")
 
 
+############################
+#   Algo 
+# for word decomposition:
+############################
+
+"""
+def model_wrd_algo(wrd, d_cnt_vocab, ):
+  n_char = len(wrd)
+  l_encodings = []
+  score = 0 # 1
+  model = [d_cnt_vocab.get(wrd, 0), d_cnt_vocab.get(wrd, 0)]
+  for i in range(1, n_char):
+    w_1, w_2 = wrd[:i], wrd[i:]
+    i_1, i_2 = d_w_embedding.get(w_1, False), d_w_embedding.get(w_2, False)
+    
+    if i_1 and i_2:
+      if score < len(w_1) * len(w_2):
+        score = score
+        model = [i_1, i_2]
+        
+  return model+[d_cnt_vocab.get(wrd, 0)]
+
+def encode_txt(txt):
+  l_wrds = re.split('[ ?.,!:;،]', s.strip())
+  src = []
+  for w in l_wrds:
+    for i in model_wrd_algo(w):
+      src.append(i)
+  return src
+"""
+
+############################
+#   Evaluation
+############################
 import re
 
 def evaluation(trans_orig, trans_model):

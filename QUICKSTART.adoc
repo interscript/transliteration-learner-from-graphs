@@ -357,6 +357,12 @@ In principle, necessary variable are specified in *config/params.yml*.
 bc
 > ruby script_transliteration.rb --text "z"
 a
+ruby script_transliteration.rb --text "bc"
+c d (code did not recognised bc but b and c)
+> ruby script_transliteration.rb --text  "sibi temperat ignis"
+tjcj ufnqfsbu jhojt
+> time ruby script_transliteration.rb --text "zkldndmdwvft"
+"" (the code has never seen this word and can not decompose it into two words)
 # transliterate file
 echo ab > test.txt
 echo z >> test.txt

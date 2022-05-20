@@ -10,7 +10,6 @@ module Transliterator
 
     def initialize(config)
 
-
       @onnx_models_path = config["transliteration"]["ONNX_RUBY_DIR"]
 
       # load inference model from model_path
@@ -75,7 +74,6 @@ module Transliterator
 
     def greedy_decode(src)
 
-      # p(src)
       num_tokens = src.length
       max_len = num_tokens + 5
       src_mask = Array.new(num_tokens) { Array.new(num_tokens, false) }

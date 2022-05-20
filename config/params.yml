@@ -1,5 +1,6 @@
 nnets:
 
+  NUM_EPOCHS: 25
   EMB_SIZE: 512 
   NHEAD: 8
   FFN_HID_DIM: 512 
@@ -22,12 +23,13 @@ transliteration:
 
   # From NNets
   VOCAB_TRAFO: "../python-nnets-torch/resources/vocab_transform.yaml" # vocab trafo
+  VOCAB_COUNTER: "../python-nnets-torch/resources/vocab_counter.yaml" # vocab counter
   ONNX_RUBY_DIR: "../python-nnets-torch/resources/"
 
   # For Diagram to code
   preprocessData: true
   SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "
-  TARGETCHARS: "abcdefghijklmnopqrstuvwxyz "
+  TARGETCHARS: "abcdefghijklmnopqrstuvwxyz " 
   window: 6
   onnx_path: "../resources"
   space: 4

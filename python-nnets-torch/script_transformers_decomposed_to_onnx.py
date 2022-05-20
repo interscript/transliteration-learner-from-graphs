@@ -187,7 +187,6 @@ torch.onnx.export(transformer.generator,
 
 
 ### Encoder
-
 print('Export Encoder')
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))
 src =  transformer.positional_encoding(transformer.src_tok_emb(src))
@@ -243,7 +242,7 @@ torch.onnx.export(transformer.transformer.decoder,
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
-                  do_constant_folding=False,  # whether to execute constant folding for optimizatio
+                  do_constant_folding=False, # whether to execute constant folding for optimizatio
                 )
 
 
@@ -255,6 +254,12 @@ V_TGT = vocab_transform[TGT_LAN]
 
 d = {SRC_LAN: V_SRC.vocab.get_itos(),
      TGT_LAN: V_TGT.vocab.get_itos()}
+
+with open(ONNX_DIR+'vocab_counter.yaml', 'r') as f:
+    d_cnt_vocab = yaml.safe_load(f)
+d_cnt_vocab = dict([(w, c) for w,c in d_cnt_vocab.items() if w in d[SRC_LAN]])
+with open(ONNX_DIR+'vocab_counter.yaml', 'w') as outfile:
+    yaml.dump(d_cnt_vocab, outfile)
 
 print('Write Vocab Transform')
 with open(ONNX_DIR+'vocab_transform.yaml', 'w') as outfile:

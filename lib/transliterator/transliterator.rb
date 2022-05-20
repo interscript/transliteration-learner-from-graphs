@@ -40,8 +40,7 @@ module Transliterator
 
       rescue
 
-        p("error processing string: " + txt)
-        p("algo decomposing unseen word about to be implemented")
+        p(error processing string:  + txt)
         txt
 
       end

@@ -211,7 +211,7 @@ dicCODE["transliterate each side of it separately in proper order"] =
          dd = copy(dataN);
          dd["word"] = join(lStr[idx+1:end], "");
          dd["pos"] = d["pos"];
-         interfaceName = "transliterator";
+         dd["hassemispace"] = true;
          node = e[interfaceName];
          w = runAgent(node, e, f, dd);
          d["res"] = d["res"] * w;
@@ -573,6 +573,10 @@ dicCODE["does the verb root to-which it's attached, end in any of the /e, a, u/ 
 dicCODE["is there a space or semi-space before it?"] =
     Functor((d,e=nothing,f=nothing) ->
         (n = length(d["affix"]);
+         if haskey(d, "hassemispace")
+             d["state"] = "yes"
+             @goto hassemispace
+         end;
          idx = first(findlast(d["affix"], d["word"]));
          if idx > 1
              d["word"][idx-n:idx] == " " ?
@@ -586,7 +590,9 @@ dicCODE["is there a space or semi-space before it?"] =
                     end
           else
              d["state"] = "no"
-          end; d),
+          end;
+          @label hassemispace; # jair
+          d),
             Dict(:in => ["word", "affix"], :out => ["state"]))
 
 
@@ -1087,7 +1093,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
                 end
             end
             d
-        end, # jair 1
+        end,
             Dict(:in => ["affix"], :out => ["l_affix"]))
 
 dicCODE["update the word's pos according to the database!"] =
@@ -1179,7 +1185,6 @@ dicCODE["move contents of affix vector back to the input then run transliterator
             for i=1:nAffixes
                 affix = d["l_affixes"][i]
                 w = py"""get_in_affixes"""(affix, d["pos"])[1]
-                # println(w)
                 if w != affix
 
                     d["l_translit"][i] = string(w)
@@ -1207,16 +1212,23 @@ dicCODE["move contents of affix vector back to the input then run transliterator
 
 dicCODE["run affix-handler on it"] =
     Functor((d,e=nothing,f=nothing) ->
-        (bN = d["brain"];
+        (bN = d["brain"]; # jair
          k = haskey(d, "suffix") ? "suffix" : "prefix";
+         w = d["word"];
          segm = nothing;
          dd = copy(dataN);
          dd["word"] = w;
          dd["affix"] = w;
          dd["brain"] = bN;
          dd[k] = w;
+         if !haskey(d, "suffix") && !haskey(d, "suffix")
+             dd["suffix"] = w
+         end;
+         if haskey(d, "hassemispace")
+             dd["hassemispace"] = true
+         end;
          dd["pos"] = d["pos"];
          node = e["affix-handler"];
          d["res"] = runAgent(node, e, f, dd);
          d["brain"]=bN; d),
-         Dict(:in => ["affix"], :out => ["res"]))
+         Dict(:in => [], :out => ["res"]))

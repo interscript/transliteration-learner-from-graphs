@@ -112,7 +112,7 @@ https://julialang.org/downloads/[julia downloads]
 ==== Connect to Correct Python Path/Dependencies
 [source,bash]
 ----
-ENV[``PYTHON''] = ``…my python path with hazm installed…''
+ENV[``PYTHON''] = ``…my python path with deps installed…''
 import Pkg; Pkg.add(``PyCall''); Pkg.build(``PyCall'')
 ----
 

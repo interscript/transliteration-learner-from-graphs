@@ -6,19 +6,22 @@ We implement the following simple transliteration model:
 
 * a -> b, b -> c, c -> d, d -> e, ..., z -> a
 
-The steps below are going to allow us to implement:
+The steps below are going to allow us to implement a transliteration model:
 
-1. *design diagram*
-2. *diagram based code*
+1. *Design Diagrams*
+2. *Diagram Based Code*
+  * install julia and dependencies
   * generate code
+  * run DEBUG code
   * run tests
-2. *build transliteration data*
-3. *neural network model*
+2. *Build Transliteration Data*
+3. *Neural Network Model*
   * train model
   * export model to onnx
-4. *run ruby code*
+4. *Run Ruby Code*
 
-=== Design Diagram
+
+=== 1. Design Diagrams
 
 We have designed the following diagram with lucidchart:
  https://github.com/interscript/transliteration-learner-from-graphs/blob/main/learn-graph/resources/FullDemo.pdf[diagram]
@@ -54,17 +57,28 @@ Entries are activated in the following ways:
 
 So in the diagram, the computational flow is jumping between subdiagrams.
 
-=== Transliteration Code Generation
+=== 2. Transliteration Code Generation
+
+===== Install Julia and dependencies
+Link to https://julialang.org/downloads/[install julia].
+source,sh]
+----
+# going to learn-graph repo.
+> cd learn-graph
+# install julia deps
+> julia packageInstall.jl
+----
+
+===== Generate code from diagram
 
 Diagram designs on lucidchart can be exported as csv.
+The csv can in turn be transformed into code
+(.dat format with julia serialization).
 
 
 [source,sh]
 ----
-# going to learn-graph repo.
-> cd learn-graph
-# install deps
-> julia packageInstall.jl
+# build code from diagram
 > julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
 ----
 
@@ -75,8 +89,17 @@ The code should output a list of warning messages:
 This means that the logic needs to be coded.
 This is done under */learn-graph/src/Rules.jl*.
 
+So we do:
+[source,sh]
+----
+# copy code for nodes
+> cp resources/RulesSamples/Rules.jl src/Rules.jl
+# and rebuild
+> julia train.jl --path-lucidchart-csv resources/FullDemo.csv --brain-entry transliteration --path-model resources/FullDemo.dat
+----
+This time the code should be successfully built.
 
-===== Code Snippets Implementation
+===== Details on Code Snippets Implementation
 
 Code building is based on the following ideas and tools:
 
@@ -231,9 +254,9 @@ read(`a.out $word`, String)
 read(pipeline(`echo $wrd`, `sed s/z/@/g`), String)
 ----
 
-===== Run Tests and transliteration
+===== Run Code, Tests and transliteration
 
-====== Run DBG mode
+====== Run DEBUG mode
 We find useful to run the built code with a full
 verbose mode:
 [source,bash]
@@ -277,15 +300,6 @@ bcde defg
 ----
 This allows to track the states and debug the codes.
 
-====== Run Transliteration
-[source,bash]
-----
-# run transliteration
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
-# run transliteration into file
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
-----
-
 ====== Run Tests
 Runs tests, shows bugs and write them to csv:
 [source,bash]
@@ -296,7 +310,19 @@ error summary in: data/test_debug.csv
 ----
 Errors were written in data/test_debug.csv.
 
-=== Neural networks
+====== Run Transliteration
+[source,bash]
+----
+# run transliteration
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
+# run transliteration into file
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
+----
+
+=== 4. Neural networks
+
+===== Install Python
+Python 3.6 is supported
 
 ===== Generate Transliteration Data
 Afert transliteration has been generated, as in Run Transliteration,
@@ -310,7 +336,9 @@ real	0m40.863s
 user	0m40.212s
 sys	0m0.572s
 ----
+
 ===== Train Neural Networks
+
 The example below should have converged against the test
 examples after ~15 epochs.
 [source,bash]
@@ -328,6 +356,7 @@ Epoch: 1,            Train loss: 7.030,            Val loss: 6.627,       git   
 {'accuracy': 1.0}
 save model: data/model_basic_epoch_20.pt
 ----
+
 ===== Export Neural Networks to Onnx
 As next step, on can export the transformer to ONNX format.
 This occurs after its decomposition into submodels.
@@ -346,7 +375,8 @@ Export Encoder
 Export Decoder
 Write Vocab Transform
 ----
-=== Run ruby Code
+
+=== 5. Run ruby Code
 Finally, one can run the *ruby code*.
 In principle, necessary variable are specified in *config/params.yml*.
 [source,bash]

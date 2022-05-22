@@ -1,7 +1,7 @@
 import Pkg
 
 meta = ["PyCall","YAML","JSON","Logging","Serialization","ProgressMeter",
-        "CSV","DataFrames","ProgressBars"]
+        "ArgParse","CSV","DataFrames","ProgressBars"]
 
 
 Pkg.update()

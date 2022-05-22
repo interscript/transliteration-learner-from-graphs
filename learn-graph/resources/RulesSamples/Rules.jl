@@ -47,18 +47,23 @@ dicCODE["done, terminate"] =
     ===#
     Functor((d,e=nothing,f=nothing) ->
         begin
-            d["res"] = d["txt"]
+            d["res"] = d["transl_txt"]
+            # clean up if necessary
+            delete!(d, "transl_txt")
+            # or
+            [delete!(d, f) for f in ["l_transl_wrds", "transl_txt", "l_wrds"]]
+            # return dictionary
             d
         end, # identity
-        Dict(:in => ["txt"], :out => ["res"]))
+        Dict(:in => ["transl_txt"], :out => ["res"]))
 
 
 dicCODE["bind transliterated words together"] =
     #===    ===#
     Functor((d,e=nothing,f=nothing) ->
-        (d["txt"] = join(d["l_transl_wrds"], " ");
+        (d["transl_txt"] = join(d["l_transl_wrds"], " ");
          d),
-        Dict(:in => ["l_transl_wrds"], :out => ["txt"]))
+        Dict(:in => ["l_transl_wrds"], :out => ["transl_txt"]))
 
 dicCODE["process each word with mapping"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -99,27 +104,27 @@ using PyCall
 
 py"""
 d_maps = {'z': 'a',
-          'y': 'x',
-          'x': 'w',
-          'w': 'v',
-          'v': 'u',
-          'u': 't',
-          't': 's',
-          's': 'r',
-          'r': 'q',
-          'q': 'p',
-          'p': 'o',
-          'o': 'n',
-          'n': 'm',
-          'm': 'l',
-          'l': 'k',
-          'k': 'j',
-          'j': 'i',
-          'i': 'h',
-          'h': 'g',
-          'g': 'f',
-          'f': 'e',
-          'e': 'd',
+          'y': 'z',
+          'x': 'y',
+          'w': 'x',
+          'v': 'w',
+          'u': 'v',
+          't': 'u',
+          's': 't',
+          'r': 's',
+          'q': 'r',
+          'p': 'q',
+          'o': 'p',
+          'n': 'o',
+          'm': 'n',
+          'l': 'm',
+          'k': 'l',
+          'j': 'k',
+          'i': 'j',
+          'h': 'i',
+          'g': 'h',
+          'f': 'g',
+          'e': 'f',
           'd': 'e',
           'c': 'd',
           'b': 'c',
@@ -157,8 +162,7 @@ dicCODE["normalize the text!"] =
         Example calling a python function
     ===#
     Functor((d,e=nothing,f=nothing) ->
-        (println(d);
-         d["txt"] = py"""normalise_filter_txt"""(d["txt"]);
+        (d["txt"] = py"""normalise_filter_txt"""(d["txt"]);
          d),
             Dict(:in => ["txt"], :out => ["txt"]))
 

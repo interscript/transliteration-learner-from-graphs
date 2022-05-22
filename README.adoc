@@ -33,13 +33,14 @@ We also needed to make production code independant of some python libraries
 and details and easy to build.
 Our codes are generated from data in ways explained below.
 
-==== Quickstart
+==== Quickstart & Documentation
 The Library/strategy can be tried on a simple, https://github.com/interscript/transliteration-learner-from-graphs/blob/main/QUICKSTART.adoc[QUICKSTART].
+A more complete version can be found under https://github.com/interscript/transliteration-learner-from-graphs/blob/main/DOCUMENTATION.adoc[documentation].
 
 ==== Paper and Presentation
 We have summarised the reflection and results into a short
 https://github.com/interscript/transliteration-learner-from-graphs/blob/main/docs/article.pdf[ARTICLE].
-and also a  
+and also a
 https://github.com/interscript/transliteration-learner-from-graphs/blob/main/docs/presentation.pdf[PRESENTATION].
 
 ==== Approach

@@ -47,7 +47,8 @@ end
 function createTree(node::Union{Node, Nothing},
                     df_Nodes::DataFrame,
                     df_Arrows::DataFrame,
-                    df_Brains::DataFrame)
+                    df_Brains::DataFrame,
+                    history::Vector{Node} = Node[])
 
     if node != nothing
 
@@ -68,11 +69,22 @@ function createTree(node::Union{Node, Nothing},
         if size(df_ids)[1] > 0
 
             node.children = map(ix ->
-                    createTree(
+
+                    if ix in [n.x[:Id] for n in history]
+                        
+                        filter(n -> n.x[:Id] == ix, history)[end]
+
+                    else
+
+                        createTree(
                             Node(get_node(ix, df_Nodes, node.x[:depth]+1),
                                  nothing),
-                               df_Nodes, df_Arrows, df_Brains),
+                            df_Nodes, df_Arrows, df_Brains,
+                            [history;[node]])
+
+                    end,
                                 df_ids[!,"Line Destination"])
+
         end
 
     end

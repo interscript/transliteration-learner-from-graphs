@@ -257,10 +257,10 @@ dicCODE["output its transliteration!"] =
             typeof(d["data"]) == Vector{Dict{Any, Any}} ?
                 (v = py"""return_highest_search_pos"""(d["data"], d["pos"]);
                  d["res"] = v[1]; d["SynCatCode"] = v[2]) :
-                (d["res"] = d["word"]);
+                 d["res"] = d["word"];
         end;
         d),
-            Dict(:in => [], :out => []))
+            Dict(:in => [], :out => ["res"]))
 
 dicCODE["return its transliteration!"] = dicCODE["output its transliteration!"]
 
@@ -906,8 +906,8 @@ dicCODE["mark it as suffix"] =
        delete!(d, "res");
        d["affix"] = d["suffix"];
        d["data"] = py"""affix_search"""(d["affix"]);
-       d["brain"] = "hacktobesurebrainsjump"
-       ; d),
+       d["brain"] = "hacktobesurebrainsjump";
+       d),
         Dict(:in => ["word"], :out => ["suffix"]))
 
 
@@ -983,6 +983,9 @@ dicCODE["run affix-handler on affix vector"] =
                            dd["word"] = d["affix"];
                            dd["pos"] = d["pos"];
                            dd["brain"] = d["brain"];
+                           if haskey(d, "res_root")
+                               dd["res_root"] = d["res_root"]
+                           end;
                            interfaceName = "terminator";
                            node = e[interfaceName];
                            w = runAgent(node, e, f, dd);
@@ -1005,6 +1008,9 @@ dicCODE["run affix-handler on affix vector"] =
                         i == length(d["l_affix"]) ?
                             d["pos"] : "nothing";
                  dd["segm"] = length(d["l_res"]) == 0 ? nothing : d["l_res"][end];
+                 if haskey(d, "res_root")
+                     dd["res_root"] = d["res_root"]
+                 end;
                  node = e["affix-handler"];
                  push!(d["l_res"],
                        runAgent(node, e, f, dd));
@@ -1156,6 +1162,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
                 dd["pos"] = d["pos"]
                 dd["affix"] = d["affix"]
                 dd["input"] = d["affix"]
+                dd["res_root"] = d["res_root"]
                 if haskey(d, "suffix") || haskey(d, "prefix")
                     k = haskey(d, "suffix") ? "suffix" : "prefix";
                     dd[k] = dd["input"]
@@ -1177,8 +1184,6 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
             if idx_l > 0
 
-                println(idx_l)
-                println(dd["input"], length(dd["input"]))
                 push!(dd["prefix_vector"], join(collect(dd["input"])[1:idx_l]))
                 dd["input"] = join(collect(dd["input"])[idx_l+1:end])
 
@@ -1201,10 +1206,6 @@ dicCODE["is the input empty"] =
          if d["state"] == "yes"
              d["l_affix"] = [d["prefix_vector"];d["suffix_vector"]]
          end;
-         println(d);
-         if d["state"] == "yes"
-             exit()
-         end;
          d),
         Dict(:in => ["input","prefix_vector","suffix_vector"],
              :out => ["state"]))
@@ -1213,18 +1214,14 @@ dicCODE["is the input empty"] =
 dicCODE["can any substrings of the input be found in affixes?"] =
     Functor((d,e=nothing,f=nothing) ->
         (d["state"] = py"""is_any_substring_in_affixes"""(d["input"]) ?
-            "yes" : "no";
-        println(d);
-        #exit();
-         d),
+            "yes" : "no"; d),
         Dict(:in => ["input"], :out => ["state"]))
 
 
 dicCODE["move contents of affix vector back to the input then run transliterator on it."] =
     Functor((d,e=nothing,f=nothing) ->
         begin
-
-            bN = d["brain"];
+            bN = "affix-sub"; #d["brain"];
             w = join([d["prefix_vector"]; d["input"]; d["suffix_vector"]]);
             k = haskey(d, "suffix") ? "suffix" : "prefix";
             segm = nothing;
@@ -1233,11 +1230,12 @@ dicCODE["move contents of affix vector back to the input then run transliterator
             dd["affix"] = w;
             dd["brain"] = bN;
             dd[k] = w;
+            dd["res_root"] = d["res_root"]
             dd["pos"] = d["pos"];
             node = e["transliterator"];
             d["res"] = runAgent(node, e, f, dd)
+            d["brain"] = bN;
             d
-
         end,
     Dict(:in => ["input","prefix_vector","suffix_vector"],
          :out => ["res"]))

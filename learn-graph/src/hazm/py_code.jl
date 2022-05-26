@@ -215,7 +215,7 @@ def get_affixes_from_l(wrd, pos_pos=None, pos_neg=None):
     if idx == 0:
         return idx
     else:
-        return idx + 1 # + 1 for julia
+        return idx # + 1 for julia
 
 def get_affixes_from_r(wrd, pos_pos=None, pos_neg=None):
     # search from right
@@ -224,7 +224,7 @@ def get_affixes_from_r(wrd, pos_pos=None, pos_neg=None):
         if df_Affixes[df_Affixes['Affix']==wrd[i:]].shape[0] > 0:
             idx = i
             break
-    return idx + 1 # + 1 for julia
+    return idx # + 1 for julia
 
 def is_any_substring_in_affixes(wrd):
 

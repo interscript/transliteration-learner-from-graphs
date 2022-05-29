@@ -79,7 +79,7 @@ dicCODE["run transliterator on each word!"] =
                             dd["pos"] = pos;
                             interfaceName = "transliterator";
                             dd["brain"] = interfaceName;
-                            node = e[interfaceName];
+                            node = copy(e[interfaceName]);
                             dd["pos"] == "Punctuation" ?
                                 dd["word"] : runAgent(node, e, f, dd) |>
                                     (w -> replace(w, "-''"=>"", "-'"=>""))),
@@ -205,14 +205,14 @@ dicCODE["transliterate each side of it separately in proper order"] =
          dd["word"] = join(lStr[1:idx-1], "");
          dd["pos"] = d["pos"];
          interfaceName = "transliterator";
-         node = e[interfaceName];
+         node = copy(e[interfaceName]);
          d["res"] = runAgent(node, e, f, dd);
          # post u200c
          dd = copy(dataN);
          dd["word"] = join(lStr[idx+1:end], "");
          dd["pos"] = d["pos"];
          dd["hassemispace"] = true;
-         node = e[interfaceName];
+         node = copy(e[interfaceName]);
          w = runAgent(node, e, f, dd);
          d["res"] = d["res"] * w;
          d["brain"] = bN; d),
@@ -510,6 +510,8 @@ dicCODE["is it a suffix?"] =
         (d["state"] =
             if haskey(d,"suffix")
                 d["suffix"] == d["affix"] ? "yes" : "no"
+            elseif haskey(d, "hassemispace")
+                d["hassemispace"] ? "yes" : "no"
             else
                 "no"
             end; d),
@@ -1206,7 +1208,6 @@ dicCODE["is the input empty"] =
          if d["state"] == "yes"
              d["l_affix"] = [d["prefix_vector"];d["suffix_vector"]]
          end;
-#exit();
          d),
         Dict(:in => ["input","prefix_vector","suffix_vector"],
              :out => ["state"]))
@@ -1223,7 +1224,7 @@ dicCODE["can any substrings of the input be found in affixes?"] =
 dicCODE["move contents of affix vector back to the input then run transliterator on it."] =
     Functor((d,e=nothing,f=nothing) ->
         begin
-            bN = "affix-sub"; #d["brain"];
+            bN = "affix-sub";
             w = join([d["prefix_vector"]; d["input"]; d["suffix_vector"]]);
             k = haskey(d, "suffix") ? "suffix" : "prefix";
             segm = nothing;
@@ -1245,9 +1246,12 @@ dicCODE["move contents of affix vector back to the input then run transliterator
 dicCODE["run affix-handler on it"] =
     Functor((d,e=nothing,f=nothing) ->
         (bN = d["brain"];
-         if d["l_affix"] == []
-            d["l_affix"] == [d["input"]]
+         if !haskey(d, "l_affix")
+             d["l_affix"] = [d["word"]]
+         elseif d["l_affix"] == []
+             d["l_affix"] == [d["input"]]
          end;
+#exit();
          d["l_res"] = [];
          k = haskey(d, "suffix") ? "suffix" : "prefix";
          segm = nothing;
@@ -1257,6 +1261,9 @@ dicCODE["run affix-handler on it"] =
              dd = copy(dataN);
              dd["word"] = w;
              dd["affix"] = w;
+             if get(d, "hassemispace", false)
+                 dd["hassemispace"] = d["hassemispace"]
+             end
              dd["brain"] = bN;
              dd[k] = w;
              dd["pos"] = k == "suffix" ?
@@ -1270,4 +1277,4 @@ dicCODE["run affix-handler on it"] =
           end;
           d["brain"]=bN;
           d),
-            Dict(:in => ["l_affix"], :out => ["l_res"]))
+            Dict(:in => [], :out => ["l_res"]))

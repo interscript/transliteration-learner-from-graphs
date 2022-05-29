@@ -12,6 +12,22 @@ mutable struct Node
 
 end
 
+import Base.copy 
+
+function copy(dict::Dict{String, Any})
+    dico = Dict{String, Any}()
+    for k in keys(dict)
+        dico[k] = isnothing(dict[k]) ? dict[k] : dict[k]
+    end
+    dico
+end
+
+function copy(node::Union{Node, Nothing})
+     isnothing(node) ? 
+        nothing : Node(copy(node.x), isnothing(node.children) ? 
+                                        nothing : [copy(c) for c in node.children])
+end
+
 
 mutable struct Functor
 

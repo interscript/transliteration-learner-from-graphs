@@ -44,7 +44,6 @@ function runAgent(node::Node,
         if haskey(dicBRAINS, name)
 
             @info "brain name ::> ", name
-
             if data["brain"] != name
 
                 # run elsewhere in graph
@@ -80,7 +79,6 @@ function runAgent(node::Node,
             if node.children == nothing
 
                 @label __OUT
-
                 return haskey(data, "res") ?
                     data["res"] : data["word"]
 

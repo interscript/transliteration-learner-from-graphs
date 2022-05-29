@@ -1197,7 +1197,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
             end
 
             dd
-            
+
         end,
             Dict(:in => ["affix"],
                  :out => ["input","prefix_vector","suffix_vector"]))
@@ -1216,8 +1216,10 @@ dicCODE["is the input empty"] =
 
 dicCODE["can any substrings of the input be found in affixes?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["state"] = py"""is_any_substring_in_affixes"""(d["input"]) ?
-            "yes" : "no";
+        (idx_l = py"""get_affixes_from_l"""(d["affix"]);
+         idx_r = py"""get_affixes_from_r"""(d["affix"]);
+         d["state"] = (idx_l == -1) && (idx_r == -1) ?
+                    "no" : "yes";
             d),
         Dict(:in => ["input"], :out => ["state"]))
 
@@ -1252,7 +1254,6 @@ dicCODE["run affix-handler on it"] =
          elseif d["l_affix"] == []
              d["l_affix"] == [d["input"]]
          end;
-#exit();
          d["l_res"] = [];
          k = haskey(d, "suffix") ? "suffix" : "prefix";
          segm = nothing;

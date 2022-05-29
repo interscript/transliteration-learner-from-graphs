@@ -1189,7 +1189,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
                 push!(dd["prefix_vector"], join(collect(dd["input"])[1:idx_l]))
                 dd["input"] = join(collect(dd["input"])[idx_l+1:end])
 
-            elseif idx_l > 0 && idx_r == length(dd["input"])
+            elseif idx_r > 0 # idx_l > 0 && idx_r == length(dd["input"])
 
                 push!(dd["suffix_vector"], join(collect(dd["input"])[idx_r+1:end]))
                 dd["input"] = join(collect(dd["input"])[1:idx_r])
@@ -1197,6 +1197,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
             end
 
             dd
+            
         end,
             Dict(:in => ["affix"],
                  :out => ["input","prefix_vector","suffix_vector"]))

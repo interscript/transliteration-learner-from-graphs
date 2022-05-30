@@ -50,12 +50,18 @@ function runAgent(node::Node,
                 dataUpdate = runAgent(dicBRAINS[name].children[1],
                                       dicBRAINS, df_Nodes, data)
 
-                if typeof(dataUpdate) == Dict{String, Any}
-                    for k in keys(dataUpdate)
-                        data[k] = dataUpdate[k]
-                    end
+                if isnothing(dataUpdate)
+                    "" # println("data:: ", data)
                 else
-                    data["res"] = dataUpdate
+                    if typeof(dataUpdate) == Dict{String, Any}
+                        for k in keys(dataUpdate)
+                            if k != "brain"
+                                data[k] = dataUpdate[k]
+                            end
+                        end
+                    else
+                        data["res"] = dataUpdate
+                    end
                 end
 
                 data["brain"] = name
@@ -79,8 +85,9 @@ function runAgent(node::Node,
             if node.children == nothing
 
                 @label __OUT
+
                 return haskey(data, "res") ?
-                    data["res"] : data["word"]
+                    data["res"] : nothing #data["word"]
 
             end
 

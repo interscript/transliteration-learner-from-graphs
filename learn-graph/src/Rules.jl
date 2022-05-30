@@ -136,7 +136,7 @@ dicCODE["output it!"] =
             "" :
             (typeof(d["data"]) == Vector{Dict{Any, Any}} ?
                   d["res"] = py"""return_highest_search_pos"""(d["data"], d["pos"]) :
-                  d["res"] = d["word"]); d),
+                  d["res"] = join(d["l_res"])); d),
             Dict(:in => ["data"], :out => []))
 
 dicCODE["collision?"] =
@@ -185,7 +185,7 @@ dicCODE["transliterate the segment before u200c and mark the segment after u200c
          dd["word"] = join(lStr[1:idx-1], "");
          dd["pos"] = d["pos"];
          interfaceName = "transliterator";
-         node = e[interfaceName];
+         node = copy(e[interfaceName]);
          pre_res = runAgent(node, e, f, dd);
          d["res_root"] = pre_res;
          # post u200c
@@ -230,7 +230,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd["word"] = wrd;
          dd["pos"] = "Verb";
          interfaceName = "transliterator"; # "verb-handler"
-         node = e[interfaceName];
+         node = copy(e[interfaceName]);
          res = wrd != "" ? "mi"*runAgent(node, e, f, dd) : "mi";
          d["res"] = res;
          d["brain"] = bN;d),
@@ -246,7 +246,7 @@ dicCODE["transliterate the segment after u200c as a verb, starting at \"lemmatiz
          dd["word"] = wrd;
          dd["pos"] = "Verb";
          interfaceName = "transliterator"; #"verb-handler"
-         node = e[interfaceName];
+         node = copy(e[interfaceName]);
          d["res"] = "nemi"*runAgent(node, e, f, dd);
          d["brain"] = bN;d),
             Dict(:in => ["word"], :out => ["state"]))
@@ -288,7 +288,7 @@ dicCODE["transliterate each side of underscore separately in proper order"] =
                               dd["word"] = w;
                               dd["pos"] = d["pos"];
                               interfaceName = "transliterator";
-                              node = e[interfaceName];
+                              node = copy(e[interfaceName]);
                               runAgent(node, e, f, dd)),
                     split(d["word"], "_")) |>
                         (D -> join(D, ""));
@@ -432,11 +432,13 @@ dicCODE["return \"ye\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"at\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "At"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "At"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"'at\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "'at"; d),
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "'at"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"yan\""] =
@@ -955,7 +957,7 @@ dicCODE["transliterate it using affix-handler"] =
         (bN = d["brain"];
          d["res"] = if haskey(d, "prefix")
                         (interfaceName = "affix-handler";
-                         node = e[interfaceName];
+                         node = copy(e[interfaceName]);
                          d["affix"]=d["prefix"];
                          if haskey(d, "res")
                              d["res_root"] = d["res"]
@@ -965,7 +967,7 @@ dicCODE["transliterate it using affix-handler"] =
                          d["res_prefix"] = runAgent(node, e, f, d); d)
                     elseif haskey(d, "suffix")
                         (interfaceName = "affix-handler";
-                         node = e[interfaceName];
+                         node = copy(e[interfaceName]);
                          d["affix"] = d["suffix"];
                             if haskey(d, "res")
                                 d["res_root"] = d["res"]
@@ -989,7 +991,7 @@ dicCODE["run affix-handler on affix vector"] =
                                dd["res_root"] = d["res_root"]
                            end;
                            interfaceName = "terminator";
-                           node = e[interfaceName];
+                           node = copy(e[interfaceName]);
                            w = runAgent(node, e, f, dd);
                            [w])
 
@@ -1013,7 +1015,7 @@ dicCODE["run affix-handler on affix vector"] =
                  if haskey(d, "res_root")
                      dd["res_root"] = d["res_root"]
                  end;
-                 node = e["affix-handler"];
+                 node = copy(e["affix-handler"]);
                  push!(d["l_res"],
                        runAgent(node, e, f, dd));
             end;
@@ -1054,7 +1056,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
              dd["pos"] = d["pos"];
              dd["pre_pos"] = d["pre_pos"];
              interfaceName = "transliterator";
-             node = e[interfaceName];
+             node = copy(e[interfaceName]);
              if haskey(dd, "res")
                  dd["res_root"] = dd["res"]
                  delete!(dd, "res")
@@ -1069,7 +1071,7 @@ dicCODE["transliterate each side of it separately in proper order and put its tr
              dd["pos"] = d["pos"];
              dd["pre_pos"] = d["pre_pos"];
              interfaceName = "transliterator";
-             node = e[interfaceName];
+             node = copy(e[interfaceName]);
              if haskey(dd, "res")
                  dd["res_root"] = dd["res"]
                  delete!(dd, "res")
@@ -1142,7 +1144,7 @@ dicCODE["transliterate each side of the underscore separately in proper order an
                               dd["word"] = w;
                               dd["pos"] = d["pos"];
                               interfaceName = "transliterator";
-                              node = e[interfaceName];
+                              node = copy(e[interfaceName]);
                               runAgent(node, e, f, dd)),
                     split(d["word"], "_")) |>
                         (D -> join(D, " "));
@@ -1238,7 +1240,7 @@ dicCODE["move contents of affix vector back to the input then run transliterator
             dd[k] = w;
             dd["res_root"] = d["res_root"]
             dd["pos"] = d["pos"];
-            node = e["transliterator"];
+            node = copy(e["transliterator"]);
             d["res"] = runAgent(node, e, f, dd)
             d["brain"] = bN;
             d
@@ -1273,7 +1275,7 @@ dicCODE["run affix-handler on it"] =
                     i == length(d["l_affix"]) ?
                         d["pos"] : "nothing";
              dd["segm"] = length(d["l_res"]) == 0 ? nothing : d["l_res"][end];
-             node = e["affix-handler"];
+             node = copy(e["affix-handler"]);
              push!(d["l_res"],
                    runAgent(node, e, f, dd));
           end;

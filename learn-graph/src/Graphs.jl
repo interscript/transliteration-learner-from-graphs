@@ -12,7 +12,7 @@ mutable struct Node
 
 end
 
-import Base.copy 
+import Base.copy
 
 function copy(dict::Dict{String, Any})
     dico = Dict{String, Any}()
@@ -23,9 +23,10 @@ function copy(dict::Dict{String, Any})
 end
 
 function copy(node::Union{Node, Nothing})
-     isnothing(node) ? 
-        nothing : Node(copy(node.x), isnothing(node.children) ? 
-                                        nothing : [copy(c) for c in node.children])
+     isnothing(node) ?
+        nothing : Node(copy(node.x),
+                       isnothing(node.children) ?
+                            nothing : [copy(n) for n in node.children])
 end
 
 
@@ -87,7 +88,7 @@ function createTree(node::Union{Node, Nothing},
             node.children = map(ix ->
 
                     if ix in [n.x[:Id] for n in history]
-                        
+
                         filter(n -> n.x[:Id] == ix, history)[end]
 
                     else

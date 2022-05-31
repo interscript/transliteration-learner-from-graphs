@@ -446,7 +446,7 @@ dicCODE["return \"yan\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"an\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "An"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "an"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"as\""] =

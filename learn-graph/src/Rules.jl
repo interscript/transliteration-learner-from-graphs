@@ -446,7 +446,7 @@ dicCODE["return \"yan\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"an\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "an"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "An"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"as\""] =
@@ -948,7 +948,8 @@ dicCODE["undo the change to the verb root and use it!"] =
 
 dicCODE["return the concatenation of all the returned transliterations."] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = join(d["l_res"], ""); d),
+        (d["res"] = join(d["l_res"], "");
+         d["finish"] = true; d),
             Dict(:in => ["l_res"], :out => ["res"]))
 
 
@@ -1124,8 +1125,12 @@ dicCODE["is there anything before it?"] =
 
 dicCODE["add it to the beginning of its transliteration"] =
     Functor((d,e=nothing,f=nothing) ->
-        (d["res"] = d["res"]*get(d, "res_root", ""); d),
-            Dict(:in => ["res_root", "res"], :out => ["res"]))
+        (if !haskey(d, "res")
+            d["res"] = join(d["l_res"])
+         end;
+         d["res"] = d["res"]*get(d, "res_root", "");
+         d),
+            Dict(:in => ["res_root"], :out => ["res"]))
 
 dicCODE["add it to the end of its transliteration"] =
     Functor((d,e=nothing,f=nothing) ->
@@ -1188,13 +1193,13 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
             if idx_l > 0
 
-                push!(dd["prefix_vector"], join(collect(dd["input"])[1:idx_l]))
+                push!(dd["prefix_vector"], join(collect(dd["input"])[1:min(idx_l, end)]))
                 dd["input"] = join(collect(dd["input"])[idx_l+1:end])
 
             elseif idx_r > 0 # idx_l > 0 && idx_r == length(dd["input"])
 
                 push!(dd["suffix_vector"], join(collect(dd["input"])[idx_r+1:end]))
-                dd["input"] = join(collect(dd["input"])[1:idx_r])
+                dd["input"] = join(collect(dd["input"])[1:min(idx_r, end)])
 
             end
 
@@ -1252,7 +1257,7 @@ dicCODE["run affix-handler on it"] =
     Functor((d,e=nothing,f=nothing) ->
         (bN = d["brain"];
          if !haskey(d, "l_affix")
-             d["l_affix"] = [d["word"]]
+             d["l_affix"] = !haskey(d, "affix") ? [d["word"]] : [d["affix"]]
          elseif d["l_affix"] == []
              d["l_affix"] == [d["input"]]
          end;
@@ -1267,6 +1272,9 @@ dicCODE["run affix-handler on it"] =
              dd["affix"] = w;
              if get(d, "hassemispace", false)
                  dd["hassemispace"] = d["hassemispace"]
+             end
+             if haskey(d, "res_root")
+                 dd["res_root"] = d["res_root"]
              end
              dd["brain"] = bN;
              dd[k] = w;

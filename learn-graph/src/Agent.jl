@@ -68,7 +68,7 @@ function runAgent(node::Node,
 
             end
 
-            if isnothing(node.children) # || haskey(data, "res")
+            if isnothing(node.children)  || isnothing(data["brain"])
 
                 @goto __OUT
 

@@ -209,19 +209,8 @@ def get_affixes_from_l(wrd, pos_pos=None, pos_neg=None):
     # search from left
     for i in range(len(wrd), 0, -1):
         if df_Affixes[df_Affixes['Affix']==wrd[:i]].shape[0] > 0:
-            return i
-    return -1
-
-# 
-#def get_affixes_from_r(wrd, pos_pos=None, pos_neg=None):
-#    # search from right
-#    idx = len(wrd)-1
-#    for i in range(0,len(wrd)):
-#        if df_Affixes[df_Affixes['Affix']==wrd[i:]].shape[0] > 0:
-#            idx = i
-#            break
-#    return idx # + 1 for julia
-#
+            return i, wrd[:i]
+    return -1, ''
 
 def get_affixes_from_r(wrd, pos_pos=None, pos_neg=None):
     # search from right
@@ -229,16 +218,8 @@ def get_affixes_from_r(wrd, pos_pos=None, pos_neg=None):
     w = ''
     for i in range(0,len(wrd)):
         if df_Affixes[df_Affixes['Affix']==wrd[i:]].shape[0] > 0:
-            #idx = i
-            #w = wrd[i:]
-            #break
-            return i # dx
-
-    #if len(w) > 0:
-    #    return idx #, w # + 1 for julia
-    #else:
-    return -1
-
+            return i, wrd[i:]
+    return -1, ''
 
 def is_any_substring_in_affixes(wrd):
 

@@ -1188,10 +1188,14 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
             end
 
-            idx_l = py"""get_affixes_from_l"""(dd["affix"])
-            idx_r = py"""get_affixes_from_r"""(dd["affix"])
+            idx_l, w_l = py"""get_affixes_from_l"""(dd["input"]) # "affix"
+            idx_r, w_r = py"""get_affixes_from_r"""(dd["input"])
 
-            if idx_l > 0
+            #w_l = join(collect(dd["input"])[1:min(idx_l, end)])
+            #w_r = join(collect(dd["input"])[idx_r+1:end])
+
+
+            if idx_l > 0 && length(w_l) >= length(w_r)
 
                 push!(dd["prefix_vector"], join(collect(dd["input"])[1:min(idx_l, end)]))
                 dd["input"] = join(collect(dd["input"])[idx_l+1:end])
@@ -1202,7 +1206,9 @@ dicCODE["move the longest substring of the input that exists in affixes and star
                 dd["input"] = join(collect(dd["input"])[1:min(idx_r, end)])
 
             end
-
+#println(dd)
+#if
+#exit()
             dd
 
         end,
@@ -1223,8 +1229,8 @@ dicCODE["is the input empty"] =
 
 dicCODE["can any substrings of the input be found in affixes?"] =
     Functor((d,e=nothing,f=nothing) ->
-        (idx_l = py"""get_affixes_from_l"""(d["affix"]);
-         idx_r = py"""get_affixes_from_r"""(d["affix"]);
+        (idx_l = py"""get_affixes_from_l"""(d["affix"])[1];
+         idx_r = py"""get_affixes_from_r"""(d["affix"])[1];
          d["state"] = (idx_l == -1) && (idx_r == -1) ?
                     "no" : "yes";
             d),

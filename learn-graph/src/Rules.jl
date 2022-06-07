@@ -865,7 +865,7 @@ dicCODE["mark it as prefix"] =
              end
          end;
 
-         d["suffix"] = join(collect(d["word"])[idx+n:end], "");
+         #d["suffix"] = join(collect(d["word"])[idx+n:end], "");
          d["prefix"] = join(collect(d["word"])[1:idx-1]);
          d["affix"] = d["prefix"];
          d["data"] = py"""affix_search"""(d["prefix"]);
@@ -1191,10 +1191,6 @@ dicCODE["move the longest substring of the input that exists in affixes and star
             idx_l, w_l = py"""get_affixes_from_l"""(dd["input"]) # "affix"
             idx_r, w_r = py"""get_affixes_from_r"""(dd["input"])
 
-            #w_l = join(collect(dd["input"])[1:min(idx_l, end)])
-            #w_r = join(collect(dd["input"])[idx_r+1:end])
-
-
             if idx_l > 0 && length(w_l) >= length(w_r)
 
                 push!(dd["prefix_vector"], join(collect(dd["input"])[1:min(idx_l, end)]))
@@ -1206,9 +1202,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
                 dd["input"] = join(collect(dd["input"])[1:min(idx_r, end)])
 
             end
-#println(dd)
-#if
-#exit()
+
             dd
 
         end,

@@ -340,7 +340,22 @@ dicCODE["return the transliteration of the instance with the highest frequency!"
 dicCODE["return \"id\""] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = "id"; d),
-            Dict(:in => [], :out => []))
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"m\""] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "m"; d),
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"set\""] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "set"; d),
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"s\""] =
+Functor((d,e=nothing,f=nothing) ->
+    (d["res"] = "s"; d),
+        Dict(:in => [], :out => ["res"]))
 
 dicCODE["terminator"] =
     Functor((d,e=nothing,f=nothing) -> d,

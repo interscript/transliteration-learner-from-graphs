@@ -1,0 +1,429 @@
+Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,Source Arrow,Destination Arrow,Status,Text Area 1
+1,Document,,,,,,,,,,Farsi Transliteration - version 6
+2,Page,,,,,,,,,,Page 1
+3,Decision,Flowchart Shapes,2,,,,,,,,Is the word found in the DB?
+4,Process,Flowchart Shapes,2,,,,,,,,Output its transliteration!
+5,Decision,Flowchart Shapes,2,,,,,,,,Collision?
+6,Process,Flowchart Shapes,2,,,,,,,,Collision-handler
+7,Process,Flowchart Shapes,2,,,,,,,,Change all instances of ي and ك and ۀ in the text to ی and ک and هٔ
+8,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Affix-handler
+9,Decision,Flowchart Shapes,2,,,,,,,,Is there only one instance of the affix?
+10,Decision,Flowchart Shapes,2,,,,,,,,Is it بی or نی?
+11,Decision,Flowchart Shapes,2,,,,,,,,Is it ست?
+12,Process,Flowchart Shapes,2,,,,,,,,ST-handler
+13,Decision,Flowchart Shapes,2,,,,,,,,Is it ی?
+14,Process,Flowchart Shapes,2,,,,,,,,Y-handler
+15,Decision,Flowchart Shapes,2,,,,,,,,Is it ات?
+16,Process,Flowchart Shapes,2,,,,,,,,AT-handler
+17,Decision,Flowchart Shapes,2,,,,,,,,Is it ان?
+18,Process,Flowchart Shapes,2,,,,,,,,AN-handler
+19,Decision,Flowchart Shapes,2,,,,,,,,Is it ش?
+20,Process,Flowchart Shapes,2,,,,,,,,SH-handler
+21,Decision,Flowchart Shapes,2,,,,,,,,Is it م?
+22,Process,Flowchart Shapes,2,,,,,,,,M-handler
+23,Decision,Flowchart Shapes,2,,,,,,,,Is it مان?
+24,Process,Flowchart Shapes,2,,,,,,,,MAN-handler
+25,Decision,Flowchart Shapes,2,,,,,,,,Is it می?
+26,Process,Flowchart Shapes,2,,,,,,,,MI-handler
+27,Decision,Flowchart Shapes,2,,,,,,,,Is it ون?
+28,Process,Flowchart Shapes,2,,,,,,,,UN-handler
+29,Decision,Flowchart Shapes,2,,,,,,,,Is it ید?
+30,Process,Flowchart Shapes,2,,,,,,,,ID-handler
+31,Decision,Flowchart Shapes,2,,,,,,,,Is it یم?
+32,Process,Flowchart Shapes,2,,,,,,,,IM-handler
+33,Decision,Flowchart Shapes,2,,,,,,,,Is it ن?
+34,Process,Flowchart Shapes,2,,,,,,,,N-handler
+35,Process,Flowchart Shapes,2,,,,,,,,Affix-sub
+36,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Collision-handler
+37,Decision,Flowchart Shapes,2,,,,,,,,Is there only one instance of the word with the desired PoS?
+38,Process,Flowchart Shapes,2,,,,,,,,Return the transliteration of the instance with the desired PoS!
+39,Process,Flowchart Shapes,2,,,,,,,,Return the transliteration of the instance with the desired PoS that has the highest frequency!
+40,Decision,Flowchart Shapes,2,,,,,,,,Is there an instance of the word with the desired PoS?
+41,Process,Flowchart Shapes,2,,,,,,,,Return the transliteration of the instance with the highest frequency!
+42,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Transliterator
+43,Curly Brace Note,Flowchart Shapes,2,,,,,,,,ST-handler
+44,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+45,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /A, i, u/ sounds?"
+46,Process,Flowchart Shapes,2,,,,,,,,"Return ""st"""
+47,Process,Flowchart Shapes,2,,,,,,,,"Return ""ast"""
+48,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Y-handler
+49,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+50,Decision,Flowchart Shapes,2,,,,,,,,Is the word before it a verb?
+51,Process,Flowchart Shapes,2,,,,,,,,"Return ""i"""
+52,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,u/ sounds?"
+53,Process,Flowchart Shapes,2,,,,,,,,"Return ""ye"""
+54,Process,Flowchart Shapes,2,,,,,,,,"Return ""i"""
+55,Curly Brace Note,Flowchart Shapes,2,,,,,,,,AT-handler
+56,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+57,Decision,Flowchart Shapes,2,,,,,,,,Is there a space or semi-space before it?
+58,Process,Flowchart Shapes,2,,,,,,,,"Return ""'at"""
+59,Process,Flowchart Shapes,2,,,,,,,,"Return ""'at"""
+60,Process,Flowchart Shapes,2,,,,,,,,"Return ""At"""
+61,Curly Brace Note,Flowchart Shapes,2,,,,,,,,AN-handler
+62,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+63,Decision,Flowchart Shapes,2,,,,,,,,Does the transliteration of the segment before it end in /i/?
+64,Process,Flowchart Shapes,2,,,,,,,,"Return ""An"""
+65,Process,Flowchart Shapes,2,,,,,,,,"Return ""yAn"""
+66,Process,Flowchart Shapes,2,,,,,,,,"Return ""An"""
+67,Curly Brace Note,Flowchart Shapes,2,,,,,,,,SH-handler
+68,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+69,Decision,Flowchart Shapes,2,,,,,,,,"Is the word to-which it's attached, a noun?"
+70,Process,Flowchart Shapes,2,,,,,,,,"Return ""S"""
+71,Process,Flowchart Shapes,2,,,,,,,,"Return ""aS"""
+72,Process,Flowchart Shapes,2,,,,,,,,"Return ""eS"""
+73,Curly Brace Note,Flowchart Shapes,2,,,,,,,,M-handler
+74,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+75,Decision,Flowchart Shapes,2,,,,,,,,"Is the word to-which it's attached, a number or چند?"
+76,Process,Flowchart Shapes,2,,,,,,,,"Return ""m"""
+77,Process,Flowchart Shapes,2,,,,,,,,"Return ""om"""
+78,Process,Flowchart Shapes,2,,,,,,,,"Return ""am"""
+79,Curly Brace Note,Flowchart Shapes,2,,,,,,,,MAN-handler
+80,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+81,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,i,u/ sounds?"
+82,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
+83,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
+84,Process,Flowchart Shapes,2,,,,,,,,"Return ""emAn"""
+85,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+86,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,i,u/ sounds?"
+87,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
+88,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
+89,Process,Flowchart Shapes,2,,,,,,,,"Return ""emAn"""
+90,Curly Brace Note,Flowchart Shapes,2,,,,,,,,MI-handler
+91,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+92,Process,Flowchart Shapes,2,,,,,,,,"Return ""omi"""
+93,Process,Flowchart Shapes,2,,,,,,,,"Return ""mi"""
+94,Curly Brace Note,Flowchart Shapes,2,,,,,,,,UN-handler
+95,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+96,Decision,Flowchart Shapes,2,,,,,,,,Does the transliteration of the segment before it end in /i/?
+97,Process,Flowchart Shapes,2,,,,,,,,"Return ""un"""
+98,Process,Flowchart Shapes,2,,,,,,,,"Return ""yun"""
+99,Process,Flowchart Shapes,2,,,,,,,,"Return ""un"""
+100,Curly Brace Note,Flowchart Shapes,2,,,,,,,,ID-handler
+101,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+102,Decision,Flowchart Shapes,2,,,,,,,,Is the word before it a verb?
+103,Process,Flowchart Shapes,2,,,,,,,,"Return ""yad"""
+104,Decision,Flowchart Shapes,2,,,,,,,,"Is the verb root to-which it's attached, marked as V2 in the database?"
+105,Process,Flowchart Shapes,2,,,,,,,,"Return ""id"""
+106,Decision,Flowchart Shapes,2,,,,,,,,"Does the verb root to-which it's attached, end in any of the /e, A, u/ sounds?"
+107,Process,Flowchart Shapes,2,,,,,,,,"Return ""yad"""
+108,Curly Brace Note,Flowchart Shapes,2,,,,,,,,IM-handler
+109,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+110,Decision,Flowchart Shapes,2,,,,,,,,Is the word before it a verb?
+111,Process,Flowchart Shapes,2,,,,,,,,"Return ""yam"""
+112,Decision,Flowchart Shapes,2,,,,,,,,"Is the verb root to-which it's attached, marked as V2 in the database?"
+113,Process,Flowchart Shapes,2,,,,,,,,"Return ""im"""
+114,Decision,Flowchart Shapes,2,,,,,,,,"Does the verb root to-which it's attached, end in any of the /e, A, u/ sounds?"
+115,Process,Flowchart Shapes,2,,,,,,,,"Return ""yam"""
+116,Curly Brace Note,Flowchart Shapes,2,,,,,,,,N-handler
+117,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
+118,Process,Flowchart Shapes,2,,,,,,,,"Return ""an"""
+119,Process,Flowchart Shapes,2,,,,,,,,"Return ""na"""
+120,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Affix-sub
+121,Process,Flowchart Shapes,2,,,,,,,,Move the longest substring of the input that exists in affixes and starts in the beginning of the input to affix vector.
+122,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Terminator
+123,Decision,Flowchart Shapes,2,,,,,,,,Is it found in affixes?
+124,Process,Flowchart Shapes,2,,,,,,,,Run Affix-handler on it
+125,Process,Flowchart Shapes,2,,,,,,,,Find the longest substring of the input that exists in the database.
+126,Process,Flowchart Shapes,2,,,,,,,,Run Affix-handler on affix vector
+127,Process,Flowchart Shapes,2,,,,,,,,Return the concatenation of all the returned transliterations.
+128,Process,Flowchart Shapes,2,,,,,,,,Return its transliteration then Omit the ' symbol in the beginning of the word root that comes after it!
+129,Process,Flowchart Shapes,2,,,,,,,,Return its transliteration!
+130,Decision,Flowchart Shapes,2,,,,,,,,Is it a single letter?
+131,Process,Flowchart Shapes,2,,,,,,,,Return the transliteration with T as its PoS
+132,Decision,Flowchart Shapes,2,,,,,,,,Does it include u200c?
+133,Decision,Flowchart Shapes,2,,,,,,,,Is the segment before it نمی?
+134,Process,Flowchart Shapes,2,,,,,,,,"Transliterate the segment after u200c as a verb, starting at ""Lemmatize it!"" and add nemi to the beginning of it"
+135,Decision,Flowchart Shapes,2,,,,,,,,Is the segment before it می?
+136,Process,Flowchart Shapes,2,,,,,,,,"Transliterate the segment after u200c as a verb, starting at ""Lemmatize it!"" and add mi to the beginning of it"
+137,Decision,Flowchart Shapes,2,,,,,,,,Does the segment after it start with ها?
+138,Process,Flowchart Shapes,2,,,,,,,,Transliterate the segment before u200c and mark the segment after u200c as suffix.
+139,Process,Flowchart Shapes,2,,,,,,,,Affix-handler
+140,Process,Flowchart Shapes,2,,,,,,,,Transliterate each side of it separately in proper order
+141,Decision,Flowchart Shapes,2,,,,,,,,Is it a verb?
+142,Process,Flowchart Shapes,2,,,,,,,,Stem it!
+143,Decision,Flowchart Shapes,2,,,,,,,,Is there anything before the word root?
+144,Decision,Flowchart Shapes,2,,,,,,,,Does the root of the word exist in the database?
+145,Decision,Flowchart Shapes,2,,,,,,,,Collision?
+146,Process,Flowchart Shapes,2,,,,,,,,Collision-handler
+147,Process,Flowchart Shapes,2,,,,,,,,Output its transliteration!
+148,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
+149,Process,Flowchart Shapes,2,,,,,,,,Mark it as prefix
+150,Decision,Flowchart Shapes,2,,,,,,,,Is there anything after the word root?
+151,Decision,Flowchart Shapes,2,,,,,,,,"Is the word root, رو recognized as a verb?"
+152,Process,Flowchart Shapes,2,,,,,,,,Change the word root's transliteration from /rav/ to /ro/
+153,Process,Flowchart Shapes,2,,,,,,,,Affix-handler
+154,Process,Flowchart Shapes,2,,,,,,,,Add it to the beginning of the root's transliteration
+155,Process,Flowchart Shapes,2,,,,,,,,Mark it as suffix
+156,Process,Flowchart Shapes,2,,,,,,,,Affix-handler
+157,Process,Flowchart Shapes,2,,,,,,,,Add it to the end of the root's transliteration
+158,Process,Flowchart Shapes,2,,,,,,,,Output it!
+159,Process,Flowchart Shapes,2,,,,,,,,Add it to the end of the root's transliteration
+160,Decision,Flowchart Shapes,2,,,,,,,,Collision?
+161,Process,Flowchart Shapes,2,,,,,,,,Collision-handler
+162,Process,Flowchart Shapes,2,,,,,,,,Lemmatize it!
+163,Decision,Flowchart Shapes,2,,,,,,,,Does only one of the verb roots exist in the verb?
+164,Decision,Flowchart Shapes,2,,,,,,,,Do both verb roots exist in the verb?
+165,Decision,Flowchart Shapes,2,,,,,,,,Is the prefix ب or بی?
+166,Process,Flowchart Shapes,2,,,,,,,,Use the second verb root!
+167,Process,Flowchart Shapes,2,,,,,,,,Use the first verb root!
+168,Decision,Flowchart Shapes,2,,,,,,,,Is there an آ in the verb roots?
+169,Process,Flowchart Shapes,2,,,,,,,,Change the first آ in the verb root(s) to ا.
+170,Decision,Flowchart Shapes,2,,,,,,,,Does only one of the verb roots exist in the verb?
+171,Decision,Flowchart Shapes,2,,,,,,,,Do both verb roots exist in the verb?
+172,Decision,Flowchart Shapes,2,,,,,,,,Is the prefix ب or بی?
+173,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
+174,Process,Flowchart Shapes,2,,,,,,,,Undo the change to the second verb root and use it!
+175,Process,Flowchart Shapes,2,,,,,,,,Undo the change to the first verb root and use it!
+176,Process,Flowchart Shapes,2,,,,,,,,Use it! 
+177,Decision,Flowchart Shapes,2,,,,,,,,Is the verb root found in the DB?
+178,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
+179,Process,Flowchart Shapes,2,,,,,,,,Undo the change to the verb root and use it!
+180,Process,Flowchart Shapes,2,,,,,,,,Output its transliteration!
+181,Decision,Flowchart Shapes,2,,,,,,,,Collision?
+182,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
+183,Decision,Flowchart Shapes,2,,,,,,,,Includes underscores?
+184,Process,Flowchart Shapes,2,,,,,,,,transliterate each side of the underscore separately in proper order and add a space between them
+185,Process,Flowchart Shapes,2,,,,,,,,Output it!
+186,Process,Flowchart Shapes,2,,,,,,,,Output it!
+187,Process,Flowchart Shapes,2,,,,,,,,Output it!
+188,Curly Brace Note,Flowchart Shapes,2,,,,,,,,Verb-handler
+189,Process,Flowchart Shapes,2,,,,,,,,Collision-handler
+190,Process,Flowchart Shapes,2,,,,,,,,Verb-handler
+191,Process,Flowchart Shapes,2,,,,,,,,Do nothing!
+192,Process,Flowchart Shapes,2,,,,,,,,Output its transliteration!
+193,Decision,Flowchart Shapes,2,,,,,,,,Is there anything before it?
+194,Process,Flowchart Shapes,2,,,,,,,,Mark it as prefix
+195,Decision,Flowchart Shapes,2,,,,,,,,Is there anything after it?
+196,Decision,Flowchart Shapes,2,,,,,,,,"Is the longest substring, رو recognized as a verb?"
+197,Process,Flowchart Shapes,2,,,,,,,,Change its transliteration from /rav/ to /ro/
+198,Process,Flowchart Shapes,2,,,,,,,,Affix-handler
+199,Process,Flowchart Shapes,2,,,,,,,,Add it to the beginning of its transliteration
+200,Process,Flowchart Shapes,2,,,,,,,,Mark it as suffix
+201,Process,Flowchart Shapes,2,,,,,,,,Affix-handler
+202,Process,Flowchart Shapes,2,,,,,,,,Add it to the end of its transliteration
+203,Process,Flowchart Shapes,2,,,,,,,,Do nothing!
+204,Process,Flowchart Shapes,2,,,,,,,,Update the word's PoS according to the database!
+205,Process,Flowchart Shapes,2,,,,,,,,Update the word's PoS according to the database!
+206,Decision,Flowchart Shapes,2,,,,,,,,"Is the word root, شو recognized as a verb?"
+207,Process,Flowchart Shapes,2,,,,,,,,Change the word root's transliteration from /Sav/ to /So/
+208,Decision,Flowchart Shapes,2,,,,,,,,"Is the word root, شنو recognized as a verb?"
+209,Process,Flowchart Shapes,2,,,,,,,,Change the word root's transliteration from /Senav/ to /Seno/
+210,Decision,Flowchart Shapes,2,,,,,,,,Is the input empty
+211,Decision,Flowchart Shapes,2,,,,,,,,Can any substrings of the input be found in affixes?
+212,Process,Flowchart Shapes,2,,,,,,,,move contents of affix vector back to the input then run Transliterator on it.
+213,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,i,u/ sounds?"
+214,Process,Flowchart Shapes,2,,,,,,,,"Return ""yam"""
+215,Process,Flowchart Shapes,2,,,,,,,,"Return ""ye"""
+216,Process,Flowchart Shapes,2,,,,,,,,"Return ""set"""
+217,Line,,2,,,3,5,None,Arrow,,Yes
+218,Line,,2,,,5,6,None,Arrow,,Yes
+219,Line,,2,,,6,4,None,Arrow,,
+220,Line,,2,,,7,3,None,Arrow,,
+221,Line,,2,,,5,4,None,Arrow,,No
+222,Line,,2,,,11,12,None,Arrow,,Yes
+223,Line,,2,,,11,13,None,Arrow,,No
+224,Line,,2,,,13,14,None,Arrow,,Yes
+225,Line,,2,,,13,15,None,Arrow,,No
+226,Line,,2,,,15,16,None,Arrow,,Yes
+227,Line,,2,,,15,17,None,Arrow,,No
+228,Line,,2,,,17,18,None,Arrow,,Yes
+229,Line,,2,,,17,19,None,Arrow,,No
+230,Line,,2,,,19,20,None,Arrow,,Yes
+231,Line,,2,,,19,21,None,Arrow,,No
+232,Line,,2,,,21,22,None,Arrow,,Yes
+233,Line,,2,,,21,23,None,Arrow,,No
+234,Line,,2,,,23,24,None,Arrow,,Yes
+235,Line,,2,,,23,25,None,Arrow,,No
+236,Line,,2,,,25,26,None,Arrow,,Yes
+237,Line,,2,,,25,27,None,Arrow,,No
+238,Line,,2,,,27,28,None,Arrow,,Yes
+239,Line,,2,,,27,29,None,Arrow,,No
+240,Line,,2,,,29,30,None,Arrow,,Yes
+241,Line,,2,,,29,31,None,Arrow,,No
+242,Line,,2,,,31,32,None,Arrow,,Yes
+243,Line,,2,,,31,33,None,Arrow,,No
+244,Line,,2,,,33,34,None,Arrow,,Yes
+245,Line,,2,,,33,35,None,Arrow,,No
+246,Line,,2,,,37,38,None,Arrow,,Yes
+247,Line,,2,,,37,39,None,Arrow,,No
+248,Line,,2,,,40,37,None,Arrow,,Yes
+249,Line,,2,,,40,41,None,Arrow,,No
+250,Line,,2,,,44,45,None,Arrow,,Yes
+251,Line,,2,,,44,216,None,Arrow,,No
+252,Line,,2,,,45,46,None,Arrow,,Yes
+253,Line,,2,,,45,47,None,Arrow,,No
+254,Line,,2,,,42,7,None,Arrow,,
+255,Line,,2,,,49,50,None,Arrow,,Yes
+256,Line,,2,,,49,215,None,Arrow,,No
+257,Line,,2,,,50,51,None,Arrow,,Yes
+258,Line,,2,,,50,52,None,Arrow,,No
+259,Line,,2,,,52,53,None,Arrow,,Yes
+260,Line,,2,,,52,54,None,Arrow,,No
+261,Line,,2,,,56,57,None,Arrow,,Yes
+262,Line,,2,,,56,58,None,Arrow,,No
+263,Line,,2,,,57,59,None,Arrow,,Yes
+264,Line,,2,,,57,60,None,Arrow,,No
+265,Line,,2,,,62,63,None,Arrow,,Yes
+266,Line,,2,,,62,64,None,Arrow,,No
+267,Line,,2,,,63,65,None,Arrow,,Yes
+268,Line,,2,,,63,66,None,Arrow,,No
+269,Line,,2,,,8,9,None,Arrow,,
+270,Line,,2,,,36,40,None,Arrow,,
+271,Line,,2,,,43,44,None,Arrow,,
+272,Line,,2,,,48,49,None,Arrow,,
+273,Line,,2,,,55,56,None,Arrow,,
+274,Line,,2,,,61,62,None,Arrow,,
+275,Line,,2,,,68,69,None,Arrow,,Yes
+276,Line,,2,,,68,70,None,Arrow,,No
+277,Line,,2,,,69,71,None,Arrow,,Yes
+278,Line,,2,,,69,72,None,Arrow,,No
+279,Line,,2,,,67,68,None,Arrow,,
+280,Line,,2,,,74,75,None,Arrow,,Yes
+281,Line,,2,,,74,76,None,Arrow,,No
+282,Line,,2,,,75,77,None,Arrow,,Yes
+283,Line,,2,,,75,78,None,Arrow,,No
+284,Line,,2,,,73,74,None,Arrow,,
+285,Line,,2,,,80,81,None,Arrow,,Yes
+286,Line,,2,,,80,82,None,Arrow,,No
+287,Line,,2,,,81,83,None,Arrow,,Yes
+288,Line,,2,,,81,84,None,Arrow,,No
+289,Line,,2,,,85,86,None,Arrow,,Yes
+290,Line,,2,,,85,87,None,Arrow,,No
+291,Line,,2,,,86,88,None,Arrow,,Yes
+292,Line,,2,,,86,89,None,Arrow,,No
+293,Line,,2,,,91,92,None,Arrow,,Yes
+294,Line,,2,,,90,91,None,Arrow,,
+295,Line,,2,,,91,93,None,Arrow,,No
+296,Line,,2,,,95,96,None,Arrow,,Yes
+297,Line,,2,,,95,97,None,Arrow,,No
+298,Line,,2,,,96,98,None,Arrow,,Yes
+299,Line,,2,,,96,99,None,Arrow,,No
+300,Line,,2,,,94,95,None,Arrow,,
+301,Line,,2,,,79,80,None,Arrow,,
+302,Line,,2,,,101,102,None,Arrow,,Yes
+303,Line,,2,,,101,103,None,Arrow,,No
+304,Line,,2,,,102,104,None,Arrow,,Yes
+305,Line,,2,,,102,105,None,Arrow,,No
+306,Line,,2,,,100,101,None,Arrow,,
+307,Line,,2,,,106,107,None,Arrow,,Yes
+308,Line,,2,,,104,105,None,Arrow,,Yes
+309,Line,,2,,,104,106,None,Arrow,,No
+310,Line,,2,,,106,105,None,Arrow,,No
+311,Line,,2,,,109,110,None,Arrow,,Yes
+312,Line,,2,,,109,111,None,Arrow,,No
+313,Line,,2,,,110,112,None,Arrow,,Yes
+314,Line,,2,,,108,109,None,Arrow,,
+315,Line,,2,,,114,115,None,Arrow,,Yes
+316,Line,,2,,,114,113,None,Arrow,,No
+317,Line,,2,,,117,118,None,Arrow,,Yes
+318,Line,,2,,,116,117,None,Arrow,,
+319,Line,,2,,,117,119,None,Arrow,,No
+320,Line,,2,,,120,121,None,Arrow,,
+321,Line,,2,,,122,123,None,Arrow,,
+322,Line,,2,,,123,124,None,Arrow,,Yes
+323,Line,,2,,,126,127,None,Arrow,,
+324,Line,,2,,,9,10,None,Arrow,,Yes
+325,Line,,2,,,9,11,None,Arrow,,No
+326,Line,,2,,,10,128,None,Arrow,,Yes
+327,Line,,2,,,10,129,None,Arrow,,No
+328,Line,,2,,,123,130,None,Arrow,,No
+329,Line,,2,,,130,131,None,Arrow,,Yes
+330,Line,,2,,,130,125,None,Arrow,,No
+331,Line,,2,,,3,132,None,Arrow,,No
+332,Line,,2,,,132,133,None,Arrow,,Yes
+333,Line,,2,,,133,134,None,Arrow,,Yes
+334,Line,,2,,,133,135,None,Arrow,,No
+335,Line,,2,,,135,136,None,Arrow,,Yes
+336,Line,,2,,,135,137,None,Arrow,,No
+337,Line,,2,,,137,138,None,Arrow,,Yes
+338,Line,,2,,,138,139,None,Arrow,,
+339,Line,,2,,,137,140,None,Arrow,,No
+340,Line,,2,,,141,190,None,Arrow,,Yes
+341,Line,,2,,,141,142,None,Arrow,,No
+342,Line,,2,,,142,144,None,Arrow,,
+343,Line,,2,,,144,145,None,Arrow,,Yes
+344,Line,,2,,,145,146,None,Arrow,,Yes
+345,Line,,2,,,146,147,None,Arrow,,
+346,Line,,2,,,145,147,None,Arrow,,No
+347,Line,,2,,,144,148,None,Arrow,,No
+348,Line,,2,,,143,149,None,Arrow,,Yes
+349,Line,,2,,,143,150,None,Arrow,,No
+350,Line,,2,,,151,152,None,Arrow,,Yes
+351,Line,,2,,,149,153,None,Arrow,,
+352,Line,,2,,,153,154,None,Arrow,,
+353,Line,,2,,,154,150,None,Arrow,,
+354,Line,,2,,,155,156,None,Arrow,,
+355,Line,,2,,,156,157,None,Arrow,,
+356,Line,,2,,,150,155,None,Arrow,,Yes
+357,Line,,2,,,150,151,None,Arrow,,No
+358,Line,,2,,,148,158,None,Arrow,,
+359,Line,,2,,,132,141,None,Arrow,,No
+360,Line,,2,,,139,159,None,Arrow,,
+361,Line,,2,,,160,161,None,Arrow,,Yes
+362,Line,,2,,,125,160,None,Arrow,,
+363,Line,,2,,,164,165,None,Arrow,,Yes
+364,Line,,2,,,165,166,None,Arrow,,Yes
+365,Line,,2,,,165,167,None,Arrow,,No
+366,Line,,2,,,169,170,None,Arrow,,
+367,Line,,2,,,164,168,None,Arrow,,No
+368,Line,,2,,,168,169,None,Arrow,,Yes
+369,Line,,2,,,171,172,None,Arrow,,Yes
+370,Line,,2,,,171,173,None,Arrow,,No
+371,Line,,2,,,172,174,None,Arrow,,Yes
+372,Line,,2,,,172,175,None,Arrow,,No
+373,Line,,2,,,163,176,None,Arrow,,Yes
+374,Line,,2,,,163,164,None,Arrow,,No
+375,Line,,2,,,179,177,None,Arrow,,
+376,Line,,2,,,175,177,None,Arrow,,
+377,Line,,2,,,167,177,None,Arrow,,
+378,Line,,2,,,166,177,None,Arrow,,
+379,Line,,2,,,176,177,None,Arrow,,
+380,Line,,2,,,174,177,None,Arrow,,
+381,Line,,2,,,177,181,None,Arrow,,Yes
+382,Line,,2,,,177,178,None,Arrow,,No
+383,Line,,2,,,168,182,None,Arrow,,No
+384,Line,,2,,,170,179,None,Arrow,,Yes
+385,Line,,2,,,170,171,None,Arrow,,No
+386,Line,,2,,,162,183,None,Arrow,,
+387,Line,,2,,,183,184,None,Arrow,,Yes
+388,Line,,2,,,183,163,None,Arrow,,No
+389,Line,,2,,,178,185,None,Arrow,,
+390,Line,,2,,,182,186,None,Arrow,,
+391,Line,,2,,,173,187,None,Arrow,,
+392,Line,,2,,,188,162,None,Arrow,,
+393,Line,,2,,,181,189,None,Arrow,,Yes
+394,Line,,2,,,181,180,None,Arrow,,No
+395,Line,,2,,,147,143,None,Arrow,,
+396,Line,,2,,,190,143,None,Arrow,,
+397,Line,,2,,,161,192,None,Arrow,,
+398,Line,,2,,,160,192,None,Arrow,,No
+399,Line,,2,,,193,194,None,Arrow,,Yes
+400,Line,,2,,,193,195,None,Arrow,,No
+401,Line,,2,,,196,197,None,Arrow,,Yes
+402,Line,,2,,,194,198,None,Arrow,,
+403,Line,,2,,,198,199,None,Arrow,,
+404,Line,,2,,,199,195,None,Arrow,,
+405,Line,,2,,,200,201,None,Arrow,,
+406,Line,,2,,,201,202,None,Arrow,,
+407,Line,,2,,,195,200,None,Arrow,,Yes
+408,Line,,2,,,195,196,None,Arrow,,No
+409,Line,,2,,,196,203,None,Arrow,,No
+410,Line,,2,,,41,204,None,Arrow,,
+411,Line,,2,,,192,205,None,Arrow,,
+412,Line,,2,,,205,193,None,Arrow,,
+413,Line,,2,,,151,206,None,Arrow,,No
+414,Line,,2,,,206,207,None,Arrow,,Yes
+415,Line,,2,,,208,209,None,Arrow,,Yes
+416,Line,,2,,,206,208,None,Arrow,,No
+417,Line,,2,,,208,191,None,Arrow,,No
+418,Line,,2,,,210,126,None,Arrow,,Yes
+419,Line,,2,,,210,211,None,Arrow,,No
+420,Line,,2,,,121,210,None,Arrow,,
+421,Line,,2,,,211,121,None,Arrow,,Yes
+422,Line,,2,,,211,212,None,Arrow,,No
+423,Line,,2,,,112,113,None,Arrow,,Yes
+424,Line,,2,,,112,114,None,Arrow,,No
+425,Line,,2,,,110,213,None,Arrow,,No
+426,Line,,2,,,213,214,None,Arrow,,Yes
+427,Line,,2,,,213,113,None,Arrow,,No
+428,Page,,,,,,,,,,Page 2

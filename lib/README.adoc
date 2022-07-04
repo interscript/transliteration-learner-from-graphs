@@ -8,3 +8,7 @@ in ruby after they were trained and export with the python code/scripts.
 
 Main and Farsi branches are containing more info and quickstart. 
 
+
+=== usage
+
+* ruby script_transliteration.rb --text "غلبه بر"

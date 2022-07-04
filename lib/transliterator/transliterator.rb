@@ -31,20 +31,20 @@ module Transliterator
     def transliterate_text(txt)
 
       # transliteration steps with error handling
-      #begin
+      begin
 
         src = @encoders.encode_src(txt)
-        p(src)
+        # p(src)
         tgt = @transformers.greedy_decode(src)
         str = @encoders.decode_tgt(tgt)
         str
 
-      #rescue
+      rescue
 
       #  p("error processing string: " + txt)
-      #  txt
+        txt
 
-      #end
+      end
 
     end
 

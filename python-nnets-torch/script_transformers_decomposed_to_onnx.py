@@ -36,8 +36,8 @@ with open(vocab_transform_path, 'rb') as handle:
     vocab_transform = pickle.load(handle)
 
 # NNets params
-SRC_VOCAB_SIZE = len(vocab_transform[SRC_LAN])
-TGT_VOCAB_SIZE = len(vocab_transform[TGT_LAN])
+SRC_VOCAB_SIZE = 143981 #92960 # len(vocab_transform[SRC_LAN])
+TGT_VOCAB_SIZE = 113328 #92960 # len(vocab_transform[TGT_LAN])
 EMB_SIZE = params['nnets']['EMB_SIZE'] # 512
 NHEAD = params['nnets']['NHEAD'] # 8
 FFN_HID_DIM = params['nnets']['FFN_HID_DIM'] # 512
@@ -66,8 +66,8 @@ token_transform[TGT_LAN] = lambda txt: dcder.tokenizer(txt, TGT_CHARS)
 text_transform = {}
 for ln in [SRC_LAN, TGT_LAN]:
     text_transform[ln] = dcder.sequential_transforms(token_transform[ln], #Tokenization
-                                               vocab_transform[ln], #Numericalization
-                                               dcder.tensor_transform) # Add BOS/EOS and create tensor
+                                                     vocab_transform[ln], #Numericalization
+                                                     dcder.tensor_transform) # Add BOS/EOS and create tensor
 
 
 ### Decipher example
@@ -84,7 +84,7 @@ assert type(deciphered) == str
 
 ### Export token_embbedding
 
-batch_size = 16
+batch_size = 64 # 16
 source_length = 8
 target_length = 8
 
@@ -116,11 +116,11 @@ torch.onnx.export(transformer.tgt_tok_emb,
                   ONNX_DIR+"token_tgt_embbedding.onnx",
                   input_names=['tgt'],
                   output_names=['output'],  # the model's output names
-                  dynamic_axes={'tgt': {0: 'source_length', 1: 'batch_size'}},
+                  #dynamic_axes={'tgt': {0: 'source_length', 1: 'batch_size'}},
                   verbose=False,
                   export_params=True,        # store the trained parameter weights inside the model file
-                  opset_version=11,          # the ONNX version to export the model to
-                  do_constant_folding=True,  # whether to execute constant folding for optimizatio
+                  #opset_version=11,          # the ONNX version to export the model to
+                  #do_constant_folding=True,  # whether to execute constant folding for optimizatio
                 )
 
 

@@ -3,19 +3,19 @@ nnets:
   EMB_SIZE: 512
   NHEAD: 8
   FFN_HID_DIM: 512
-  BATCH_SIZE: 32
+  BATCH_SIZE: 64
   NUM_ENCODER_LAYERS: 3
   NUM_DECODER_LAYERS: 3
   TRAIN_DATA: "../learn-graph/data/test_train.txt" # train data for nnets
   TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
   VOCAB_TRAFO: "resources/vocab_transform.pickle" # vocab trafo
-  MODEL_PATH: "data/model_basic_epoch_20.pt"
+  MODEL_PATH: "data/model_basic_epoch_1.pt"
   ONNX_DIR: "resources/"
   
 
 transliteration:
 
-  SRC_LAN: "source"
+  SRC_LAN: "farsi"
   TGT_LAN: "transliterated"
 
   # From NNets

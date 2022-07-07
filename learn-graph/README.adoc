@@ -17,7 +17,7 @@ both tasks and roles are well defined and confined.
 ==== Learning Strategy
 
 We refer to QUICKSTART and the article in docs in the main branch for explanations.
- 
+
 
 ==== Diagram format
 
@@ -71,6 +71,11 @@ julia train.jl –-help
 julia train.jl --path-lucidchart-csv resources/ISO-Strict.csv --brain-entry iso-strict --path-model resources/ISO-Strict.dat
 ----
 
+* Parameters
+In ../config/params.yaml
+  relevant parameters are under: transliteration
+
+
 * Transliterate single string (with debugging mode)
 [source,bash]
 ----
@@ -80,9 +85,7 @@ julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text "رفتٌ رف�
 julia runDBGCode.jl --path-model resources/ISO-Strict.dat --text ﺮﻔﺗٌ
 ----
 
-* Run Tests (data data/tests.csv)
-
-run diacritization on file:
+* Run Diacritization on file:
 [source,bash]
 ----
 julia run.jl –-help
@@ -90,7 +93,10 @@ julia run.jl –-help
 julia run.jl --path-model resources/ISO-Strict.dat --file-name data/test_poems.txt --file-name-out out.txt
 ----
 
-run tests, with scores and error summary:
+* Build Training Data:
 [source,bash]
 ----
+nohup julia run.jl --path-model resources/ISO-Strict.dat --file-name resources/voa_persian_w6_s4_preprocessed.txt --file-name-out out.txt
+# or on a server
+nohup julia run.jl --path-model resources/ISO-Strict.dat --file-name resources/voa_persian_w6_s4_preprocessed.txt --file-name-out out.txt &
 ----

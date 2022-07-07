@@ -4,6 +4,29 @@ A technology to design transliteration systems from scratch, integrative
 of language experts workflow with a graphical
 editor.
 
+We refer to the main branch for an introduction,
+papers, a quickstart to the technology.
+
 === ISO Farsi
 
+This is a branch specialised to ISO farsi.
+The graphical model can be found under /learn-graph/resources/ISO-Strict.png
 
+===== Run the technology
+
+1. download model from https://github.com/secryst/transliteration-learner-from-graph-models/releases/tag/untagged-182e0c1d706a89b72823[sources]
+2. Follow instruction in /lib
+
+===== Build & Train Models
+
+====== Build Code From Graph
+Code can be built from /learn-graph
+
+====== Build Transliteration Examples
+Script can be built from /learn-graph
+
+====== Train Transformers
+With code in /python-nnets-torch.
+
+====== Export pytorch model to ONNX
+With code in /python-nnets-torch.

@@ -13,7 +13,7 @@ import decoder as dcder
 
 with open('../config/params.yml', 'r') as f:
     params = yaml.safe_load(f)
-    
+
 ONNX_DIR = params['nnets']['ONNX_DIR']
 
 SRC_CHARS = params['transliteration']['SOURCECHARS']
@@ -67,9 +67,8 @@ text_transform = {}
 for ln in [SRC_LAN, TGT_LAN]:
     text_transform[ln] = dcder.sequential_transforms(token_transform[ln], #Tokenization
                                                      vocab_transform[ln], #Numericalization
+
                                                      dcder.tensor_transform) # Add BOS/EOS and create tensor
-
-
 ### Decipher example
 
 src_sentence = 'a'
@@ -81,12 +80,11 @@ print('target: ', deciphered)
 # basic test
 assert type(deciphered) == str
 
-
 ### Export token_embbedding
 
-batch_size = 64 # 16
-source_length = 8
-target_length = 8
+batch_size = 1
+source_length = 4
+target_length = 4
 
 input_vocab_size = len(vocab_transform[SRC_LAN])
 src = torch.randint(0, input_vocab_size, (source_length, batch_size))

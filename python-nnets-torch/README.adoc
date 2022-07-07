@@ -12,6 +12,20 @@ Paths would need to be adjusted, as this was a code running google collab.
 
 We refer to QUICKSTART in main and farsi branches for examples.
 
+* Parameters
+In ../config/params.yaml
+  relevant parameters are under: NNets
 
+====== Run
 
+* Run training
+[source,bash]
+----
+python script_train_transformer_on_transliteration.py----
 
+* Export Model into ONNX
+[source,bash]
+----
+python script_transformers_decomposed_to_onnx.py
+----
+Output of above script is into  /resources.

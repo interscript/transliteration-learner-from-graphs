@@ -36,8 +36,10 @@ with open(vocab_transform_path, 'rb') as handle:
     vocab_transform = pickle.load(handle)
 
 # NNets params
-SRC_VOCAB_SIZE = 143981 #92960 # len(vocab_transform[SRC_LAN])
-TGT_VOCAB_SIZE = 113328 #92960 # len(vocab_transform[TGT_LAN])
+SRC_VOCAB_SIZE = len(vocab_transform[SRC_LAN]) #92960 # 
+print(len(vocab_transform[SRC_LAN]))
+TGT_VOCAB_SIZE = len(vocab_transform[TGT_LAN]) #92960 # 
+print(len(vocab_transform[TGT_LAN]))
 EMB_SIZE = params['nnets']['EMB_SIZE'] # 512
 NHEAD = params['nnets']['NHEAD'] # 8
 FFN_HID_DIM = params['nnets']['FFN_HID_DIM'] # 512
@@ -52,6 +54,7 @@ transformer = tfmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, E
 
 # Load model
 MODEL_PATH = params['nnets']['MODEL_PATH']
+print(MODEL_PATH)
 # "../resources/model_trained_transformer.pt"
 transformer.load_state_dict(
     torch.load(MODEL_PATH, map_location=torch.device('cpu')))
@@ -71,7 +74,7 @@ for ln in [SRC_LAN, TGT_LAN]:
                                                      dcder.tensor_transform) # Add BOS/EOS and create tensor
 ### Decipher example
 
-src_sentence = 'a'
+src_sentence = ' پيمان صلح در '
 deciphered = dcder.translate(transformer, text_transform, vocab_transform, SRC_LAN, TGT_LAN, src_sentence)
 print('test:')
 print('source: ', src_sentence)

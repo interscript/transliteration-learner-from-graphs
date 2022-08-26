@@ -149,9 +149,9 @@ Errors were written in data/test_debug.csv.
 [source,bash]
 ----
 # run transliteration
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test_train.csv
 # run transliteration into file
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out testout.txt
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test_train.csv --file-name-out testout.txt
 ----
 
 === 4. Neural networks
@@ -167,7 +167,7 @@ After transliteration has been generated, as in Run Transliteration,
 training data is created.
 [source,bash]
 ----
-> julia run.jl --path-model resources/FullDemo.dat --file-name data/test.txt --file-name-out data/test_train.csv
+> julia run.jl --path-model resources/FullDemo.dat --file-name data/test_train.csv --file-name-out data/test_train.csv
 100.0%┣████████████████████████████████████████┫ 830/830 [00:00<00:00, 2.2kit/s]
 
 real	0m40.863s
@@ -232,9 +232,9 @@ tjcj ufnqfsbu jhojt
 > time ruby script_transliteration.rb --text "zkldndmdwvft"
 "" (the code has never seen this word and can not decompose it into two words)
 # transliterate file
-echo ab > test.txt
-echo z >> test.txt
-> ruby script_transliteration.rb --text_filename test.txt
+echo ab > test_train.csv
+echo z >> test_train.csv
+> ruby script_transliteration.rb --text_filename test_train.csv
 bc
 a
 ----

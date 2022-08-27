@@ -446,9 +446,14 @@ dicCODE["return \"ye\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "ye"; d),
             Dict(:in => [], :out => ["res"]))
 
-dicCODE["return \"at\""] =
+dicCODE["return \"^at\""] =
     Functor((d,e=nothing,f=nothing) ->
         (d["res"] = "At"; d),
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"at\""] =
+    Functor((d,e=nothing,f=nothing) ->
+        (d["res"] = "at"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"'at\""] =
@@ -457,12 +462,20 @@ dicCODE["return \"'at\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"yan\""] =
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "yan"; d),
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"y^an\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "yAn"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"an\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "an"; d),
             Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"^an\""] =
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "An"; d),
+        Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"as\""] =
     Functor((d,e=nothing,f=nothing) ->
@@ -481,15 +494,23 @@ dicCODE["return \"am\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "am"; d),
             Dict(:in => [], :out => ["res"]))
 
-dicCODE["return \"man\""] =
+dicCODE["return \"m^an\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "mAn"; d),
             Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"man\""] =
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "man"; d),
+        Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"m^an\""] =
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "mAn"; d),
+        Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"na\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "na"; d),
             Dict(:in => [], :out => ["res"]))
 
-dicCODE["return \"eman\""] =
+dicCODE["return \"em^an\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "emAn"; d),
             Dict(:in => [], :out => ["res"]))
 

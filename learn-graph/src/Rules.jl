@@ -461,7 +461,7 @@ dicCODE["return \"yan\""] =
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"an\""] =
-    Functor((d,e=nothing,f=nothing) -> (d["res"] = "An"; d),
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "an"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"as\""] =
@@ -610,7 +610,7 @@ dicCODE["is there a space or semi-space before it?"] =
           else
              d["state"] = "no"
           end;
-          @label hassemispace; # jair
+          @label hassemispace;
           d),
             Dict(:in => ["word", "affix"], :out => ["state"]))
 
@@ -1218,7 +1218,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
             end
 
-            dd
+            dd # jair
 
         end,
             Dict(:in => ["affix"],

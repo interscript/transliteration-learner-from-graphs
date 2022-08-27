@@ -1218,6 +1218,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
 
             end
 
+            dd["affix"] = dd["input"]
             dd # jair
 
         end,

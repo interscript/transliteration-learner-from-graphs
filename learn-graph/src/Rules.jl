@@ -258,8 +258,8 @@ dicCODE["output its transliteration!"] =
                 (v = py"""return_highest_search_pos"""(d["data"], d["pos"]);
                  d["res"] = v[1]; d["SynCatCode"] = v[2]) :
                  d["res"] = d["word"];
-        end;
-        d),
+         end;
+         d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return its transliteration!"] = dicCODE["output its transliteration!"]
@@ -512,6 +512,10 @@ dicCODE["return \"na\""] =
 
 dicCODE["return \"em^an\""] =
     Functor((d,e=nothing,f=nothing) -> (d["res"] = "emAn"; d),
+            Dict(:in => [], :out => ["res"]))
+
+dicCODE["return \"eman\""] =
+    Functor((d,e=nothing,f=nothing) -> (d["res"] = "eman"; d),
             Dict(:in => [], :out => ["res"]))
 
 dicCODE["return \"omi\""] =
@@ -1240,7 +1244,7 @@ dicCODE["move the longest substring of the input that exists in affixes and star
             end
 
             dd["affix"] = dd["input"]
-            dd # jair
+            dd
 
         end,
             Dict(:in => ["affix"],

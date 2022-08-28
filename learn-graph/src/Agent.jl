@@ -85,9 +85,8 @@ function runAgent(node::Node,
             if node.children == nothing
 
                 @label __OUT
-# println("<========1", name, data["brain"])
                 return haskey(data, "res") ?
-                    data["res"] : nothing #data["word"]
+                    data["res"] : nothing # data["word"]
 
             end
 
@@ -107,7 +106,6 @@ function runAgent(node::Node,
         end
 
     @info "data::> ", data
-# println("<========2", name, data["brain"])
     runAgent(node, dicBRAINS, df_Nodes, data)
 
 end

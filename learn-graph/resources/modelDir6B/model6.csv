@@ -58,13 +58,13 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 57,Decision,Flowchart Shapes,2,,,,,,,,Is there a space or semi-space before it?
 58,Process,Flowchart Shapes,2,,,,,,,,"Return ""'at"""
 59,Process,Flowchart Shapes,2,,,,,,,,"Return ""'at"""
-60,Process,Flowchart Shapes,2,,,,,,,,"Return ""At"""
+60,Process,Flowchart Shapes,2,,,,,,,,"Return ""^at"""
 61,Curly Brace Note,Flowchart Shapes,2,,,,,,,,AN-handler
 62,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
 63,Decision,Flowchart Shapes,2,,,,,,,,Does the transliteration of the segment before it end in /i/?
-64,Process,Flowchart Shapes,2,,,,,,,,"Return ""An"""
-65,Process,Flowchart Shapes,2,,,,,,,,"Return ""yAn"""
-66,Process,Flowchart Shapes,2,,,,,,,,"Return ""An"""
+64,Process,Flowchart Shapes,2,,,,,,,,"Return ""^an"""
+65,Process,Flowchart Shapes,2,,,,,,,,"Return ""y^an"""
+66,Process,Flowchart Shapes,2,,,,,,,,"Return ""^an"""
 67,Curly Brace Note,Flowchart Shapes,2,,,,,,,,SH-handler
 68,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
 69,Decision,Flowchart Shapes,2,,,,,,,,"Is the word to-which it's attached, a noun?"
@@ -81,13 +81,13 @@ Id,Name,Shape Library,Page ID,Contained By,Group,Line Source,Line Destination,So
 80,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
 81,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,i,u/ sounds?"
 82,Terminator,Flowchart Shapes,2,,,,,,,,Terminator
-83,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
-84,Process,Flowchart Shapes,2,,,,,,,,"Return ""emAn"""
+83,Process,Flowchart Shapes,2,,,,,,,,"Return ""m^an"""
+84,Process,Flowchart Shapes,2,,,,,,,,"Return ""em^an"""
 85,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
 86,Decision,Flowchart Shapes,2,,,,,,,,"Does the transliteration of the segment before it end in any of the /a,e,o,A,i,u/ sounds?"
-87,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
-88,Process,Flowchart Shapes,2,,,,,,,,"Return ""mAn"""
-89,Process,Flowchart Shapes,2,,,,,,,,"Return ""emAn"""
+87,Process,Flowchart Shapes,2,,,,,,,,"Return ""m^an"""
+88,Process,Flowchart Shapes,2,,,,,,,,"Return ""m^an"""
+89,Process,Flowchart Shapes,2,,,,,,,,"Return ""em^an"""
 90,Curly Brace Note,Flowchart Shapes,2,,,,,,,,MI-handler
 91,Decision,Flowchart Shapes,2,,,,,,,,Is it a suffix?
 92,Process,Flowchart Shapes,2,,,,,,,,"Return ""omi"""

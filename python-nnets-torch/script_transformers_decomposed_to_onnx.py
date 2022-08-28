@@ -46,8 +46,13 @@ NUM_ENCODER_LAYERS = params['nnets']['NUM_ENCODER_LAYERS'] # 3
 NUM_DECODER_LAYERS = params['nnets']['NUM_DECODER_LAYERS'] # 3
 
 # init Transformer
-transformer = tfmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, NUM_DECODER_LAYERS, EMB_SIZE,
-                                       NHEAD, SRC_VOCAB_SIZE, TGT_VOCAB_SIZE, FFN_HID_DIM)
+transformer = tfmer.Seq2SeqTransformer(NUM_ENCODER_LAYERS, 
+                                       NUM_DECODER_LAYERS, 
+                                       EMB_SIZE,
+                                       NHEAD, 
+                                       SRC_VOCAB_SIZE, 
+                                       TGT_VOCAB_SIZE, 
+                                       FFN_HID_DIM)
 
 
 # Load model
@@ -78,6 +83,7 @@ print('test:')
 print('source: ', src_sentence)
 print('target: ', deciphered)
 
+
 # basic test
 assert type(deciphered) == str
 
@@ -106,7 +112,7 @@ torch.onnx.export(transformer.src_tok_emb,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=True,  # whether to execute constant folding for optimizatio
-                )
+                 )
 
 
 # Export the Model
@@ -123,7 +129,7 @@ torch.onnx.export(transformer.tgt_tok_emb,
                   export_params=True,        # store the trained parameter weights inside the model file
                   opset_version=11,          # the ONNX version to export the model to
                   do_constant_folding=True,  # whether to execute constant folding for optimizatio
-                )
+                 )
 
 
 

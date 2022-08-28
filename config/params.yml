@@ -1,6 +1,6 @@
 nnets:
 
-  NUM_EPOCHS: 25
+  NUM_EPOCHS: 30
   EMB_SIZE: 512 
   NHEAD: 8
   FFN_HID_DIM: 512 
@@ -12,7 +12,7 @@ nnets:
   VOCAB_TRAFO: "resources/vocab_transform.pickle" # vocab trafo
   MODEL_PATH: "data/model_basic_epoch_20.pt"
   # ONNX
-  ONNX_SRC_LEN: 50
+  ONNX_SRC_LEN: 20
   ONNX_DIR: "resources/"
 
 

@@ -178,7 +178,12 @@ sys	0m0.572s
 ===== Train Neural Networks
 
 The example below should have converged against the test
-examples after ~15 epochs.
+examples after ~20 epochs. 
+
+For practical implementation we found useful to train the nnets with lots of passes
+and data, lowering also the training gradually. Scores should be near 100% for an accurate implementation
+in ruby.
+
 [source,bash]
 ----
 > cd python-nnets-torch
@@ -219,7 +224,7 @@ Finally, one can run the *ruby code*.
 In principle, necessary variable are specified in *config/params.yml*.
 [source,bash]
 ----
-> cd lib
+> cd ../lib
 # transliterate string
 > ruby script_transliteration.rb --text "ab"
 bc

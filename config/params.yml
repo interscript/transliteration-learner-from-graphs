@@ -10,6 +10,7 @@ nnets:
   TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
   VOCAB_TRAFO: "resources/vocab_transform.pickle" # vocab trafo
   MODEL_PATH: "data/model_basic_epoch.pt"
+  ONNX_SRC_LEN: 20
   ONNX_DIR: "resources/"
   
 

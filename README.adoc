@@ -14,7 +14,7 @@ The graphical model can be found under /learn-graph/resources/ISO-Strict.png
 
 ===== Run the technology
 
-1. download model from https://github.com/secryst/transliteration-learner-from-graph-models/releases/tag/untagged-182e0c1d706a89b72823[sources]
+1. download models from https://github.com/secryst/transliteration-learner-from-graph-models/releases/tag/v1
 2. Follow instruction in /lib
 
 ===== Build & Train Models

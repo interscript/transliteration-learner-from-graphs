@@ -9,6 +9,15 @@ in ruby after they were trained and export with the python code/scripts.
 Main and Farsi branches are containing more info and quickstart. 
 
 
+=== models
+
+Download models from https://github.com/secryst/transliteration-learner-from-graph-models/releases/tag/v1
+
 === usage
 
 * ruby script_transliteration.rb --text "غلبه بر"
+
+
+=== Ruby & Gems
+ruby2.7.6
+ optparse, onnxruntime, yaml, tqdm 

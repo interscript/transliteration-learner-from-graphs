@@ -11,12 +11,11 @@ nnets:
   n_layer: 6 # number of transformer blocks
   dropout: 0.2 # dropout rate
 
-file_parameters:
+file_paths:
   file_name: 'gdrive/MyDrive/out.txt' # path to the comma separated text file
   n_cutoff: 1000000 # number of lines to read from the file (throwing away the rest)
-  chars_file_path: 'gdrive/MyDrive/chars.txt' # path to the file containing the list of characters
-  torch_model_path: 'gdrive/MyDrive/transformer_model.pt' # path to the torch model
-  onnx_model_path: 'gdrive/MyDrive/transformer_model.onnx' # path to the onnx model
+  chars_file_path: '/home/jair/WORK/Interscript/transliteration-learner-from-graphs/ressources/chars.txt' # path to the file containing the list of characters
+  torch_model_path: '/home/jair/WORK/Interscript/transliteration-learner-from-graphs/ressources/transformer_model.pt' # path to the torch model
+  onnx_model_path: '/home/jair/WORK/Interscript/transliteration-learner-from-graphs/ressources/transformer_model.onnx' # path to the onnx model
 
-  
   

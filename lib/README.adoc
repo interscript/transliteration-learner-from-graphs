@@ -3,6 +3,13 @@
 The ruby implementation is importing nnets components to run transformers
 in ruby after they were trained and export with the python code/scripts.
 
+===== Packages Installation
+`
+gem install optparse
+gem install onnxruntime
+gem install yaml
+gem install tqdm
+`
 
 ===== Transformer into Ruby
 

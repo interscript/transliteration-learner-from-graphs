@@ -1,5 +1,4 @@
 
-require_relative "vocab"
 require_relative "encoders"
 require_relative "transformer"
 
@@ -11,11 +10,9 @@ module Transliterator
 
     def initialize(config)
 
-      @config = config #["prod"]
-
+      @config = config 
       @transformers = get_transformers()
       @encoders = get_encoders()
-      @languages = get_vocab()
 
     end
 
@@ -34,13 +31,12 @@ module Transliterator
       begin
 
         src = @encoders.encode_src(txt)
-        tgt = @transformers.greedy_decode(src)
-        str = @encoders.decode_tgt(tgt)
-        str
+        tgt = @transformers.predicts(src)
+        @encoders.decode_tgt(tgt)
 
       rescue
 
-        p(error processing string:  + txt)
+        p("error processing string:  " + txt)
         txt
 
       end
@@ -58,12 +54,6 @@ module Transliterator
     def get_encoders()
 
       Encoder.new(@config)
-
-    end
-
-    def get_vocab()
-
-      Languages.new(@config)
 
     end
 

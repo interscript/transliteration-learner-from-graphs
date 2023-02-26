@@ -62,6 +62,7 @@ For achieving this, we propose the following approach:
 4. Training of neural network architecture
 
   * transliteration is approached as translation and with similar tools.
+  * there are 2 repositories with codes at the char or word levels.
 
 More detailed resources can be found in the form of a https://www.interscript.org/blog/2022-04-04-transliteration-learned-from-transformers-and-graphs[blogpost],
 as well as a https://github.com/interscript/transliteration-learner-from-graphs/docs/article.pdf[short article].

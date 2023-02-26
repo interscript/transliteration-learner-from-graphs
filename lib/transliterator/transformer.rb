@@ -1,5 +1,4 @@
 
-require_relative "vocab"
 require_relative "encoders"
 
 
@@ -10,26 +9,12 @@ module Transliterator
 
     def initialize(config)
 
-      @onnx_models_path = config["transliteration"]["ONNX_RUBY_DIR"]
+      # load onnx models
+      onnx_models_path = config["file_paths"]["onnx_models_path"]
+      onnx_models_path = "/home/jair/WORK/Interscript/transliteration-learner-from-graphs/ressources/transformer_model.onnx"
 
       # load inference model from model_path
-      token_src_embbedding_path = @onnx_models_path+"token_src_embbedding.onnx"
-      @token_src_embedding = OnnxRuntime::Model.new(token_src_embbedding_path)
-
-      token_tgt_embbedding_path = @onnx_models_path+"token_tgt_embbedding.onnx"
-      @token_tgt_embedding = OnnxRuntime::Model.new(token_tgt_embbedding_path)
-
-      positional_embbedding_path = @onnx_models_path+"positional_embbedding.onnx"
-      @positional_embedding = OnnxRuntime::Model.new(positional_embbedding_path)
-
-      transformer_generator_path = @onnx_models_path+"transformer_generator.onnx"
-      @transformer_generator = OnnxRuntime::Model.new(transformer_generator_path)
-
-      transformer_encoder_path = @onnx_models_path+"transformer_encoder.onnx"
-      @transformer_encoder = OnnxRuntime::Model.new(transformer_encoder_path)
-
-      transformer_decoder_path = @onnx_models_path+"transformer_decoder.onnx"
-      @transformer_decoder = OnnxRuntime::Model.new(transformer_decoder_path)
+      @onnx_model = OnnxRuntime::Model.new(onnx_models_path)
 
     end
 
@@ -43,11 +28,21 @@ module Transliterator
     end
 
 
-    def encode(src, src_mask)
+    def predicts(src)
 
-      d_src = {"src": src}
-      tokens = @token_src_embedding.predict(d_src)
-      d_tokens = {"tokens": tokens["output"]}
+      d_src = {"idx": src}
+      tokens = @onnx_model.predict(d_src)
+      tokens["logits"]
+
+    end
+
+
+    def encode(src)
+
+      d_src = {"idx": src}
+      # output shape of src
+      tokens = @onnx_model.predict(d_src)
+      d_tokens = {"logits": tokens["logit"]}
       pos = @positional_embedding.predict(d_tokens)
       d_pos_src_mask = {src: pos["output"], src_mask: src_mask}
       @transformer_encoder.predict(d_pos_src_mask)["output"]

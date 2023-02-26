@@ -80,8 +80,7 @@ dicCODE["process each word with mapping"] =
                 d["l_wrds"])
                 d
         end,
-            Dict(:in => ["l_wrds"],
-                 :out => ["l_transl_wrds"]))
+            Dict(:in => ["l_wrds"],:out => ["l_transl_wrds"]))
 
 dicCODE["has word the char z?"] =
     Functor((d,e=nothing,f=nothing) ->

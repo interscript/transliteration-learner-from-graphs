@@ -1,0 +1,63 @@
+nnets:
+
+  batch_size: 64
+  block_size: 256 # maximum context length (sentence length) for predictions?
+  max_iters: 5000 # maximum number of iterations for training
+  eval_interval: 500 # evaluate every n iterations
+  eval_iters: 200 # number of iterations to evaluate on
+  learning_rate: 3e-4 # learning rate
+  n_embd: 384 # embedding dimension
+  n_head: 6 # number of attention heads
+  n_layer: 6 # number of transformer blocks
+  dropout: 0.2 # dropout rate
+
+file_parameters:
+  file_name: 'gdrive/MyDrive/out.txt' # path to the comma separated text file
+  n_cutoff: 1000000 # number of lines to read from the file (throwing away the rest)
+  chars_file_path: 'gdrive/MyDrive/chars.txt' # path to the file containing the list of characters
+  torch_model_path: 'gdrive/MyDrive/transformer_model.pt' # path to the torch model
+  onnx_model_path: 'gdrive/MyDrive/transformer_model.onnx' # path to the onnx model
+
+  
+  
+  NUM_EPOCHS: 30
+  EMB_SIZE: 512 
+  NHEAD: 8
+  FFN_HID_DIM: 512 
+  BATCH_SIZE: 32
+  NUM_ENCODER_LAYERS: 3
+  NUM_DECODER_LAYERS: 3
+  TRAIN_DATA: "../learn-graph/data/test_train.csv" # train data for nnets
+  TEST_DATA: "../learn-graph/data/test_benchmark.csv" # test data for nnets
+  VOCAB_TRAFO: "resources/vocab_transform.pickle" # vocab trafo
+  MODEL_PATH: "data/model_basic_epoch_20.pt"
+  # ONNX
+  ONNX_SRC_LEN: 20
+  ONNX_DIR: "resources/"
+
+
+transliteration:
+
+  SRC_LAN: "source"
+  TGT_LAN: "transliterated"
+
+  # From NNets
+  VOCAB_TRAFO: "../python-nnets-torch/resources/vocab_transform.yaml" # vocab trafo
+  VOCAB_COUNTER: "../python-nnets-torch/resources/vocab_counter.yaml" # vocab counter
+  ONNX_RUBY_DIR: "../python-nnets-torch/resources/"
+
+  # For Diagram to code
+  preprocessData: true
+  SOURCECHARS: "abcdefghijklmnopqrstuvwxyz "
+  TARGETCHARS: "abcdefghijklmnopqrstuvwxyz " 
+  window: 6
+  onnx_path: "../resources"
+  space: 4
+  max_str_len: 100
+  vocab_transform: "../resources/vocab_transform.yaml"
+  TRAIN_DATA: "../learn-graph/data/test_train.txt"
+  SPECIALSYMBOLS:
+    - "<unk>"
+    - "<pad>"
+    - "<bos>"
+    - "<eos>"

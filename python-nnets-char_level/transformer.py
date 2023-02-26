@@ -98,7 +98,6 @@ class GPTLanguageModel(nn.Module):
         if isinstance(module, nn.Linear) and module.bias is not None:
             nn.init.zeros_(module.bias)
 
-    """
     def forward(self, idx, targets=None):
         tok_emb = self.token_embedding_table(idx)
         pos_emb = self.position_embedding_table(torch.arange(idx.shape[1], device=self.device))
@@ -115,30 +114,5 @@ class GPTLanguageModel(nn.Module):
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
 
         return logits, loss
-    """
 
-    def forward(self, idx):
-        tok_emb = self.token_embedding_table(idx)
-        pos_emb = self.position_embedding_table(torch.arange(idx.shape[1], device=self.device))
-        x = tok_emb + pos_emb
-
-        for block in self.blocks:
-            x = block(x)
-
-        x = self.ln_f(x)
-        logits = self.lm_head(x)
-
-        return logits
-
-    """
-    def generate(self, idx, max_new_tokens):
-        for _ in range(max_new_tokens):
-            idx_cond = idx[:, -block_size:]
-            logits, _ = self(idx_cond)
-            logits = logits[:, -1, :]
-            probs = F.softmax(logits, dim=-1)
-            idx_next = torch.multinomial(probs, num_samples=1)
-            idx = torch.cat((idx, idx_next), dim=1)
-        return idx
-    """
 

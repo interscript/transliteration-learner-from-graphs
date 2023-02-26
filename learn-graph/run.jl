@@ -50,7 +50,7 @@ data = deserialize(parsedArgs["path-model"])
 
 entryBrain = data[:entry]
 dicBRAINS = data[:dicBrains]
-dfNodes = data[:df_Nodes]
+dfNodes = data[:dfNodes]
 graph = dicBRAINS[entryBrain]
 
 
@@ -62,11 +62,15 @@ dataSTATE = Dict{String, Any}(
 
 
 dicParams = YAML.load_file("../config/params.yml")
-SOURCECHARS = dicParams["transliteration"]["SOURCECHARS"]
+# read the source characters as an array in julia
+
+CharsFilePath = dicParams["file_paths"]["chars_file_path"]
+# read chars array from chars_file_path file, in julia:
+Chars = readlines(CharsFilePath, keep=true)
 
 
-if parsedArgs["file-name"] in ["data/test_benchmark.csv", "test"] # Run the test
-
+# Run the test
+if parsedArgs["file-name"] in ["data/test_benchmark.csv", "test"] 
 
     dfTest = DataFrame(CSV.File("data/test_benchmark.csv"))
 

@@ -5,7 +5,9 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 # import other modules
+import os
 import random
+import yaml
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -27,7 +29,7 @@ block_size = params['nnets']['block_size'] # 256 # maximum context length (sente
 max_iters = params['nnets']['max_iters'] # 5000 # maximum number of iterations for training
 eval_interval = params['nnets']['eval_interval'] #500 # evaluate every n iterations
 eval_iters = params['nnets']['eval_iters'] # 200 # number of iterations to evaluate on
-learning_rate = params['nnets']['learning_rate'] # 3e-4 # learning rate
+learning_rate = float(params['nnets']['learning_rate']) # 3e-4 # learning rate
 n_embd = params['nnets']['n_embd'] # 384 # embedding dimension
 n_head = params['nnets']['n_head'] # 6 # number of attention heads
 n_layer = params['nnets']['n_layer'] # 6 # number of transformer blocks
@@ -35,11 +37,11 @@ dropout = params['nnets']['dropout'] # 0.2 # dropout rate
 
 
 # file parameters
-file_name = params['file_parameters']['file_name'] # 'gdrive/MyDrive/out.txt' # path to the comma separated text file 
-n_cutoff = params['file_parameters']['n_cutoff'] # 1000000 # number of lines to read from the file (throughing away the rest)
-chars_file_path = params['file_parameters']['chars_file_path'] # 'gdrive/MyDrive/chars.txt' # path to the file containing the list of characters
-torch_model_path = params['file_parameters']['torch_model_path'] # 'gdrive/MyDrive/transformer_model.pt' # path to the torch model
-onnx_model_path = params['file_parameters']['onnx_model_path'] # 'gdrive/MyDrive/transformer_model.onnx' # path to the onnx model
+file_name = params['file_paths']['file_name'] # 'gdrive/MyDrive/out.txt' # path to the comma separated text file 
+n_cutoff = params['file_paths']['n_cutoff'] # 1000000 # number of lines to read from the file (throughing away the rest)
+chars_file_path = params['file_paths']['chars_file_path'] # 'gdrive/MyDrive/chars.txt' # path to the file containing the list of characters
+torch_model_path = params['file_paths']['torch_model_path'] # 'gdrive/MyDrive/transformer_model.pt' # path to the torch model
+onnx_model_path = params['file_paths']['onnx_model_path'] # 'gdrive/MyDrive/transformer_model.onnx' # path to the onnx model
 
 file = open(file_name, 'r')
 data = file.readlines()[:n_cutoff]
@@ -110,23 +112,23 @@ def estimate_loss():
             logits, loss = model(x, y)
             losses[k] = loss.item()
             preds = torch.argmax(logits, dim=2)
-            correct += (preds == Y).sum().item()
-            total += (X.shape[1] * batch_size)
+            correct += (preds == y).sum().item()
+            total += (x.shape[1] * batch_size)
         out[split+'_prec'] = float(correct) / total
         out[split+'_loss'] = losses.mean()
     model.train()
     return out
 
 
-# create model
+# create and setup model
 model = GPTLanguageModel(vocab_size, n_embd, n_layer, n_head, block_size, dropout, device)
+# if model exists on torch_model_path, load its weights
+if os.path.exists(torch_model_path):
+    model = torch.load(torch_model_path)
 model = model.to(device)
 # using lion optimizer instead of Adam
-optimizer = Lion(model.parameters(), lr = learning_rate) 
-# loss function
-#criterion = nn.CrossEntropyLoss()
-# optimiser instantiation
-# optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+#optimizer = Lion(model.parameters(), lr = learning_rate) 
+optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
 
 # define the training loop
@@ -138,6 +140,11 @@ for iter in tqdm(range(max_iters)):
         print(f"step {iter}: train loss {losses['train_loss']:.4f}, val loss {losses['val_loss']:.4f}")
         print(f"step {iter}: train prec {losses['train_prec']:.4f}, val prec {losses['val_prec']:.4f}")
 
+    # save model with a iter label each 10 times eval_interval iterations
+    if iter % (eval_interval * 10) == 0 or iter == max_iters - 1:
+        torch.save(model.state_dict(), torch_model_path + str(iter))
+    
+
     # sample a batch of data
     x, y = get_batch('train')
 
@@ -146,6 +153,8 @@ for iter in tqdm(range(max_iters)):
     optimizer.zero_grad(set_to_none=True)
     loss.backward()
     optimizer.step()
+
+
 print('Training complete!')
 
 # save model

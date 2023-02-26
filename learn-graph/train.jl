@@ -11,6 +11,7 @@ include("src/Agent.jl")
 include("src/Rules.jl")
 
 
+
 function parse_commandline()
 
     s = ArgParseSettings()
@@ -74,14 +75,14 @@ end
 # Preprocess Nodes
 df[!,"Label"] = map(x -> ismissing(x) ? Missing : lowercase(x), df[!,"Text Area 1"])
 
-df_Nodes = filter(row -> row.Name in ["Decision", "Process", "Terminator"], df)
-df_Arrows = filter(row -> row.Name in ["Line"], df);
-df_Brains = filter(row -> row.Name in ["Curly Brace Note"], df);
+dfNodes = filter(row -> row.Name in ["Decision", "Process", "Terminator"], df)
+dfArrows = filter(row -> row.Name in ["Line"], df);
+dfBrains = filter(row -> row.Name in ["Curly Brace Note"], df);
 
 
 dicBRAINS = Dict{String, Node}()
 
-brainsList = df_Brains[!, "Label"] |> unique
+brainsList = dfBrains[!, "Label"] |> unique
 
 
 if !(brainEntry in brainsList)
@@ -98,11 +99,11 @@ for b in brainsList
 
     #try
 
-        dicBRAINS[b] = get_node(b, df_Brains) |>
+        dicBRAINS[b] = get_node(b, dfBrains) |>
                 (D ->
                     (n=Node(D, nothing); n.x[:depth]=0; n)) |>
                     (N ->
-                         createTree(N, df_Nodes, df_Arrows, df_Brains))
+                         createTree(N, dfNodes, dfArrows, dfBrains))
 
     #catch
 
@@ -114,6 +115,6 @@ end
 
 
 serialize(modelName, Dict(:dicBrains => dicBRAINS,
-                          :df_Nodes => df_Nodes,
+                          :dfNodes => dfNodes,
                           :entry => brainEntry))
 println("data saved to: ", modelName)

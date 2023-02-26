@@ -39,7 +39,7 @@ data = deserialize(parsedArgs["path-model"])
 
 entryBrain = data[:entry]
 dicBRAINS = data[:dicBrains]
-df_Nodes = data[:df_Nodes]
+dfNodes = data[:dfNodes]
 graph = dicBRAINS[entryBrain]
 
 
@@ -50,7 +50,7 @@ data = Dict{String, Any}(
 
 
 # run agent
-runAgent(graph, dicBRAINS, df_Nodes, data) |>
+runAgent(graph, dicBRAINS, dfNodes, data) |>
     println
 
 

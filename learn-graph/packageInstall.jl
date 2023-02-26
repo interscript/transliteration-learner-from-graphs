@@ -1,6 +1,6 @@
 import Pkg
 
-meta = ["PyCall","YAML","JSON","Logging","Serialization","ProgressMeter",
+meta = ["PyCall","YAML","JSON","Logging","Serialization","ProgressMeter","Graphs",
         "ArgParse","CSV","DataFrames","ProgressBars"]
 
 

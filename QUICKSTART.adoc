@@ -136,7 +136,7 @@ bcde defg
 This allows to track the states and debug the codes.
 
 ====== Run Tests
-Runs tests, shows bugs and write them to csv:
+Runs tests in /data/test_benchmark.csv, shows bugs and write them to csv:
 [source,bash]
 ----
 > julia run.jl --path-model resources/FullDemo.dat --file-name test
@@ -157,10 +157,7 @@ Errors were written in data/test_debug.csv.
 === 4. Neural networks
 
 ===== Install Python
-Python 3.6 is supported,
-https://www.python.org/downloads/release/python-360/[link for installation],
-alternatives are https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html[conda]
-and https://docs.conda.io/projects/conda/en/latest/commands/create.html[conda create environment].
+Python 3.8 is supported and tested.
 
 ===== Generate Transliteration Data
 After transliteration has been generated, as in Run Transliteration,
@@ -184,9 +181,12 @@ For practical implementation we found useful to train the nnets with lots of pas
 and data, lowering also the training gradually. Scores should be near 100% for an accurate implementation
 in ruby.
 
+The demo is using a transformer version and strategy encoding words at the word level. 
+The code in /python-nnets-torch is the one for the encoding at char level and using a slightly simpler setup.
+
 [source,bash]
 ----
-> cd python-nnets-torch
+> cd python-nnets-demo-word-level
 # install dependencies
 > pip install -r requirements.txt
 # train nnets

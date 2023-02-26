@@ -21,46 +21,46 @@ mutable struct Functor
 end
 
 
-function get_node(id::Int64, df_Nodes::DataFrame, depth::Int64=0)
+function get_node(id::Int64, dfNodes::DataFrame, depth::Int64=0)
 
-    filter(row -> row.Id == id, df_Nodes)[1,:] |>
+    filter(row -> row.Id == id, dfNodes)[1,:] |>
         (x -> (d=Dict(pairs(x));d[:depth]=depth;d))
 
 end
 
 
-function get_node(interfaceName::String, df_Nodes::DataFrame, depth::Int64=0)
+function get_node(interfaceName::String, dfNodes::DataFrame, depth::Int64=0)
 
-    filter(row -> row.Label == interfaceName, df_Nodes)[1,:] |>
+    filter(row -> row.Label == interfaceName, dfNodes)[1,:] |>
         (x -> (d=Dict(pairs(x));d[:depth]=depth;d))
 
 end
 
 
-function get_children_ids(id::Int64, df_Arrows::DataFrame)
+function get_children_ids(id::Int64, dfArrows::DataFrame)
 
-     df_Arrows[df_Arrows[!,"Line Source"] .== id, :]
+     dfArrows[dfArrows[!,"Line Source"] .== id, :]
 
 end
 
 
 function createTree(node::Union{Node, Nothing},
-                    df_Nodes::DataFrame,
-                    df_Arrows::DataFrame,
-                    df_Brains::DataFrame,
+                    dfNodes::DataFrame,
+                    dfArrows::DataFrame,
+                    dfBrains::DataFrame,
                     history::Vector{Node} = Node[])
 
     if node != nothing
 
         id = node.x[:Id]
-        df_ids = get_children_ids(id, df_Arrows)
+        df_ids = get_children_ids(id, dfArrows)
         node.x[:map] = size(df_ids.Label)[1] > 1 ?
                 Dict(map(x -> x[2] => x[1], enumerate(df_ids.Label))) :
                 nothing
 
 
         if !haskey(dicCODE, node.x[:Label]) &
-                !(node.x[:Label] in df_Brains[!, "Label"])
+                !(node.x[:Label] in dfBrains[!, "Label"])
 
             @warn "unimplemented Node:: Id", node.x[:Id], " Name: " , node.x[:Label]
 
@@ -77,9 +77,9 @@ function createTree(node::Union{Node, Nothing},
                     else
 
                         createTree(
-                            Node(get_node(ix, df_Nodes, node.x[:depth]+1),
+                            Node(get_node(ix, dfNodes, node.x[:depth]+1),
                                  nothing),
-                            df_Nodes, df_Arrows, df_Brains,
+                            dfNodes, dfArrows, dfBrains,
                             [history;[node]])
 
                     end,
@@ -92,3 +92,4 @@ function createTree(node::Union{Node, Nothing},
     node
 
 end
+

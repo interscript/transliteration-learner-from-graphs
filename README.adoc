@@ -97,5 +97,5 @@ The workflow is also sketched.
 
 Notice that two versions were developed for the encoding and are on different branches:
   * https://github.com/interscript/transliteration-learner-from-graphs/tree/farsi-word-level[farsi word level]
-  * https://github.com/interscript/transliteration-learner-from-graphs/tree/main[char level encoding]
+  * https://github.com/interscript/transliteration-learner-from-graphs/tree/farsi-char-level[farsi char level]
 The char level encoding was made possible using a simplified version inspired and modified from Andrej Karpathy.

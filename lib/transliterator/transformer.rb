@@ -10,11 +10,9 @@ module Transliterator
     def initialize(config)
 
       # load onnx models
-      onnx_models_path = config["file_paths"]["onnx_models_path"]
-      onnx_models_path = "/home/jair/WORK/Interscript/transliteration-learner-from-graphs/ressources/transformer_model.onnx"
-
+      onnx_model_path = config["file_paths"]["onnx_model_path"]
       # load inference model from model_path
-      @onnx_model = OnnxRuntime::Model.new(onnx_models_path)
+      @onnx_model = OnnxRuntime::Model.new(onnx_model_path)
 
     end
 

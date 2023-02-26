@@ -19,8 +19,8 @@ nnets:
 file_paths:
   file_name: 'gdrive/MyDrive/out.txt' # path to the comma separated text file
   n_cutoff: 1000000 # number of lines to read from the file (throwing away the rest)
-  chars_file_path: '/home/jair/WORK/Interscript/char-level/transliteration-learner-from-graphs/resources/chars.txt' # path to the file containing the list of characters
-  torch_model_path: '/home/jair/WORK/Interscript/char-level/transliteration-learner-from-graphs/resources/transformer_model.pt' # path to the torch model
-  onnx_model_path: '/home/jair/WORK/Interscript/char-level/transliteration-learner-from-graphs/resources/transformer_model.onnx' # path to the onnx model
+  chars_file_path: '/home/jair/WORK/Interscript/farsi/transliteration-learner-from-graphs/resources/chars.txt' # path to the file containing the list of characters
+  torch_model_path: '/home/jair/WORK/Interscript/farsi/transliteration-learner-from-graphs/resources/transformer_model.pt' # path to the torch model
+  onnx_model_path: '/home/jair/WORK/Interscript/farsi/transliteration-learner-from-graphs/resources/transformer_model.onnx' # path to the onnx model
 
   

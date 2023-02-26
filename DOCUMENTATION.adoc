@@ -382,6 +382,9 @@ Write Vocab Transform
 === 5. Run ruby Code
 Finally, one can run the *ruby code*.
 In principle, necessary variable are specified in *config/params.yml*.
+
+Notice that the code for word-level encoding and training is on the **farsi-word-level** branch! 
+
 [source,bash]
 ----
 > cd lib

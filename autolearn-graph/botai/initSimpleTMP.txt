@@ -1,0 +1,12 @@
+I am going to give you a set of commands and a initial computational state of the form:
+
+data = {"txt": txt}
+
+You need to write a lambda function in python that executes the following command:
+
+command = $command
+
+
+Please, generate a lambda function and return the code with the lambda function and name it lambda_$name_function.
+
+

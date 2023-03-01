@@ -1,0 +1,10 @@
+== Graph Learn And Code Building with Chat GPT
+
+==== Usage
+
+[source,bash]
+----
+> julia buildAI.jl --path-model resources/FullDemo.dat --file-name test 
+----
+
+

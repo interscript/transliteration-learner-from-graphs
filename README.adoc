@@ -34,8 +34,36 @@ and details and easy to build.
 Our codes are generated from data in ways explained below.
 
 ==== Quickstart & Documentation
-The Library/strategy can be tried on a simple, https://github.com/interscript/transliteration-learner-from-graphs/blob/main/QUICKSTART.adoc[QUICKSTART].
-A more complete version can be found under https://github.com/interscript/transliteration-learner-from-graphs/blob/main/DOCUMENTATION.adoc[documentation].
+
+===== Quickstart
+
+====== Data 
+The farsi model can be downloaded from https://github.com/secryst/transliteration-learner-from-graph-models/releases/tag/v1.0.0-char-level[char level data].
+Data is the raw data to train the model but also the trained model, using the code of the python branch.
+
+====== Code & Installation
+0. configuration: /learn-graph/config.yml
+  * onnx_model_path: <FULLPATH/transformer_model.onnx> 
+  * torch_model_path: <FULLPATH/transformer_model.pt>
+  * chars_file_path: <FULLPATH/chars.txt>
+1. python code to train nnets with pytorch: 
+   * char-level: /python-nnets-char_level
+   * word-level: /python-nnets-word_level
+2. ruby code to run the trained model: /lib
+3. julia to generate ruby code from diagrams: /learn-graph
+
+Installations: 
+
+python with requirements.txt, ruby with gemfile, julia with packageInstall.jl script (not standard).
+
+====== Production
+in /lib and once installation made run:
+
+* ruby transliterate.rb <FULLPATH/input.txt> <FULLPATH/output.txt>
+
+==== General Demo / Quickstart
+The Library/strategy are illustrated / can be tried on a simple generic demo: https://github.com/interscript/transliteration-learner-from-graphs/blob/main/QUICKSTART.adoc[QUICKSTART].
+A more complete description can be found under https://github.com/interscript/transliteration-learner-from-graphs/blob/main/DOCUMENTATION.adoc[documentation].
 
 ==== Paper and Presentation
 We have summarised the reflection and results into a short
